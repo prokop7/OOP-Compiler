@@ -3,7 +3,7 @@ Compiler for OOP language.
 
 Innopolis University, Fall 2017, Introduction to Compiler Construction.
 
-Links are private. To gather them, if it possible, contact <a.prokopev@innopolis.ru>.
+Links are private property of Innopolis University and Evgeny Zuev.
 
 [Common lexical grammar](https://moodle.university.innopolis.ru/pluginfile.php/19029/mod_resource/content/1/CC%20Projects%20-%20Common%20Lexical%20Grammar.pdf)
 
