@@ -26,8 +26,6 @@ namespace Compiler.TreeStructure.Expressions
         public IPrimaryExpression PrimaryPart { get; set; } 
         public List<MethodOrFieldCall> Calls { get; set; } = new List<MethodOrFieldCall>();
 
-        // TODO Ask and then fill in.
-
         public override string ToString()
         {
             return PrimaryPart.ToString();
