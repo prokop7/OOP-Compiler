@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Compiler.TreeStructure.MemberDeclarations;
+using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure
 {

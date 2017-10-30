@@ -2,7 +2,8 @@
 
 namespace Compiler.TreeStructure
 {
-    public interface IBody: ICommonTreeInterface
+    public interface ICommonTreeInterface: IAcceptVisitor
     {
+        
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Compiler.TreeStructure.MemberDeclarations
+﻿using Compiler.TreeStructure.Visitors;
+
+namespace Compiler.TreeStructure.MemberDeclarations
 {
-    public interface IMemberDeclaration
+    public interface IMemberDeclaration: ICommonTreeInterface
     {
     }
 }

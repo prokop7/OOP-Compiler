@@ -1,4 +1,6 @@
-﻿using Compiler.TreeStructure.Expressions;
+﻿using System.Collections.Generic;
+using Compiler.TreeStructure.Expressions;
+using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Statements
 {
@@ -16,6 +18,11 @@ namespace Compiler.TreeStructure.Statements
         public override string ToString()
         {
             return $"{Identifier}:= {Expression}";
+        }
+
+        public void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

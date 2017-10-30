@@ -1,6 +1,8 @@
-﻿namespace Compiler.TreeStructure
+﻿using Compiler.TreeStructure.Visitors;
+
+namespace Compiler.TreeStructure
 {
-    public class ParameterDeclaration
+    public class ParameterDeclaration: ICommonTreeInterface
     {
         public ParameterDeclaration(string identifier, string type)
         {
@@ -14,6 +16,11 @@
         public override string ToString()
         {
             return $"{Type}: {Identifier}";
+        }
+
+        public void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace Compiler.TreeStructure.Expressions
 {
-    public interface IPrimaryExpression
+    public interface IPrimaryExpression: ICommonTreeInterface
     {
-        
     }
 }
