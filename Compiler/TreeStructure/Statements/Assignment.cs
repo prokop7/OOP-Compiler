@@ -14,6 +14,9 @@ namespace Compiler.TreeStructure.Statements
 
         public string Identifier { get; set; }
         public Expression Expression { get; set; }
+        // a = true
+        //  a - identifier
+        //  true - expression
 
         public override string ToString()
         {

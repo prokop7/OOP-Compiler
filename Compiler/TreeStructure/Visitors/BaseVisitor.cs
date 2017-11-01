@@ -9,6 +9,7 @@ namespace Compiler.TreeStructure.Visitors
 	/// <summary>
 	/// Makes all traverse across the tree
 	/// </summary>
+	// Рекурсивно пробегает по всему дереву, никаких изменений он не делает
     public class BaseVisitor: IVisitor
 	{
 		public virtual void Visit(Class @class)
