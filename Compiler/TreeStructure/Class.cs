@@ -11,8 +11,7 @@ namespace Compiler.TreeStructure
             ClassName = name;
         }
         
-        public Class Base { get; set; } = null;
-        public string Specification { get; set; } = null;
-        public List<IMemberDeclaration> MemberDeclarations { get; set; } = new List<IMemberDeclaration>();
-    }
+        public Class Base { get; set; } = null; // класс от которого наследуется текущий класс
+        public string Specification { get; set; } = null; // для дженериков
+        public List<IMemberDeclaration> MemberDeclarations { get; set; } = new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции    }
 }
