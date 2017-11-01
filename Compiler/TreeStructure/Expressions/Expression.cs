@@ -25,6 +25,7 @@ namespace Compiler.TreeStructure.Expressions
         public string ReturnType { get; set; }
         public IPrimaryExpression PrimaryPart { get; set; } 
         public List<MethodOrFieldCall> Calls { get; set; } = new List<MethodOrFieldCall>();
+        // 5.Plus(4) - 5 is a primary part, всё остальное - calls
 
         public override string ToString()
         {
