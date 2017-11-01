@@ -10,8 +10,11 @@ namespace Compiler.TreeStructure
             Type = type;
         }
 
-        public string Identifier { get; set; }
-        public string Type { get; set; }
+        public string Identifier { get; set; } // название параметра
+        public string Type { get; set; } // тип параметра
+        // Visitor visitor:
+        //          visitor - Identifier
+        //          Visitor - Type
 
         public override string ToString()
         {
