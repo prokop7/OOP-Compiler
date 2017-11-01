@@ -13,8 +13,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
         }
 
 
-        public string Identifier { get; set; }
-        public Expression Expression { get; set; }
+        public string Identifier { get; set; } // название
+        public Expression Expression { get; set; } // var i = expresion. Это и есть expression
 
         public void Accept(IVisitor visitor)
         {
