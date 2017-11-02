@@ -1,0 +1,19 @@
+class Program is
+ 
+ 	var a: 7
+ 	var res: 0
+
+
+    method findFactorial(n: Integer): Integer is
+
+        var fact: 0
+
+        if n.Equal(0).Or(n.Equal(1)) then
+    		return 1
+
+        fact = findFactorial(n - 1) * n;
+        return fact;
+    }
+    res := findFactorial(a)
+  
+end

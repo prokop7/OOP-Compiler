@@ -1,0 +1,15 @@
+class Program is
+
+	var i: 0
+	var x: 23
+	var sum: 1
+
+
+	while i.Less(10)  
+	loop
+		
+	end
+
+	// this test is invalid because while loop cannot be with empty body - in this case it will be infinite loop
+
+end

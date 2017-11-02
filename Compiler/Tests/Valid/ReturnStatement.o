@@ -1,0 +1,19 @@
+class Program is
+
+ 	var a: 20
+
+ 	// return normal expression
+    method incrementByTen(n: Integer): Integer is
+        n := n.Plus(10)
+        return n
+    end
+
+    // no expression in return statement
+    method nullMethod(n: Integer) : is
+        return 
+    end
+    a := a.Minus(incrementByTen(12))
+
+    nullMethod(2) // nothing happens
+
+end
