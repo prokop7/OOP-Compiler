@@ -7,6 +7,7 @@ namespace Compiler.TreeStructure.Expressions
     {
         public string Identifier { get; set; }
         public List<Expression> Arguments { get; set; } = new List<Expression>();
+        // 5.Plus(4) - Plus is Identifier, 4 is Argument
         
         public void Accept(IVisitor visitor)
         {

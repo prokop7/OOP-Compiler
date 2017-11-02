@@ -8,10 +8,10 @@ namespace Compiler.TreeStructure.MemberDeclarations
     {
         public MethodDeclaration(string identifier) => Identifier = identifier;
 
-        public string Identifier { get; set; }
-        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
-        public string ResulType { get; set; }
-        public List<IBody> Body { get; set; } = new List<IBody>();
+        public string Identifier { get; set; } // название метода
+        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>(); // параметры метода
+        public string ResulType { get; set; } // result types
+        public List<IBody> Body { get; set; } = new List<IBody>(); // тело
         
         public void Accept(IVisitor visitor)
         {
@@ -19,6 +19,6 @@ namespace Compiler.TreeStructure.MemberDeclarations
         }
 
         public override string ToString() =>
-            $"Method: {Identifier} ({Parameters.Aggregate("", (current, p) => current + (p.ToString() + ", "))})" + $"";
+            $"Method: {Identifier} ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})";
     }
 }

@@ -5,6 +5,7 @@ namespace Compiler.TreeStructure.Expressions
 {
     public class Expression: ICommonTreeInterface
     {
+
         public Expression(IPrimaryExpression primaryPart)
         {
             PrimaryPart = primaryPart;
@@ -25,7 +26,8 @@ namespace Compiler.TreeStructure.Expressions
         public string ReturnType { get; set; }
         public IPrimaryExpression PrimaryPart { get; set; } 
         public List<MethodOrFieldCall> Calls { get; set; } = new List<MethodOrFieldCall>();
-
+        // 5.Plus(4) - 5 is a primary part, всё остальное - calls либо fields
+        
         public override string ToString()
         {
             return PrimaryPart.ToString();

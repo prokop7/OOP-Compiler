@@ -8,9 +8,10 @@ namespace Compiler.TreeStructure.Statements
     public class IfStatement: IStatement
     {
         public Expression Expression { get; set; }
-        public List<IBody> Body { get; set; } = new List<IBody>();
+        public List<IBody> Body { get; set; }
         public List<IBody> ElseBody { get; set; } = new List<IBody>();
 
+        // if expression is true, выполняется Body, else - elsebody
         public IfStatement(Expression expression, List<IBody> body)
         {
             Expression = expression;
