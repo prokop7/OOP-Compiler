@@ -1,0 +1,5 @@
+class Program is
+
+	var int: Integer(1.UnaryMinus())
+	
+end

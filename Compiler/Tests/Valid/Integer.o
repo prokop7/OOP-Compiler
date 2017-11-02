@@ -1,0 +1,19 @@
+class Program is
+
+    var int1: 10
+	var int2: Integer(1)
+	var int3: Integer(4)
+	var int4: Integer(235)
+	var int5: Integer(7.98)
+	var int6: 0
+	var int7: Integer(true)
+	var int8: Integer()
+	
+	var sum: int1.Plus(int5)
+	var sub: int3.Minus(int4)
+	var mult: int4.Mult(int6)
+	var div: int1.Div(int3)
+	var reminder: int4.Rem(10)
+	var neg: int5.UnaryMinus()
+	
+end

@@ -1,0 +1,5 @@
+class Program is
+
+	var real: .8
+	
+end

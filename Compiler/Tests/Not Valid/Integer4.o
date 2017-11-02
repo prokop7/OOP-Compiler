@@ -1,0 +1,7 @@
+class Program is
+
+    var int: 10
+
+	var int: 5
+	
+end

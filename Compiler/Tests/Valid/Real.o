@@ -1,0 +1,20 @@
+class Program is
+
+    var real1: 10.0
+	var real2: Real(2.1)
+	var real3: Real(4)
+	var real4: Real(0.45)
+	var real5: Real(7.98)
+	var real6: 0.849
+	var real7: Real(true)
+	var real8: Real(0.0)
+	var real9: Real(7.0)
+	
+	var sum: real1.Plus(real5)
+	var sub: real3.Minus(real4)
+	var mult: real4.Mult(real7)
+	var div: real1.Div(real3)
+	var reminder: real5.Rem(real4)
+	var neg: real5.Neg()
+	
+end
