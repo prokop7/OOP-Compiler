@@ -9,7 +9,7 @@ namespace Compiler.TreeStructure
 
         public Object() => ClassName = "Class";
 
-        public void Accept(IVisitor visitor)
+        public virtual void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
         }

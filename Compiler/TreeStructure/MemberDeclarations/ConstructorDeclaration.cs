@@ -7,6 +7,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
     {
         public List<ParameterDeclaration> Parameters { get; set; }
         public List<IBody> Body { get; set; }
+        
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

@@ -4,6 +4,5 @@ namespace Compiler.TreeStructure
 {
     public interface ICommonTreeInterface: IAcceptVisitor
     {
-        
     }
 }

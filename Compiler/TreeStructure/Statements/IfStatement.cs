@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
 
@@ -14,6 +15,13 @@ namespace Compiler.TreeStructure.Statements
         {
             Expression = expression;
             Body = body;
+        }
+
+        public IfStatement(Expression expression, List<IBody> body, List<IBody> elseBody) 
+        {
+            Expression = expression;
+            Body = body;
+            ElseBody = elseBody;
         }
 
         public void Accept(IVisitor visitor)

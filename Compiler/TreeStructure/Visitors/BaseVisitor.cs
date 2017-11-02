@@ -22,18 +22,18 @@ namespace Compiler.TreeStructure.Visitors
             variableDeclaration.Expression.Accept(this);
         }
 
-        public virtual void Visit(Expression expression)
+	    public virtual void Visit(Expression expression)
         {
             expression.PrimaryPart.Accept(this);
             foreach (var call in expression.Calls)
                 call.Accept(this);
         }
 
-        public virtual void Visit(RealLiteral realLiteral)
-        {
-        }
+	    public void Visit(RealLiteral realLiteral)
+	    {
+	    }
 
-        public virtual void Visit(IntegerLiteral integerLiteral)
+	    public virtual void Visit(IntegerLiteral integerLiteral)
         {
         }
 

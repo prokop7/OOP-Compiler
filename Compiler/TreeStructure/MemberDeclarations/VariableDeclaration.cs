@@ -12,7 +12,6 @@ namespace Compiler.TreeStructure.MemberDeclarations
             Expression = expression;
         }
 
-
         public string Identifier { get; set; }
         public Expression Expression { get; set; }
 
