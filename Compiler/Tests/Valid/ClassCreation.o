@@ -1,0 +1,18 @@
+class A is
+    this is
+        var a: 0
+    end
+end
+
+class C is
+    this(Integer i) is
+        var c: i
+    end
+end
+
+class B is
+    this is
+        var a = A()
+        var c = C(5)
+    end
+end

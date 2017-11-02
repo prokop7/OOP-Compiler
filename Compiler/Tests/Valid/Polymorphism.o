@@ -1,0 +1,45 @@
+class A is
+    method Foo is
+        return 5
+    end
+
+    this is
+        var a: 0
+    end
+end
+
+class B extends A is
+    method Foo is
+        return 4
+    end
+
+    this(A a) is
+        var b = a
+    end
+end
+
+class C extends A is
+    method Foo is
+        return 3
+    end
+
+    this is
+        var b = a
+    end
+end
+
+class D is
+    this is
+        var arr: Array[A](2)
+        var b = B()
+        var c = C()
+        arr.set(0, b)
+        arr.set(1, c)
+        
+        //result == 4
+        arr.get(0).Foo() 
+        
+        //result == 3
+        arr.get(1).Foo() 
+    end
+end

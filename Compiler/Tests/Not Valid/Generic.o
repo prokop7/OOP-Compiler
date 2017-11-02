@@ -1,0 +1,30 @@
+﻿class A[T] is
+    this(T t)
+        var b: t
+    end
+end
+
+class B[TKey, TValue] is
+    this(TKey k, TValue v)
+        var key: k
+        var value: v
+    end
+end
+
+class C is
+    this is
+    
+        // Excess parameter
+        var a1: A[Integer, Integer](4)
+        
+        // Missed generic specification
+        // Theoretically, that should work (in normal languages)
+        var a2: A(4)
+        
+        // Wrong type in constructor
+        var a3: A[Integer](a1)
+        
+        // Missed second parameter
+        var b1: B[Integer](1)
+    end
+end

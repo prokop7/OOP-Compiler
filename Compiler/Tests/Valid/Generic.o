@@ -1,0 +1,19 @@
+class A[T] is
+    this(T t)
+        var b: t
+    end
+end
+
+class B[TKey, TValue] is
+    this(TKey k, TValue v)
+        var key: k
+        var value: v
+    end
+end
+
+class C is
+    this is
+        var a: A[Integer](4)
+        var b: B[Integer, Boolean](1, true)
+    end
+end
