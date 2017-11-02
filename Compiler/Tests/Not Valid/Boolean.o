@@ -1,0 +1,7 @@
+class Program is
+
+    var bool: true
+	
+	var not: bool.Not(1) // something
+	
+end

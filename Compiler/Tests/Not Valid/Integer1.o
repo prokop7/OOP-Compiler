@@ -1,0 +1,7 @@
+class Program is
+
+    var int: 10
+
+	var neg: int.UnaryMinus(6)
+	
+end

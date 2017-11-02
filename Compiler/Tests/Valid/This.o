@@ -1,0 +1,15 @@
+class Program is
+
+    var a: anotherClass(2)
+	
+end
+
+class AnotherClass is
+
+	var value: Integer()
+
+	this (value: Integer) is
+		this.value := value
+	end
+
+end
