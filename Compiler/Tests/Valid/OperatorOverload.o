@@ -6,7 +6,7 @@ class A is
 
   this(t: Integer, v: Real) is
     a := t
-    b: = v
+    b := v
   end
 
   method Add(i: Integer) is
