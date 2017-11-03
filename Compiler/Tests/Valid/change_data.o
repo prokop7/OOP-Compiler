@@ -1,0 +1,17 @@
+class Program is    //valid case
+
+  var x : Integer
+  method setX(i : Integer) : is
+    x:= i
+  end
+
+end
+
+class Change is
+
+  var y is Program
+  y.setX(5)              // change data using only methods of this class
+
+end
+
+// Изменять данные класса можно только через методы этого класса.
