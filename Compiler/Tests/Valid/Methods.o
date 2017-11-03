@@ -1,0 +1,44 @@
+// valid
+
+class A is 
+  var a : 0
+
+  this(t: Integer) is
+    a := t
+  end
+
+  //метод без параметров и аутпута
+  method plusFive is
+    a.Plus(5)
+  end
+
+  //метод с параметром, но без аутпута
+  method plusN(N: Integer) is
+    a.Plus(N)
+  end
+  
+  //метод без параметра, но с аутпутом
+  method RetMultiplyFive: Integer is
+    return a.Mult(5)
+  end
+  
+  //метод с параметром и аутпутом
+  method RetMultiplyN(N: Integer): Integer is
+    return a.Mult(N)
+  end
+
+end
+
+Class B is 
+	var b : A(2)
+
+  this is 
+    b.plusFive
+    var c : b.RetMultiplyFive
+    b.plusN(10)
+    c := b.RetMultiplyN(10)
+  end
+end
+
+
+//Создание и функционирование методов (с, без)² × (параметры, output)²
