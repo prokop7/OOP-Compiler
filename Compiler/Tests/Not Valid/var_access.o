@@ -1,0 +1,17 @@
+class Program is          //invalid case
+
+  var x is 5
+  var y is 9
+
+end
+
+class Access is
+  
+  var x is Program
+  var y is Program
+
+  x:= y+5         // here we try to change x, but only reading is available
+
+end
+
+// Доступ к переменным из-вне доступен только для чтения.
