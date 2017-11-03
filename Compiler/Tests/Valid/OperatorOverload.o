@@ -1,0 +1,38 @@
+// valid
+
+class A is 
+  var a : 0
+  var b : 0.0
+
+  this(t: Integer, v: Real) is
+    a := t
+    b: = v
+  end
+
+  method Add(i: Integer) is
+    a.Plus(i)
+  end
+
+  method Add(r: Real) is
+    b.Plus(r)
+  end
+
+  method Add(i: Integer, r: Real) is
+    a.Plus(i)
+    b.Plus(r)
+  end
+
+end
+
+Class B is 
+	var c : A(2, 4.2)
+
+  this is 
+    c.Add(3)
+    c.Add(2.8)
+    c.Add(8, 10.5)      //all of these are correct
+  end
+end
+
+
+//overload operators
