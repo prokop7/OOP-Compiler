@@ -1,17 +1,8 @@
 class Program is		//invalid case
-
-  method MaxInt(a: Array[Integer]) : Integer is  
-    
-    var max : Integer.Min
-    
-      while i.Less(a.Length) loop                           //i is not declared
-        if a.get(i).Greater(max) then max := get(i) end
-        i := i.Plus(1)
-      end
-    return max
-  end
-
-
+    this is
+        var max : Integer.Min
+        max := i                    // 'i' is not declared
+    end
 end
 
 // Любая переменная должна быть объявлена.

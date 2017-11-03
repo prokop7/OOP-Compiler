@@ -13,7 +13,7 @@ class B extends A is
         return 4
     end
 
-    this(A a) is
+    this(a: A) is
         var b = a
     end
 end

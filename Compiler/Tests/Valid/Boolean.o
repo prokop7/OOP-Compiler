@@ -2,27 +2,11 @@ class Program is
 
     var bool1: true
 	var bool2: false
-	var bool3: Boolean(1)
-	var bool4: Boolean(0)
-	var bool5: Boolean(7.98)
 	var bool6: Boolean()
 	
 	var and: bool1.And(bool2)
-	var or: bool3.Or(bool4)
-	var xor: bool5.Xor(bool4)
+	var or: bool1.Or(bool2)
+	var xor: bool1.Xor(bool2)
 	var less: 5.Less(4)
-	var lessEqual: 7.LessEqual(7)
-	var greater: 1.Greater(2)
-	var greaterEqual: 99.GreaterEqual(98.9)
-	var equal: 77.Equal(0)
-	var not: bool5.Not()
-	
-	// with 'is'
-	var _bool1_ is true
-	var _bool2 is false
-	var _bool3 is Boolean(1)
-	var _bool4 is Boolean(0)
-	var _bool5 is Boolean(7.98)
-	var _bool6 is Boolean()
-	
+	var not: bool1.Not()
 end

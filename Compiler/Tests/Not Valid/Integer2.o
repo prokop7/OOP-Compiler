@@ -1,5 +1,3 @@
 class Program is
-
-	var int: Integer(1.UnaryMinus())
-	
+	var int7: Integer(true)
 end

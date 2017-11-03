@@ -5,7 +5,7 @@ class A is
 end
 
 class C is
-    this(Integer i) is
+    this(i: Integer) is
         var c: i
     end
 end

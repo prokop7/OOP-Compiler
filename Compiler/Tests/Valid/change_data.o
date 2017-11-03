@@ -9,7 +9,7 @@ end
 
 class Change is
 
-  var y is Program
+  var y is Program()
   y.setX(5)              // change data using only methods of this class
 
 end

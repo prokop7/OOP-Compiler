@@ -1,10 +1,14 @@
 class Program is
-
- 	var a: 20
+    this is
+        var a: 20
+        a := Foo(12)
+        Foo(0) // withour left part
+        nullMethod(2) // nothing happens
+    end
+ 	
 
  	// return normal expression
-    method incrementByTen(n: Integer): Integer is
-        n := n.Plus(10)
+    method Foo(n: Integer): Integer is
         return n
     end
 
@@ -12,8 +16,4 @@ class Program is
     method nullMethod(n: Integer) : is
         return 
     end
-    a := a.Minus(incrementByTen(12))
-
-    nullMethod(2) // nothing happens
-
 end

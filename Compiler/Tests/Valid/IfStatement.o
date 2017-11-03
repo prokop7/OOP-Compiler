@@ -1,37 +1,35 @@
 
 // a) without else
 
-class Program is
-	var a: 0.5
-	var b: false
-	if a.Plus(0.5).toInteger.Equal(1)  
-	then 
-		b: true   
-	end
+class Program1 is
+    this is
+    	if 1.Equal(1)  
+    	then 
+    		b: true   
+    	end
+    end
 end
 
 // b) with else
 
-class Program is
-	var a: 0.5
-	var b = 4.5
-	var c: a.Plus(b)
-
-	if  c.Equal(2)
-	then 
-		a := c.Div(2)
-	else 
-		a := 0
-	end
+class Program2 is
+    this is
+        var a: 1
+        if 3.Equal(2)
+        then 
+            a:= 0
+        else 
+            a:= 1
+        end
+    end
 end
 
 // с) with empty Body
 
-class Program is
-	var a: 0.5
-	var b: false
-	if a.Plus(0.5).toInteger.Equal(1)  
-	then 
-		 
-	end
+class Program3 is
+    this is
+        if 1.Equal(1)  
+        then 
+        end
+    end
 end

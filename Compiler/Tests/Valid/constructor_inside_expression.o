@@ -1,15 +1,6 @@
-class Program is         //valid case( какой может быть невалидный?)
-
-  var x : Integer
-  method getX() : Integer is
-    return x
-  end
-
-end
-
 class Class is
-
-  var y is Program
+  var x: 5
+  var y: this.x
 
 end
 

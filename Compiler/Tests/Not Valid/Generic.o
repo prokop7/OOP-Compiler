@@ -1,11 +1,11 @@
 ﻿class A[T] is
-    this(T t)
+    this(t: T)
         var b: t
     end
 end
 
 class B[TKey, TValue] is
-    this(TKey k, TValue v)
+    this(k: TKey, v: TValue)
         var key: k
         var value: v
     end

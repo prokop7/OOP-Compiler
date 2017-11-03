@@ -1,16 +1,13 @@
 class Program is
-	
-	var a: 0.42
-	var b: 100
-	a := b // assign Integer value to Real without casting
-
-	var с : List[Integer]
-	var d : List[Boolean]
-	c.append(2)
-
-
-	d := c // // assign List of ints to List of booleans
-
-
-
+    this is 
+        var a: 0.42
+        var b: 100
+        a := b // assign Integer value to Real without casting
+        
+        var с : List[Integer]
+        var d : List[Boolean]
+        c.append(2)
+    
+        d := c // // assign List of ints to List of booleans
+    end
 end

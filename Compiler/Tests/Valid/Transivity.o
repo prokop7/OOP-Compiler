@@ -9,7 +9,7 @@ class A is
 end
 
 class B extends A is
-    this(A a) is
+    this(a: A) is
         var b = a
     end
 end

@@ -33,8 +33,8 @@ Class B is
 	var b : A(2)
 
   this is 
-    b.plusFive
-    var c : b.RetMultiplyFive
+    b.plusFive()
+    var c : b.RetMultiplyFive()
     b.plusN(10)
     c := b.RetMultiplyN(10)
   end

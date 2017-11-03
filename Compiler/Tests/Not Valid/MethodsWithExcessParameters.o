@@ -13,15 +13,12 @@ class A is
     a.Plus(f)
     b.Plus(s)
   end
-  
-
 end
 
 Class B is 
 	var c : A(2, 4)
 
   this is 
-    c.AddToElements(3, 2)    //правильно
     c.AddToElements          //неправильно (нет параметров)
     c.AddToElements(1, 2, 3) //неправильно (параметров больше, чем должно быть)
   end
