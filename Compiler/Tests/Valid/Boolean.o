@@ -1,8 +1,9 @@
 class Program is
 
-    var bool1: true
-	var bool2: false
-	var bool6: Boolean()
+    var bool1 is true
+	var bool2 is false
+	var bool3: Boolean is true
+	var bool6: Boolean
 	
 	var and: bool1.And(bool2)
 	var or: bool1.Or(bool2)
