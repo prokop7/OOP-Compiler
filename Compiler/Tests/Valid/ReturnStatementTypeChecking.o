@@ -2,7 +2,7 @@ class Program is
  	var res: 0.1
 
     this is
-        res := findFactorial(a)
+        res := Foo()
     end
     
     method Foo: Real is
