@@ -1,6 +1,6 @@
 class AnotherClass is
 
-	var value: Integer
+	var value: Integer(0)
 
 	this is
 		this.value := 5

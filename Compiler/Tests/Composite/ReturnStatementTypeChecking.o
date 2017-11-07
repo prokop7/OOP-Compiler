@@ -10,9 +10,9 @@ class Program is
         if n.Equal(0).Or(n.Equal(1)) then
     		return 1
 
-        fact := findFactorial(n - 1) * n;
-        return fact;
-    }
+        fact := findFactorial(n.Minus(1)).Mult(n)
+        return fact
+    end
     
     method getFactorial: Integer is
         res := findFactorial(a) // wrong - returned Integer expression is assigned to a variable of Real type (no casting error)

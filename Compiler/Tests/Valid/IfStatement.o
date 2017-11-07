@@ -2,10 +2,11 @@
 // a) without else
 
 class Program1 is
+    var b is false
     this is
     	if 1.Equal(1)  
     	then 
-    		b: true   
+    		b := true   
     	end
     end
 end
@@ -14,7 +15,7 @@ end
 
 class Program2 is
     this is
-        var a: 1
+        var a is 1
         if 3.Equal(2)
         then 
             a:= 0

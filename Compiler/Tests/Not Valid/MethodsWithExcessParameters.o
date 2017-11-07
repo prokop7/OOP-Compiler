@@ -1,12 +1,12 @@
 // invalid
 
 class A is 
-  var a : 0
-  var b : 0
+  var a is 0
+  var b is 0
 
   this(t: Integer, v: Integer) is
     a := t
-    b: = v
+    b := v
   end
 
   method AddToElements(f: Integer, s: Integer) is
@@ -16,7 +16,7 @@ class A is
 end
 
 Class B is 
-	var c : A(2, 4)
+	var c is A(2, 4)
 
   this is 
     c.AddToElements          //неправильно (нет параметров)

@@ -3,16 +3,16 @@ end
 
 class B extends A is
     this(Integer i) is
-        var b = i
+        var b is i
     end
 end
 
 class C is
     this is
         // Missed parameter
-        var b1 = B()
+        var b1 is B()
         
         // Excess parameter
-        var b2 = B(1, 2)
+        var b2 is B(1, 2)
     end
 end

@@ -1,6 +1,6 @@
 class Program is    //valid case
 
-  var x : Integer
+  var x : Integer is 0
   method setX(i : Integer) : is
     x:= i
   end

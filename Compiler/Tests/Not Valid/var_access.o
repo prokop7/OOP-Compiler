@@ -1,5 +1,5 @@
 class Program is          //invalid case
-  var y: 9
+  var y is 9
 end
 
 class Access is

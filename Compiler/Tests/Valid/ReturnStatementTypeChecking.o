@@ -1,5 +1,5 @@
 class Program is
- 	var res: 0.1
+ 	var res is 0.1
 
     this is
         res := Foo()

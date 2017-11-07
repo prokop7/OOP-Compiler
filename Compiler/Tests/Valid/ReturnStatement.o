@@ -1,6 +1,6 @@
 class Program is
     this is
-        var a: 20
+        var a is 20
         a := Foo(12)
         Foo(0) // withour left part
         nullMethod(2) // nothing happens

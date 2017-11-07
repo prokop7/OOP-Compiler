@@ -1,7 +1,7 @@
 // valid
 
 class A is 
-  var a : 0
+  var a is 0
 
   this(t: Integer) is
     a := t
@@ -30,11 +30,11 @@ class A is
 end
 
 Class B is 
-	var b : A(2)
+	var b is A(2)
 
   this is 
     b.plusFive()
-    var c : b.RetMultiplyFive()
+    var c is b.RetMultiplyFive()
     b.plusN(10)
     c := b.RetMultiplyN(10)
   end

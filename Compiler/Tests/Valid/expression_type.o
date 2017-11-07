@@ -1,6 +1,6 @@
 class Program is
 
-  var y: Integer
+  var y is Integer(0)
 
   method mulByOneAndHalf( x : Integer ) : Real is
     return x.Mul(3).Mul(0.5) //return type is Real

@@ -1,18 +1,18 @@
 class A is
     this is
-        var a: 0
+        var a is 0
     end
 end
 
 class C is
     this(i: Integer) is
-        var c: i
+        var c is i
     end
 end
 
 class B is
     this is
-        var a = A()
-        var c = C(5)
+        var a is A()
+        var c is C(5)
     end
 end
