@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Compiler.FrontendPart;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
@@ -11,6 +15,22 @@ namespace Compiler
     {
         static void Main(string[] args)
         {
+            var files = Directory.GetFiles("./Tests/Valid/");
+            files = files.Concat(Directory.GetFiles("./Tests/Not Valid/")).ToArray();
+            files = files.Concat(Directory.GetFiles("./Tests/Composite/")).ToArray();
+            foreach(string file in files){
+                Console.WriteLine("\n\n" + file + "\n");
+                var main = new FrontEndCompiler(file);
+                try
+                {
+                    main.Process();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
+                }
+            }
+
             var mainClass = new Class("Program");
             StaticTables.ClassTable.Add("Program", mainClass);
             StaticTables.ClassTable.Add("Integer", mainClass);
