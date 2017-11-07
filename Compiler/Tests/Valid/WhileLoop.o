@@ -1,6 +1,6 @@
 class Program is
     this is
-        var i: 0
+        var i is 0
         while i.Less(10)  
         loop
         end

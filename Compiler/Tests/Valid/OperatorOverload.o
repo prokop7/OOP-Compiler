@@ -1,8 +1,8 @@
 // valid
 
 class A is 
-  var a : 0
-  var b : 0.0
+  var a is 0
+  var b is 0.0
 
   this(t: Integer, v: Real) is
     a := t
@@ -25,7 +25,7 @@ class A is
 end
 
 Class B is 
-	var c : A(2, 4.2)
+	var c is A(2, 4.2)
 
   this is 
     c.Add(3)

@@ -4,19 +4,19 @@ class A is
     end
 
     this is
-        var a: 0
+        var a is 0
     end
 end
 
 class B extends A is
     this(i: Integer) is
-        var b = i
+        var b is i
     end
 end
 
 class C is
     this is
-        var b = B(5)
+        var b is B(5)
         b.Foo()
     end
 end

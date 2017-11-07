@@ -1,13 +1,13 @@
 ﻿class A[T] is
     this(t: T)
-        var b: t
+        var b is t
     end
 end
 
 class B[TKey, TValue] is
     this(k: TKey, v: TValue)
-        var key: k
-        var value: v
+        var key is k
+        var value is v
     end
 end
 
@@ -15,16 +15,16 @@ class C is
     this is
     
         // Excess parameter
-        var a1: A[Integer, Integer](4)
+        var a1 is A[Integer, Integer](4)
         
         // Missed generic specification
         // Theoretically, that should work (in normal languages)
-        var a2: A(4)
+        var a2 is A(4)
         
         // Wrong type in constructor
-        var a3: A[Integer](a1)
+        var a3 is A[Integer](a1)
         
         // Missed second parameter
-        var b1: B[Integer](1)
+        var b1 is B[Integer](1)
     end
 end

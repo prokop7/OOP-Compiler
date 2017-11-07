@@ -4,25 +4,25 @@ class A is
     end
 
     this is
-        var a: 0
+        var a is 0
     end
 end
 
 class B extends A is
     this(a: A) is
-        var b = a
+        var b  is a
     end
 end
 
 class C extends B is
     this is
-        var b = a
+        var b is a
     end
 end
 
 class D is
     this is
-        var c = C()
+        var c is C()
         c.Foo()
     end
 end

@@ -1,19 +1,19 @@
 class A[T] is
     this(t: T)
-        var b: t
+        var b is t
     end
 end
 
 class B[TKey, TValue] is
     this(k: TKey, v: TValue)
-        var key: k
-        var value: v
+        var key is k
+        var value is v
     end
 end
 
 class C is
     this is
-        var a: A[Integer](4)
-        var b: B[Integer, Boolean](1, true)
+        var a is A[Integer](4)
+        var b is B[Integer, Boolean](1, true)
     end
 end

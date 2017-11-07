@@ -1,4 +1,4 @@
 class Program is
-    var int: 10
-	var int: 5
+    var int is 10
+	var int is 5
 end

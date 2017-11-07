@@ -1,17 +1,17 @@
 class Program is
 
-    var int: 10
-	var real: 2.55
+    var int is 10
+	var real is 2.55
 	
-	var sum_Int_Real: int.Plus(real)
-	var sum_Real_Int: real.Plus(int)
-	var diff_Int_Real: int.Minus(real)
-	var diff_Real_Int: real.Minus(int)
-	var mult_Int_Real: int.Mult(real)
-	var mult_Real_Int: real.Mult(int)
-	var div_Int_Real: int.Div(real)
-	var div_Real_Int: real.Div(int)
-	var rem_Real_Int: real.Rem(int)
+	var sum_Int_Real is int.Plus(real)
+	var sum_Real_Int is real.Plus(int)
+	var diff_Int_Real is int.Minus(real)
+	var diff_Real_Int is real.Minus(int)
+	var mult_Int_Real is int.Mult(real)
+	var mult_Real_Int is real.Mult(int)
+	var div_Int_Real is int.Div(real)
+	var div_Real_Int is real.Div(int)
+	var rem_Real_Int is real.Rem(int)
 	
 	
 end
