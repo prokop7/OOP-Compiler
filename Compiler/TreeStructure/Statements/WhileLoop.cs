@@ -6,6 +6,12 @@ namespace Compiler.TreeStructure.Statements
 {
     public class WhileLoop: IStatement
     {
+        public WhileLoop(Expression expression, List<IBody> body)
+        {
+            Expression = expression;
+            Body = body;
+        }
+        
         public Expression Expression { get; set; }
         public List<IBody> Body { get; set; }
         
