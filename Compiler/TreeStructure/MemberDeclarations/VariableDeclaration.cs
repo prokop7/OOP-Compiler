@@ -14,7 +14,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public string Identifier { get; set; } // название
         public Expression Expression { get; set; } // var i = expresion. Это и есть expression
-
+        public string ClassName { get; set; } // инициализируется парсером при явном указании типа переменной
+        
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

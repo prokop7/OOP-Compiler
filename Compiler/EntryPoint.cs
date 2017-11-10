@@ -16,8 +16,8 @@ namespace Compiler
         static void Main(string[] args)
         {
             var files = Directory.GetFiles("./Tests/Valid/");
-            files = files.Concat(Directory.GetFiles("./Tests/Not Valid/")).ToArray();
-            files = files.Concat(Directory.GetFiles("./Tests/Composite/")).ToArray();
+/*            files = files.Concat(Directory.GetFiles("./Tests/Not Valid/")).ToArray();
+            files = files.Concat(Directory.GetFiles("./Tests/Composite/")).ToArray();*/
             foreach(string file in files){
                 Console.WriteLine("\n\n" + file + "\n");
                 var main = new FrontEndCompiler(file);
@@ -31,7 +31,7 @@ namespace Compiler
                 }
             }
 
-            var mainClass = new Class("Program");
+            var mainClass = new Class(new ClassName("Program"));
             StaticTables.ClassTable.Add("Program", mainClass);
             StaticTables.ClassTable.Add("Integer", mainClass);
             StaticTables.ClassTable.Add("Real", mainClass);

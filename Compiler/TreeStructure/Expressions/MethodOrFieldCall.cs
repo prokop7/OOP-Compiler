@@ -5,6 +5,17 @@ namespace Compiler.TreeStructure.Expressions
 {
     public class MethodOrFieldCall: ICommonTreeInterface
     {
+        public MethodOrFieldCall(string identifier)
+        {
+            Identifier = identifier;
+        }
+
+        public MethodOrFieldCall(string identifier, List<Expression> arguments)
+        {
+            Identifier = identifier;
+            Arguments = arguments;
+        }
+
         public string Identifier { get; set; }
         public List<Expression> Arguments { get; set; } = new List<Expression>();
         // 5.Plus(4) - Plus is Identifier, 4 is Argument
