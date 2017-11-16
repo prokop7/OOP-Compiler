@@ -20,5 +20,7 @@ namespace Compiler.TreeStructure.Expressions
         {
             return Value.ToString();
         }
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }

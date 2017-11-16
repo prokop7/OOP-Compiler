@@ -21,5 +21,7 @@ namespace Compiler.TreeStructure.Expressions
         {
             visitor.Visit(this);
         }
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace Compiler.TreeStructure.Visitors
         void Visit(BooleanLiteral booleanLiteral);
         
         void Visit(Object obj);
-        void Visit(ParameterDeclaration parameterDeclaration);     
+        void Visit(ParameterDeclaration parameterDeclaration);
+        void Visit(ClassName methodOrFieldCall);
     }
 }

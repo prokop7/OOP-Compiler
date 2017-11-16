@@ -1,4 +1,5 @@
-﻿using Compiler.TreeStructure.Expressions;
+﻿using System;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Statements;
 
@@ -89,7 +90,12 @@ namespace Compiler.TreeStructure.Visitors
         {
         }
 
-        public virtual void Visit(MethodOrFieldCall call)
+	    public virtual void Visit(ClassName methodOrFieldCall)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public virtual void Visit(MethodOrFieldCall call)
         {
             foreach (var argument in call.Arguments)
                 argument.Accept(this);

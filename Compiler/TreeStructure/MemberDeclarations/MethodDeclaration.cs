@@ -20,5 +20,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public override string ToString() =>
             $"Method: {Identifier} ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})";
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }

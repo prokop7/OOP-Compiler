@@ -12,5 +12,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
         {
             visitor.Visit(this);
         }
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }

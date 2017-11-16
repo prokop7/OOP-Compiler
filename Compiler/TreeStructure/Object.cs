@@ -18,5 +18,7 @@ namespace Compiler.TreeStructure
         {
             return $"Class: {ClassName}";
         }
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }
