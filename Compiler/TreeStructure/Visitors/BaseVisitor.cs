@@ -88,9 +88,20 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ParameterDeclaration parameter)
         {
+            throw new NotImplementedException();
         }
 
 	    public virtual void Visit(ClassName methodOrFieldCall)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public void Visit(Base @base)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public void Visit(This @this)
 	    {
 	        throw new NotImplementedException();
 	    }
