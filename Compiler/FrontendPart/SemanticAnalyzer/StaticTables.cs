@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Compiler.TreeStructure;
 
-namespace Compiler
+namespace Compiler.FrontendPart.SemanticAnalyzer
 {
     public static class StaticTables
     {

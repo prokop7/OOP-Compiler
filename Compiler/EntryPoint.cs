@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Compiler.FrontendPart;
+using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
