@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using Compiler.FrontendPart;
 using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
@@ -17,22 +19,55 @@ namespace Compiler
     {
         static void Main(string[] args)
         {
-            var files = Directory.GetFiles("./Tests/Valid/");
-/*            files = files.Concat(Directory.GetFiles("./Tests/Not Valid/")).ToArray();
-            files = files.Concat(Directory.GetFiles("./Tests/Composite/")).ToArray();*/
-            foreach(string file in files){
-                Console.WriteLine("\n\n" + file + "\n");
-                var main = new FrontEndCompiler(file);
-                try
-                {
-                    main.Process();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
-                }
+            try
+            {
+                AntonTests();
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+//            CheckTests("Valid");
+//            CheckTests("Not Valid");
+//            CheckTests("Composite");
+        }
+        
+        private static void AntonTests()
+        {
+            var @class = GenerateClass();
+            var a = new Analizer(new List<Class> {@class});
+            a.VariableDeclarationCheck();
+            
+            Class GenerateClass()
+            {
+                var mainClass = new Class(new ClassName("Program"));
+                var method = new MethodDeclaration("FooBar");
+                method.Parent = mainClass;
+                mainClass.MemberDeclarations.Add(method);
+            
+            
+                var expA = new Expression(new IntegerLiteral(10));
+                var varA = new VariableDeclaration("a", expA);
+                varA.Parent = method;
+                method.Body.Add(varA);
 
+                var expB = new Expression(new RealLiteral(1.5));
+                var varB = new VariableDeclaration("b", expB);
+                varB.Parent = method;
+                method.Body.Add(varB);
+            
+                var expB2 = new Expression(new RealLiteral(124.1));
+                var varB2 = new VariableDeclaration("b", expB2);
+                varB2.Parent = mainClass;
+                mainClass.MemberDeclarations.Add(varB2);
+                mainClass.Members.Add("b", varB2);
+                return mainClass;
+            }
+        }
+
+        private static void TreeBuildingExample()
+        {
             var mainClass = new Class(new ClassName("Program"));
             StaticTables.ClassTable.Add("Program", mainClass);
             StaticTables.ClassTable.Add("Integer", mainClass);
@@ -62,15 +97,23 @@ namespace Compiler
             method.Body.Add(ifStatement);
             
             mainClass.MemberDeclarations.Add(method);
-
-
-            CheckTypes(mainClass);
         }
 
-        private static void CheckTypes(Class mainClass)
+        private static void CheckTests(string folderName)
         {
-            var typeVisitor = new TypeChecker();
-            mainClass.Accept(typeVisitor);
+            var files = Directory.GetFiles($"./Tests/{folderName}/");
+            foreach(string file in files){
+                Console.WriteLine("\n\n" + file + "\n");
+                var main = new FrontEndCompiler(file);
+                try
+                {
+                    main.Process();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
+                }
+            }
         }
     }
 }
