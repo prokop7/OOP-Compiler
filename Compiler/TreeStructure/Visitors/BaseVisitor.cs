@@ -91,9 +91,10 @@ namespace Compiler.TreeStructure.Visitors
             throw new NotImplementedException();
         }
 
-	    public virtual void Visit(ClassName methodOrFieldCall)
+	    public virtual void Visit(ClassName className)
 	    {
-	        throw new NotImplementedException();
+		    foreach (var name in className.Specification)
+			    name.Accept(this);
 	    }
 
 	    public virtual void Visit(Base @base)

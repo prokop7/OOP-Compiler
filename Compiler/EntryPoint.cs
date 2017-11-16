@@ -79,7 +79,7 @@ namespace Compiler
             mainClass.MemberDeclarations.Add(varA);
             
             var method = new MethodDeclaration("FooBar");
-            method.ResulType = "Integer";
+            method.ResultType = "Integer";
             
             var expB = new Expression(new RealLiteral(1.5));
             var varB = new VariableDeclaration("b", expB);

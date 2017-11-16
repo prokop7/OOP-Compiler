@@ -10,10 +10,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
     /// TODO Stages of analizer
     /// [??%] Fill class table    <see cref="FillStaticTable"/>
     /// [??%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
-    /// [90%] Simple inheritance    <<see cref="AddInheritedMembers"/>
+    /// [90%] Simple inheritance    <see cref="AddInheritedMembers"/>
     /// [80%] Fill variable table for methods and check initialization of variables    <see cref="VariableDeclarationCheck"/>
     /// [ 0%] Replace Generic classes with existing
-    /// [10%] Check types (should be expanded)]
+    /// [10%] Check types (should be expanded)
+    /// [30%] Check that called method is declared
     public class Analizer
     {
         private readonly List<Class> _classList;
@@ -21,6 +22,12 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public Analizer(List<Class> classList)
         {
             _classList = classList;
+            InitClasses();
+        }
+
+        private void InitClasses()
+        {
+            // TODO Add base classes such as Integer, AnyRef and so on
         }
 
         public List<Class> Analize()
@@ -29,7 +36,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             FillMethodsTable();
             AddInheritedMembers();
             VariableDeclarationCheck();
+            CheckMethodDeclaration();
             return _classList;
+        }
+
+        private void CheckMethodDeclaration()
+        {
+            var visitor = new MethodCallsChecker();
+            
         }
 
         private void FillMethodsTable()

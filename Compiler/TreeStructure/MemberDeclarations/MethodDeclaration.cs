@@ -16,7 +16,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
         public List<ParameterDeclaration> Parameters { get; set; } =
             new List<ParameterDeclaration>(); // параметры метода
 
-        public string ResulType { get; set; } // result types
+        public string ResultType { get; set; } // result types
         public List<IBody> Body { get; set; } = new List<IBody>(); // тело
 
         public void Accept(IVisitor visitor)
