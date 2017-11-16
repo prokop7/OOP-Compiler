@@ -26,5 +26,10 @@ namespace Compiler.TreeStructure
  
         public List<IMemberDeclaration> MemberDeclarations { get; set; } =
             new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции
+
+        public override string ToString()
+        {
+            return SelfClassName.ToString();
+        }
     }
 }

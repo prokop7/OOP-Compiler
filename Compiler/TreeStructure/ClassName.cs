@@ -10,6 +10,7 @@ namespace Compiler.TreeStructure
         public ClassName(string name)
         {
             Identifier = name;
+            Specification = new List<string>();
         }
 
         public void Accept(IVisitor visitor)
@@ -30,5 +31,38 @@ namespace Compiler.TreeStructure
         }
 
         public ICommonTreeInterface Parent { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ClassName)
+            {
+                var o = obj as ClassName;
+                if (this.Specification.Count == o.Specification.Count)
+                {
+                    return base.Equals(obj);
+                }
+                
+            }
+            return base.Equals(obj);
+        }
+
+        public override string ToString()
+        {
+            if (Specification.Count == 0)
+            {
+                return Identifier;
+            }
+            else
+            {
+                String s = Identifier + ": ";
+                foreach (var i in Specification)
+                {
+                    s += i + ", ";
+
+                }
+                return s;
+            }
+            
+        }
     }
 }
