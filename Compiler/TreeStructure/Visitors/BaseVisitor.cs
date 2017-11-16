@@ -29,7 +29,7 @@ namespace Compiler.TreeStructure.Visitors
                 call.Accept(this);
         }
 
-	    public void Visit(RealLiteral realLiteral)
+	    public virtual void Visit(RealLiteral realLiteral)
 	    {
 	    }
 
@@ -96,12 +96,12 @@ namespace Compiler.TreeStructure.Visitors
 	        throw new NotImplementedException();
 	    }
 
-	    public void Visit(Base @base)
+	    public virtual void Visit(Base @base)
 	    {
 	        throw new NotImplementedException();
 	    }
 
-	    public void Visit(This @this)
+	    public virtual void Visit(This @this)
 	    {
 	        throw new NotImplementedException();
 	    }

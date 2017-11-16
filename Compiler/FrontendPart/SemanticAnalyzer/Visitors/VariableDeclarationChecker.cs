@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Compiler.Exceptions;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
@@ -11,9 +12,22 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 {
     public class VariableDeclarationChecker : BaseVisitor
     {
+        public override void Visit(Assignment assignment)
+        {
+            base.Visit(assignment);
+            if (IsDeclared(assignment, assignment.Identifier))
+                throw new DuplicatedDeclarationException(assignment.Identifier);
+        }
+
+        public override void Visit(This @this)
+        {
+            // TODO checking identifier
+        }
+        
+        #region Variable Declaring logic
+
         public override void Visit(ParameterDeclaration parameter)
         {
-            base.Visit(parameter);
             if (IsDeclared(parameter, parameter.Identifier))
                 throw new DuplicatedDeclarationException(parameter.Identifier);
             switch (parameter.Parent)
@@ -26,7 +40,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                     break;
             }
         }
-        
+
 
         public override void Visit(VariableDeclaration variable)
         {
@@ -49,6 +63,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             }
         }
 
+        #endregion
+
         private static bool IsDeclared(ICommonTreeInterface node, string identifier)
         {
             switch (node)
@@ -58,10 +74,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                 case Class @class:
                     return @class.Members.ContainsKey(identifier);
                 case MethodDeclaration method:
-                    return method.VariableDeclarations.ContainsKey(identifier) 
+                    return method.VariableDeclarations.ContainsKey(identifier)
                            || IsDeclared(node.Parent, identifier);
                 case IfStatement ifStatement:
-                    return ifStatement.VariableDeclarations.ContainsKey(identifier) 
+                    return ifStatement.VariableDeclarations.ContainsKey(identifier)
                            || IsDeclared(node.Parent, identifier);
                 case WhileLoop whileLoop:
                     return whileLoop.VariableDeclarations.ContainsKey(identifier) ||
@@ -70,7 +86,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                     return constructorDeclaration.VariableDeclarations.ContainsKey(identifier) ||
                            IsDeclared(node.Parent, identifier);
                 default:
-                    throw new NotImplementedException($"Class not implemented {node.GetType()}");
+                    return IsDeclared(node.Parent, identifier);
             }
         }
     }
