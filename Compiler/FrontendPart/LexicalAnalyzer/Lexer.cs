@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Compiler.Exceptions;
-using OverflowException = Compiler.Exceptions.OverflowException;
+using OverflowException = System.OverflowException;
 
 namespace Compiler.FrontendPart.LexicalAnalyzer
 {
@@ -17,23 +16,45 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
         private int currentPosition;
         private string line;
 
-        public Lexer(string fileName = "program.o")
+        public Lexer(string fileName)
         {
             fileScanner = new FileScanner(fileName);
             Tokens = new List<Token>();
             currentLine = 0;
             currentPosition = 0;
         }
-        
-        public List<Token> Analyze()
+
+        public Token GetNextToken()
         {
-            /*var token = new Token();
-            Console.WriteLine(token.type + " " + 
-                              Token.stringValueOf(token.type));*/
-            
-            while (fileScanner.ReadLine() != null)
+            if (Tokens.Count > 0)
             {
-                line = fileScanner.PeekLine();
+                return PullFirstToken();
+            }
+
+            ScanNextTokens();
+            if (Tokens.Count == 0)
+            {
+                return null;
+            }
+            return PullFirstToken();
+        }
+
+        /* returns first token from 'Tokens' with deleting it from the list  */
+        private Token PullFirstToken()
+        {
+            var token = Tokens.First();
+            Tokens.RemoveAt(0);
+            return token;
+        }
+
+        private void ScanNextTokens()
+        {
+            while (Tokens.Count == 0)
+            {
+                if ((line = fileScanner.ReadLine()) == null)
+                {
+                    return;
+                }
                 currentLine++;
                 currentPosition = 0;
 
@@ -45,7 +66,7 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
                         continue;
                     }
                     var lexeme = GetNextLexeme(line, currentPosition);
-                    
+
                     switch (lexeme)
                     {
                         case "/":
@@ -53,7 +74,7 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
                             if (currentPosition + 1 < line.Length && line[currentPosition + 1] == '/')
                             {
                                 currentPosition = line.Length;
-                            break;
+                                break;
                             }
                             throw new UnexpectedDigitException(currentLine, currentPosition);
                         }
@@ -86,7 +107,7 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
                         case ".":
                         {
                             Tokens.Add(new Token(Type.Dot, currentLine, currentPosition));
-                                break;
+                            break;
                         }
                         case "(":
                         {
@@ -192,13 +213,11 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
                             }
                             throw new UnexpectedDigitException(currentLine,currentPosition);
                         }
-                            
+
                     }
                     currentPosition += lexeme.Length;
                 }
-                
             }
-            return Tokens;
         }
 
         private void SkipSpaces()
@@ -210,7 +229,6 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
         private string GetNextLexeme(string line, int startPosition)
         {
             var lexeme = line.Substring(startPosition, 1);
-//            if(IsPunctuationMark(line[startPosition]))
             if(!Char.IsLetterOrDigit(line[startPosition]))
             {
                 return lexeme;
@@ -245,8 +263,6 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
             return lexeme;
 
         }
-        
-        
 
         private object ParseNumber(string lexeme)
         {
@@ -293,41 +309,6 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
 
             return result;
         }
-        
-  /*      private static bool IsPunctuationMark(char c)
-        {
-            switch (c)
-            {
-                case ':':
-                case ',':
-                case '.':
-                case '(':
-                case ')':
-                case '[':
-                case ']':
-                    return true;
-                default:
-                    return false;
-            }
-        }*/
-        
- /*       private static bool IsEndOfWord(string line, int position)
-        {
-            var nextPosition = position + 1;
-            return (position < line.Length &&
-                (
-                    position + 1 == line.Length // the last symbol in the line
-                    || line[nextPosition] == ' ' // followed by space
-                    || IsPunctuationMark(line[nextPosition])
-                )
-            );
-        }*/
-        
-        
-        
-/*        public Token GetNextToken()
-        {
-            return new Token();
-        }*/
+
     }
 }

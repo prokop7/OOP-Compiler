@@ -11,22 +11,27 @@ namespace Compiler.FrontendPart
     {
         private Lexer lexer;
         private Parser parser;
-
+        private string fileName;
 
         public FrontEndCompiler(string fileName = "program.o")
         {
+            this.fileName = fileName;
             lexer = new Lexer(fileName);
-            parser = new Parser(lexer);
         }
 
         public void Process()
         {
-            var tokens = lexer.Analyze();
-            Console.WriteLine(tokens);
-            foreach (Token t in tokens)
+            Token token;
+            do
             {
-                Console.Write(t + " ");
-            }
+                token = lexer.GetNextToken();
+                Console.Write(token + " ");
+            } while (token != null);
+            
+            parser = new Parser(lexer);
+            
+//            var tree = parser.Analyze();
+            
         }
     }
 }
