@@ -11,12 +11,28 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 {
     public class VariableDeclarationChecker : BaseVisitor
     {
+        public override void Visit(ParameterDeclaration parameter)
+        {
+            base.Visit(parameter);
+            if (IsDeclared(parameter, parameter.Identifier))
+                throw new DuplicatedDeclarationException(parameter.Identifier);
+            switch (parameter.Parent)
+            {
+                case ConstructorDeclaration constructorDeclaration:
+                    constructorDeclaration.VariableDeclarations.Add(parameter.Identifier, parameter);
+                    break;
+                case MethodDeclaration methodDeclaration:
+                    methodDeclaration.VariableDeclarations.Add(parameter.Identifier, parameter);
+                    break;
+            }
+        }
+        
+
         public override void Visit(VariableDeclaration variable)
         {
-            var parent = variable.Parent;
-            if (IsDeclared(variable.Parent, variable.Identifier))
+            if (IsDeclared(variable, variable.Identifier))
                 throw new DuplicatedDeclarationException(variable.Identifier);
-            switch (parent)
+            switch (variable.Parent)
             {
                 case MethodDeclaration method:
                     method.VariableDeclarations.Add(variable.Identifier, variable);
