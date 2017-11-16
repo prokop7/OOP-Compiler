@@ -14,5 +14,6 @@ namespace Compiler.TreeStructure.MemberDeclarations
         }
 
         public ICommonTreeInterface Parent { get; set; }
+        public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } = new Dictionary<string, VariableDeclaration>();
     }
 }
