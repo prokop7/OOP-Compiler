@@ -1,7 +1,12 @@
-﻿namespace Compiler.TreeStructure.Expressions
+﻿using Compiler.TreeStructure.Visitors;
+
+namespace Compiler.TreeStructure.Expressions
 {
     public class Base: IPrimaryExpression
     {
-        
+        public void Accept(IVisitor visitor)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace Compiler.TreeStructure
             visitor.Visit(this);
         }
 
-        public ClassName SelfClassName { get; set; } = null;
+        public ClassName SelfClassName { get; set; }
         public ClassName BaseClassName { get; set; } = null;
         public Class Base { get; set; } = null; // класс от которого наследуется текущий класс
  
