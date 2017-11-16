@@ -8,5 +8,7 @@ namespace Compiler.TreeStructure.Expressions
         {
             throw new System.NotImplementedException();
         }
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }

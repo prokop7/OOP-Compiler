@@ -26,5 +26,7 @@ namespace Compiler.TreeStructure
         {
             visitor.Visit(this);
         }
+
+        public ICommonTreeInterface Parent { get; set; }
     }
 }

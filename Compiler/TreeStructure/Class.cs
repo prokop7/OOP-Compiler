@@ -17,6 +17,8 @@ namespace Compiler.TreeStructure
         {
             visitor.Visit(this);
         }
+        
+        public Dictionary<string, IMemberDeclaration> Members = new Dictionary<string, IMemberDeclaration>();
 
         public ClassName SelfClassName { get; set; }
         public ClassName BaseClassName { get; set; } = null;
