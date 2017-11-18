@@ -37,5 +37,19 @@ namespace Compiler.TreeStructure
                 generics = generics.Remove(generics.Length - 2);
             return !generics.Equals("") ? $"{Identifier}<{generics}>" : Identifier;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ClassName)
+            {
+                var o = obj as ClassName;
+                if (this.Specification.Count == o.Specification.Count)
+                {
+                    return base.Equals(obj);
+                }
+                
+            }
+            return base.Equals(obj);
+        }
     }
 }

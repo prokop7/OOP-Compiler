@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Compiler.Exceptions;
+using System.Data;
+using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
 using static Compiler.L;
@@ -18,7 +20,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
     public class Analizer
     {
         private readonly List<Class> _classList;
-
 
         public Analizer(List<Class> classList)
         {
@@ -67,7 +68,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         {
             FillStaticTable();
             InitClasses();
-            FillMethodsTable();
+//            FillMethodsTable();
             AddInheritedMembers();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
@@ -88,7 +89,79 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 
         private void FillStaticTable()
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                foreach (var i in _classList)
+                {
+                    if (i.SelfClassName.Specification.Count != 0)
+                    {
+                        if (StaticTables.GenericClassTable.ContainsKey(i.SelfClassName.Identifier))
+                        {
+                            if (StaticTables.GenericClassTable[i.SelfClassName.Identifier].Any(j => i.SelfClassName.Specification.Count == j.SelfClassName.Specification.Count))
+                            {
+                                throw new DuplicateNameException();
+                            }          
+                        }
+                        else
+                        {
+                            PutToGenericClassTable(i.SelfClassName.Identifier, i);
+                        }
+                    }
+                    else
+                    {
+                        if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
+                        {
+                            throw new DuplicateNameException();
+                        }
+                        else
+                        {
+                            PutToClassTable(i.SelfClassName.Identifier, i);
+                        }
+                        
+                    }
+                   
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
+            void PutToClassTable(string key, Class value)
+            {
+                if(StaticTables.ClassTable.ContainsKey(key))
+                
+                    StaticTables.ClassTable[key].Add(value);
+                else
+                {
+                    StaticTables.ClassTable.Add(key, new List<Class> {value});
+                }
+            }
+            
+            void PutToGenericClassTable(string key, Class value)
+            {
+                if(StaticTables.GenericClassTable.ContainsKey(key))
+                    StaticTables.GenericClassTable[key].Add((GenericClass) value);
+                else
+                {
+                    StaticTables.GenericClassTable.Add(key, new List<GenericClass> {(GenericClass) value});
+                }
+            }
+            
+            
+        }
+
+        public override string ToString()
+        {
+            String s = "";
+            foreach (var i in _classList)
+            {
+                s += i.ToString();
+
+            }
+            return s;
+     
         }
 
         private void AddInheritedMembers()
@@ -119,7 +192,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Variable declaration check: start", 1);
             var visitor = new VariableDeclarationChecker();
             foreach (var @class in _classList)
-                visitor.Visit(@class);
+            ////    visitor.Visit(@class);
             Log($"Variable declaration check: finish", 1);
         }
     }
