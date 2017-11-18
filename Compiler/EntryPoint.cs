@@ -20,7 +20,8 @@ namespace Compiler
             var files = Directory.GetFiles("./Tests/Valid/");
 /*            files = files.Concat(Directory.GetFiles("./Tests/Not Valid/")).ToArray();
             files = files.Concat(Directory.GetFiles("./Tests/Composite/")).ToArray();*/
-            foreach(string file in files){
+            //foreach(string file in files){
+            var file = "./Tests/Valid/Assignment.o";
                 Console.WriteLine("\n\n" + file + "\n");
                 var main = new FrontEndCompiler(file);
                 try
@@ -31,7 +32,7 @@ namespace Compiler
                 {
                     Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
                 }
-            }
+            //}
 
             var mainClass = new Class(new ClassName("Program"));
             StaticTables.ClassTable.Add("Program", mainClass);

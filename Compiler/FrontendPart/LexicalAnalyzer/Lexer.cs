@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Compiler.Exceptions;
-using OverflowException = System.OverflowException;
+using OverflowException = Compiler.Exceptions.OverflowException;
 
 namespace Compiler.FrontendPart.LexicalAnalyzer
 {
@@ -273,21 +273,18 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
             return ParseReal(lexeme);
         }
 
-        private long ParseInteger(string lexeme)
+        private int ParseInteger(string lexeme)
         {
             long result = 0;
             for (int i = 0; i < lexeme.Length; i++)
             {
-                try
+                result = result * 10 + lexeme[i] - '0';
+                if (Int32.MaxValue < result)
                 {
-                    result = result * 10 + lexeme[i] - '0';
-                }
-                catch (System.OverflowException e)
-                {
-                    throw new OverflowException($"Constant at line {currentLine} column {currentPosition} is too big. ");
+                    throw new OverflowException(currentLine, currentPosition);
                 }
             }
-            return result;
+            return Convert.ToInt32(result);
         }
 
         private double ParseReal(string lexeme)
@@ -300,6 +297,10 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
             {
                 divider *= 10;
                 result = result + (double)(lexeme[i] - '0') / divider;
+                if (float.MaxValue < result)
+                {
+                    throw new OverflowException(currentLine, currentPosition);
+                }
             }
             for (int i = 0; i < pointIndex; i++)
             {

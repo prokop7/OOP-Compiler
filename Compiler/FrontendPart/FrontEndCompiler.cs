@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
@@ -21,17 +21,17 @@ namespace Compiler.FrontendPart
 
         public void Process()
         {
-            Token token;
+            /*Token token;
             do
             {
                 token = lexer.GetNextToken();
                 Console.Write(token + " ");
-            } while (token != null);
+            } while (token != null);*/
             
             parser = new Parser(lexer);
             
-//            var tree = parser.Analyze();
-            
+            var tree = parser.Analyze();
+            Console.WriteLine("The end!");
         }
     }
 }
