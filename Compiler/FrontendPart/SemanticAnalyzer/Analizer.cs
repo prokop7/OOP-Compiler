@@ -29,7 +29,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public List<Class> Analize()
         {
             FillStaticTable();
-            FillMethodsTable();
+            //FillMethodsTable();
             return _classList;
         }
 
@@ -44,35 +44,61 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 foreach (var i in _classList)
                 {
-                    if (StaticTables.ClassTable.ContainsKey(i.SelfClassName))
+                    if (i.SelfClassName.Specification.Count != 0)
                     {
-                        if (i.SelfClassName.Specification.Count == 0)
+                        if (StaticTables.GeneriClassTable.ContainsKey(i.SelfClassName))
+                        {
+                            if (StaticTables.GeneriClassTable[i.SelfClassName].Any(j => i.SelfClassName.Specification.Count == j.SelfClassName.Specification.Count))
+                            {
+                                throw new DuplicateNameException();
+                            }          
+                        }
+                        else
+                        {
+                            PutToGenericClassTable(i.SelfClassName, i);
+                        }
+                    }
+                    else
+                    {
+                        if (StaticTables.ClassTable.ContainsKey(i.SelfClassName))
                         {
                             throw new DuplicateNameException();
                         }
                         else
                         {
-                            if (StaticTables.ClassTable[i.SelfClassName].SelfClassName.Specification.Count != i.SelfClassName.Specification.Count)
-                            {
-                                StaticTables.ClassTable.Add(i.SelfClassName, i);
-                            }
-                            else
-                            {
-                                throw new DuplicateNameException();
-//                            
-                            }
+                            PutToClassTable(i.SelfClassName, i);
                         }
-                       
                         
-                    
                     }
-                    StaticTables.ClassTable.Add(i.SelfClassName, i);
+                   
                 }
 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+            
+            void PutToClassTable(string key, Class value)
+            {
+                if(StaticTables.ClassTable.ContainsKey(key))
+                
+                    StaticTables.ClassTable[key].Add(value);
+                else
+                {
+                    StaticTables.ClassTable.Add(key, new List<Class> {value});
+                }
+            }
+            
+            void PutToGenericClassTable(string key, Class value)
+            {
+                if(StaticTables.GeneriClassTable.ContainsKey(key))
+                
+                    StaticTables.GeneriClassTable[key].Add(value);
+                else
+                {
+                    StaticTables.GeneriClassTable.Add(key, new List<Class> {value});
+                }
             }
             
             

@@ -10,7 +10,7 @@ namespace Compiler.TreeStructure
         public ClassName(string name)
         {
             Identifier = name;
-            Specification = new List<string>();
+            Specification = new List<ClassName>();
         }
 
         public void Accept(IVisitor visitor)

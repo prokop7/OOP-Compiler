@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -21,7 +22,8 @@ namespace Compiler
         {
             try
             {
-                AntonTests();
+                //AntonTests();
+                IlyuzaTests();
             }
             catch (Exception e)
             {
@@ -66,14 +68,55 @@ namespace Compiler
             }
         }
 
+        private static void IlyuzaTests()
+        {
+            Console.WriteLine("\nSTART FLAG --------");
+            
+            ClassName className1 = new ClassName("A");
+            className1.Specification.Add("T");
+            
+            Class class1 = new Class(className1);
+            
+            ClassName className2 = new ClassName("A");
+            className2.Specification.Add("T");
+            className2.Specification.Add("F");
+            
+            Class class2 = new Class(className2);
+            
+            List<Class> classList = new List<Class>();
+            classList.Add(class1);
+            classList.Add(class2);
+            
+            Analizer analizer = new Analizer(classList);
+            List<Class> retList = new List<Class>();
+            retList = analizer.Analize();
+  
+            foreach (var i in retList)
+            {
+                Console.WriteLine(i);
+            }
+        }
+
         private static void TreeBuildingExample()
         {
             var mainClass = new Class(new ClassName("Program"));
-            StaticTables.ClassTable.Add("Program", mainClass);
-            StaticTables.ClassTable.Add("Integer", mainClass);
-            StaticTables.ClassTable.Add("Real", mainClass);
-            StaticTables.ClassTable.Add("Boolean", mainClass);
 
+            Build("Program");
+            Build("Integer");
+            Build("Real");
+            Build("Boolean");
+            
+            void Build(string key)
+            {
+                if(StaticTables.ClassTable.ContainsKey(key))
+                
+                    StaticTables.ClassTable[key].Add(mainClass);
+                else
+                {
+                    StaticTables.ClassTable.Add(key, new List<Class> {mainClass});
+                }
+            }
+           
             var expA = new Expression(new IntegerLiteral(10));
             var varA = new VariableDeclaration("a", expA);
             mainClass.MemberDeclarations.Add(varA);

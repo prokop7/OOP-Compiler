@@ -6,8 +6,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 {
     public static class StaticTables
     {
-        public static Dictionary<string, Class> ClassTable { get; set; } = new Dictionary<string, Class>();
-        public static Dictionary<List<string>, Class> zhuk { get; set; } = new Dictionary<List<string>, Class>();
+        public static Dictionary<string, List<Class>> ClassTable { get; set; } = new Dictionary<string, List<Class>>();
+        public static Dictionary<string, List<Class>> GeneriClassTable { get; set; } = new Dictionary<string, List<Class>>();
         
     }
 }
