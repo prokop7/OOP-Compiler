@@ -11,6 +11,11 @@ namespace Compiler.TreeStructure.Expressions
             Value = value;
         }
 
+        public BooleanLiteral(BooleanLiteral booleanLiteral)
+        {
+            Value = booleanLiteral.Value;
+        }
+
         public override string ToString()
         {
             return Value.ToString();

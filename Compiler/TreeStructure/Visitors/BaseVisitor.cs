@@ -13,6 +13,7 @@ namespace Compiler.TreeStructure.Visitors
 	{
 		public virtual void Visit(Class @class)
         {
+            @class.SelfClassName.Accept(this);
             foreach (var classMemberDeclaration in @class.MemberDeclarations)
                 classMemberDeclaration.Accept(this);
         }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
-using Compiler.TreeStructure.Expressions;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
 {
@@ -22,11 +20,28 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public Analizer(List<Class> classList)
         {
             _classList = classList;
-            InitClasses();
         }
 
-        private void InitClasses()
+        public void InitClasses()
         {
+            var usageFinder = new GenericUsageFinder();
+
+            foreach (var @class in _classList)
+            {
+                if (!(@class is GenericClass))
+                    usageFinder.Visit(@class);
+                else
+                {
+                    var c = new GenericClass((GenericClass)@class);
+                    var genClass = c;
+                    var genericReplacer = new GenericReplacer(genClass.GenericParams);
+                    genericReplacer.Visit(c);
+                    var places = genericReplacer.ReplaceList;
+                }
+            }
+            var genericUsages = usageFinder.GenericUsages;
+            foreach (var usage in genericUsages)
+                Console.WriteLine(usage);
             // TODO Add base classes such as Integer, AnyRef and so on
         }
 
@@ -35,6 +50,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             FillStaticTable();
             FillMethodsTable();
             AddInheritedMembers();
+            InitClasses();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
             return _classList;
@@ -43,7 +59,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void CheckMethodDeclaration()
         {
             var visitor = new MethodCallsChecker();
-            
         }
 
         private void FillMethodsTable()

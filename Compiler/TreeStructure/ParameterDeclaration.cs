@@ -1,4 +1,6 @@
-﻿using Compiler.TreeStructure.Expressions;
+﻿using System;
+using System.Runtime.Serialization;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
@@ -10,6 +12,13 @@ namespace Compiler.TreeStructure
         {
             Identifier = identifier;
             Type = type;
+        }
+
+        public ParameterDeclaration(ParameterDeclaration parameterDeclaration)
+        {
+            Identifier = String.Copy(parameterDeclaration.Identifier);
+            Type = new ClassName(parameterDeclaration.Type) {Parent = this};
+            
         }
 
         public string Identifier { get; set; } // название параметра

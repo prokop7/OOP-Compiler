@@ -12,6 +12,11 @@ namespace Compiler.TreeStructure.Expressions
             Value = value;
         }
 
+        public RealLiteral(RealLiteral realLiteral)
+        {
+            Value = realLiteral.Value;
+        }
+
         public override string ToString()
         {
             return Value.ToString(new CultureInfo(0));

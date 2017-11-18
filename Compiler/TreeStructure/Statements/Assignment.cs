@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
 
@@ -10,6 +11,12 @@ namespace Compiler.TreeStructure.Statements
         {
             Identifier = identifier;
             Expression = expression;
+        }
+
+        public Assignment(Assignment assignment)
+        {
+            Identifier = string.Copy(assignment.Identifier);
+            Expression = new Expression(assignment.Expression) {Parent = this};
         }
 
         public string Identifier { get; set; }

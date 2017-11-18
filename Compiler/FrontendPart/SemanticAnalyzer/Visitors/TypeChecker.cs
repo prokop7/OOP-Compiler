@@ -55,7 +55,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		{
 			base.Visit(parameter);
 			//TODO get type by identifier
-			if (!StaticTables.ClassTable.ContainsKey(parameter.Type))
+			if (!StaticTables.ClassTable.ContainsKey(parameter.Type.ToString()))
 				throw new ClassNotFoundException();
 		}
 	}

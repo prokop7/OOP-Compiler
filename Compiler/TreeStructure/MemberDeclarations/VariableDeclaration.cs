@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
 
@@ -10,6 +11,15 @@ namespace Compiler.TreeStructure.MemberDeclarations
         {
             Identifier = identifier;
             Expression = expression;
+            expression.Parent = this;
+        }
+
+        public VariableDeclaration(VariableDeclaration variableDeclaration)
+        {
+            Identifier = string.Copy(variableDeclaration.Identifier);
+            Expression = new Expression(variableDeclaration.Expression) {Parent = this};
+
+            if (variableDeclaration.ClassName != null) ClassName = string.Copy(variableDeclaration.ClassName);
         }
 
         public string Identifier { get; set; } // название
@@ -23,7 +33,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public override string ToString()
         {
-            return $"Var: {Identifier}";
+            return $"var {Identifier}: {Expression}";
         }
 
         public ICommonTreeInterface Parent { get; set; }

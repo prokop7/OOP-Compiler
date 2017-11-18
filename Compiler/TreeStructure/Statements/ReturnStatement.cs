@@ -12,6 +12,11 @@ namespace Compiler.TreeStructure.Statements
             Expression = expression;
         }
 
+        public ReturnStatement(ReturnStatement returnStatement)
+        {
+            Expression = new Expression(returnStatement.Expression) {Parent = this};
+        }
+
         public Expression Expression { get; set; }
 
         public void Accept(IVisitor visitor)

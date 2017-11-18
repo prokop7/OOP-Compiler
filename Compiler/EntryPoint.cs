@@ -21,7 +21,9 @@ namespace Compiler
         {
             try
             {
-                AntonTests();
+//                AntonTests.VariableDeclaration();
+                AntonTests.GenericClassSetup();
+                
             }
             catch (Exception e)
             {
@@ -33,38 +35,7 @@ namespace Compiler
 //            CheckTests("Composite");
         }
         
-        private static void AntonTests()
-        {
-            var @class = GenerateClass();
-            var a = new Analizer(new List<Class> {@class});
-            a.VariableDeclarationCheck();
-            
-            Class GenerateClass()
-            {
-                var mainClass = new Class(new ClassName("Program"));
-                var method = new MethodDeclaration("FooBar");
-                method.Parent = mainClass;
-                mainClass.MemberDeclarations.Add(method);
-            
-            
-                var expA = new Expression(new IntegerLiteral(10));
-                var varA = new VariableDeclaration("a", expA);
-                varA.Parent = method;
-                method.Body.Add(varA);
-
-                var expB = new Expression(new RealLiteral(1.5));
-                var varB = new VariableDeclaration("b", expB);
-                varB.Parent = method;
-                method.Body.Add(varB);
-            
-                var expB2 = new Expression(new RealLiteral(124.1));
-                var varB2 = new VariableDeclaration("b", expB2);
-                varB2.Parent = mainClass;
-                mainClass.MemberDeclarations.Add(varB2);
-                mainClass.Members.Add("b", varB2);
-                return mainClass;
-            }
-        }
+     
 
         private static void TreeBuildingExample()
         {

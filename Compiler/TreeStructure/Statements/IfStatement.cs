@@ -26,6 +26,37 @@ namespace Compiler.TreeStructure.Statements
             ElseBody = elseBody;
         }
 
+        public IfStatement(IfStatement ifStatement)
+        {
+            Expression = new Expression(ifStatement.Expression) {Parent = this};
+            foreach (var body in ifStatement.Body)
+                SetBody(Body, body);
+            foreach (var body in ifStatement.ElseBody)
+                SetBody(ElseBody, body);
+
+            void SetBody(ICollection<IBody> bodyList, IBody body)
+            {
+                switch (body)
+                {
+                    case VariableDeclaration variableDeclaration:
+                        bodyList.Add(new VariableDeclaration(variableDeclaration) {Parent = this});
+                        break;
+                    case Assignment assignment:
+                        bodyList.Add(new Assignment(assignment) {Parent = this});
+                        break;
+                    case IfStatement @if:
+                        bodyList.Add(new IfStatement(@if) {Parent = this});
+                        break;
+                    case ReturnStatement returnStatement:
+                        bodyList.Add(new ReturnStatement(returnStatement) {Parent = this});
+                        break;
+                    case WhileLoop whileLoop:
+                        bodyList.Add(new WhileLoop(whileLoop) {Parent = this});
+                        break;
+                }
+            }
+        }
+
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

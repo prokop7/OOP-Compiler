@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
@@ -9,6 +10,7 @@ namespace Compiler.TreeStructure.Expressions
         public Expression(IPrimaryExpression primaryPart)
         {
             PrimaryPart = primaryPart;
+            primaryPart.Parent = this;
             if (primaryPart.GetType() == typeof(IntegerLiteral))
                 ReturnType = "Integer";
             else if (primaryPart.GetType() == typeof(RealLiteral))
@@ -21,6 +23,35 @@ namespace Compiler.TreeStructure.Expressions
         {
             PrimaryPart = primaryPart;
             Calls = calls;
+        }
+
+        public Expression(Expression expression)
+        {
+            if (expression.ReturnType != null) ReturnType = string.Copy(expression.ReturnType);
+            switch (expression.PrimaryPart)
+            {
+                case ClassName className:
+                    PrimaryPart = new ClassName(className) {Parent = this};
+                    break;
+                case Base @base:
+                    PrimaryPart = new Base(@base) {Parent = this};
+                    break;
+                case BooleanLiteral booleanLiteral:
+                    PrimaryPart = new BooleanLiteral(booleanLiteral) {Parent = this};
+                    break;
+                case IntegerLiteral integerLiteral:
+                    PrimaryPart = new IntegerLiteral(integerLiteral) {Parent = this};
+                    break;
+                case RealLiteral realLiteral:
+                    PrimaryPart = new RealLiteral(realLiteral) {Parent = this};
+                    break;
+                case This @this:
+                    PrimaryPart = new This(@this) {Parent = this};
+                    break;
+            }
+            foreach (var methodOrFieldCall in expression.Calls)
+                Calls.Add(new MethodOrFieldCall(methodOrFieldCall) {Parent = this});
+            
         }
 
         public string ReturnType { get; set; }

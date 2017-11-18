@@ -9,6 +9,11 @@ namespace Compiler.TreeStructure.Expressions
             Value = value;
         }
 
+        public IntegerLiteral(IntegerLiteral integerLiteral)
+        {
+            Value = integerLiteral.Value;
+        }
+
         public int Value { get; set; }
 
         public void Accept(IVisitor visitor)
