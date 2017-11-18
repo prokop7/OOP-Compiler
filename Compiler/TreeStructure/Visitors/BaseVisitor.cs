@@ -29,7 +29,7 @@ namespace Compiler.TreeStructure.Visitors
                 call.Accept(this);
         }
 
-	    public void Visit(RealLiteral realLiteral)
+	    public virtual void Visit(RealLiteral realLiteral)
 	    {
 	    }
 
@@ -88,9 +88,20 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ParameterDeclaration parameter)
         {
+            throw new NotImplementedException();
         }
 
 	    public virtual void Visit(ClassName methodOrFieldCall)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public virtual void Visit(Base @base)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public virtual void Visit(This @this)
 	    {
 	        throw new NotImplementedException();
 	    }

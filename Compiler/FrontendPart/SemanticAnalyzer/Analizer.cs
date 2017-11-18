@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.ComTypes;
+using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 
@@ -26,7 +28,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         {
             FillStaticTable();
             FillMethodsTable();
-            
             return _classList;
         }
 
@@ -38,6 +39,16 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillStaticTable()
         {
             throw new System.NotImplementedException();
+        }
+
+        public void VariableDeclarationCheck()
+        {
+            var visitor = new VariableDeclarationChecker();
+            foreach (var @class in _classList)
+            {
+                visitor.Visit(@class);
+            }
+            Console.WriteLine("Variable declaration checking is Done");
         }
         
         

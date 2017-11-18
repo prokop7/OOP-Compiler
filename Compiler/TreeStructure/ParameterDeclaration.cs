@@ -1,9 +1,10 @@
 ﻿using Compiler.TreeStructure.Expressions;
+using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure
 {
-    public class ParameterDeclaration: ICommonTreeInterface
+    public class ParameterDeclaration: ICommonTreeInterface, IVariableDeclaration
     {
         public ParameterDeclaration(string identifier, ClassName type)
         {

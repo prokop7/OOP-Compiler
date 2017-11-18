@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Compiler.TreeStructure.Expressions;
+using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Statements
@@ -21,5 +22,6 @@ namespace Compiler.TreeStructure.Statements
         }
 
         public ICommonTreeInterface Parent { get; set; }
+        public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } = new Dictionary<string, VariableDeclaration>();
     }
 }
