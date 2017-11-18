@@ -4,7 +4,7 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.MemberDeclarations
 {
-    public class VariableDeclaration : IMemberDeclaration, IBody
+    public class VariableDeclaration : IMemberDeclaration, IBody, IVariableDeclaration
     {
         public VariableDeclaration(string identifier, Expression expression)
         {
