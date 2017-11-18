@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
@@ -7,22 +10,33 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 {
     public class GenericReplacer: BaseVisitor
     {
-        private readonly List<string> _identifiers;
+        private readonly Dictionary<string, ClassName> _map;
 
-        public GenericReplacer(List<string> identifiers) => _identifiers = identifiers;
+        public GenericReplacer(Dictionary<string, ClassName> map) => _map = map;
 
-        public List<ClassName> ReplaceList { get; set; } = new List<ClassName>();
 
-        public override void Visit(Expression expression)
+        public override void Visit(ClassName className)
         {
-            base.Visit(expression);
-            if (expression.PrimaryPart is ClassName className)
+            base.Visit(className);
+            if (!_map.ContainsKey(className.Identifier)) return;
+            
+            var parent = className.Parent;
+            switch (parent)
             {
-                if (className.Specification.Count == 0 && _identifiers.Contains(className.Identifier))
-                {
-                    className.Identifier = "1234";
-                    ReplaceList.Add((ClassName) expression.PrimaryPart);
-                }
+                //TODO add other cases
+                case ClassName parentClassName:
+                    var i = parentClassName.Specification.IndexOf(className);
+                    L.Log($"Replaced {parentClassName}", 4);
+                    _map[className.Identifier].Parent = className.Parent;
+                    parentClassName.Specification[i] = _map[className.Identifier];
+                    break;
+                case Expression expression:
+                    if (expression.PrimaryPart != className)
+                        break;
+                    L.Log($"Replaced {expression}", 4);
+                    _map[className.Identifier].Parent = className.Parent;
+                    expression.PrimaryPart = _map[className.Identifier];
+                    break;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
@@ -45,12 +46,13 @@ namespace Compiler
         public static void GenericClassSetup()
         {
             var class1 = GenerateGenericClass();
+            StaticTables.GenericClassTable.Add("A", new List<GenericClass> {class1});
             var class2 = GenerateClass();
             var a = new Analizer(new List<Class> {class1, class2});
             a.InitClasses();
             
 
-            Class GenerateGenericClass()
+            GenericClass GenerateGenericClass()
             {
                 var className = new ClassName("A");
                 var tt = new ClassName("T");

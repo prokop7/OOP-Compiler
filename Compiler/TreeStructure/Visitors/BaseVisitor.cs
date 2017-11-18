@@ -94,8 +94,11 @@ namespace Compiler.TreeStructure.Visitors
 
 	    public virtual void Visit(ClassName className)
 	    {
-		    foreach (var name in className.Specification)
+		    for (var i = 0; i < className.Specification.Count; i++)
+		    {
+			    var name = className.Specification[i];
 			    name.Accept(this);
+		    }
 	    }
 
 	    public virtual void Visit(Base @base)
