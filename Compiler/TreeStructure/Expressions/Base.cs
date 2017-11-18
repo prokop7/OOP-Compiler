@@ -6,7 +6,7 @@ namespace Compiler.TreeStructure.Expressions
     {
         public void Accept(IVisitor visitor)
         {
-            throw new System.NotImplementedException();
+            visitor.Visit(this);
         }
 
         public ICommonTreeInterface Parent { get; set; }

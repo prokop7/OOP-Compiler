@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
+using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 
@@ -28,8 +29,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public List<Class> Analize()
         {
             FillStaticTable();
-//            FillMethodsTable();
-            
+            FillMethodsTable();
             return _classList;
         }
 
@@ -37,7 +37,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         {
             throw new System.NotImplementedException();
         }
-
 
         private void FillStaticTable()
         {
@@ -88,6 +87,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 
             }
             return s;
+     
         }
+
+        public void VariableDeclarationCheck()
+        {
+            var visitor = new VariableDeclarationChecker();
+            foreach (var @class in _classList)
+            {
+                visitor.Visit(@class);
+            }
+            Console.WriteLine("Variable declaration checking is Done");
+        }
+        
+        
     }
 }

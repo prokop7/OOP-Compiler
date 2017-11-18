@@ -7,7 +7,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
     public class MethodDeclaration : IMemberDeclaration
     {
         public MethodDeclaration(string identifier) => Identifier = identifier;
-
+        
+        public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } = new Dictionary<string, VariableDeclaration>();
         public string Identifier { get; set; } // название метода
         public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>(); // параметры метода
         public string ResulType { get; set; } // result types

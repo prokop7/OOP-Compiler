@@ -19,7 +19,7 @@ namespace Compiler.TreeStructure
         }
 
         public string Identifier { get; set; } = null; // класс от которого наследуется текущий класс
-        public List<string> Specification { get; set; } = null; // для дженериков
+        public List<ClassName> Specification { get; set; } = null; // для дженериков
 
         public static implicit operator ClassName(string s)
         {
