@@ -2,8 +2,9 @@
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class BooleanLiteral: IPrimaryExpression
+    public class BooleanLiteral : IPrimaryExpression
     {
+        public ICommonTreeInterface Parent { get; set; }
         public bool Value { get; set; }
 
         public BooleanLiteral(bool value)
@@ -16,16 +17,8 @@ namespace Compiler.TreeStructure.Expressions
             Value = booleanLiteral.Value;
         }
 
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        public ICommonTreeInterface Parent { get; set; }
+        public override string ToString() => Value.ToString();
     }
 }

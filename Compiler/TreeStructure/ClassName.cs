@@ -8,6 +8,10 @@ namespace Compiler.TreeStructure
 {
     public class ClassName : IPrimaryExpression
     {
+        public string Identifier { get; set; } // класс от которого наследуется текущий класс
+        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков
+        public ICommonTreeInterface Parent { get; set; }
+
         public ClassName(string name)
         {
             Identifier = name;
@@ -20,15 +24,7 @@ namespace Compiler.TreeStructure
             Identifier = string.Copy(className.Identifier);
         }
 
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        public string Identifier { get; set; } // класс от которого наследуется текущий класс
-        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков
-
-        public ICommonTreeInterface Parent { get; set; }
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public override string ToString()
         {
@@ -47,8 +43,8 @@ namespace Compiler.TreeStructure
                 {
                     return base.Equals(obj);
                 }
-                
             }
+            //That's useless if you return base.Equals :D
             return base.Equals(obj);
         }
     }

@@ -10,24 +10,26 @@ namespace Compiler.TreeStructure
 {
     public class Class : Object
     {
+        public Dictionary<string, IMemberDeclaration> Members = new Dictionary<string, IMemberDeclaration>();
+        public ClassName SelfClassName { get; set; }
+        public ClassName BaseClassName { get; set; }
+        public Class Base { get; set; } // класс от которого наследуется текущий класс
+
+        public List<IMemberDeclaration> MemberDeclarations { get; set; } =
+            new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции
+
         public Class(ClassName name)
         {
             SelfClassName = name;
+            name.Parent = this;
         }
-
-        public override void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-        
-        public Dictionary<string, IMemberDeclaration> Members = new Dictionary<string, IMemberDeclaration>();
 
         public Class(Class @class)
         {
             SelfClassName = new ClassName(@class.SelfClassName) {Parent = this};
             if (@class.BaseClassName != null)
                 BaseClassName = new ClassName(@class.BaseClassName) {Parent = this};
-            if (@class.Base != null) 
+            if (@class.Base != null)
                 Base = new Class(@class.Base);
             foreach (var memberDeclaration in @class.MemberDeclarations)
                 switch (memberDeclaration)
@@ -47,15 +49,9 @@ namespace Compiler.TreeStructure
                         Members.Add(variable.Identifier, variable);
                         break;
                 }
-            
         }
 
-        public ClassName SelfClassName { get; set; }
-        public ClassName BaseClassName { get; set; }
-        public Class Base { get; set; } // класс от которого наследуется текущий класс
- 
-        public List<IMemberDeclaration> MemberDeclarations { get; set; } =
-            new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции
+        public override void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public override string ToString()
         {

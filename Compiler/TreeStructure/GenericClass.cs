@@ -8,12 +8,13 @@ namespace Compiler.TreeStructure
         public GenericClass(ClassName name) : base(name)
         {
             SelfClassName = name;
+            name.Parent = this;
         }
 
         public GenericClass(Class @class) : base(@class)
         {
         }
-        
+
         public GenericClass(GenericClass @class) : base(@class)
         {
             GenericParams = @class.GenericParams;

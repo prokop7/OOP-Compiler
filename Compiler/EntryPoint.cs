@@ -16,7 +16,7 @@ namespace Compiler
             try
             {
 //                AntonTests.VariableDeclaration();
-                AntonTests.GenericClassSetup();
+//                AntonTests.GenericClassSetup();
                 IlyuzaTests();
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
@@ -24,7 +24,7 @@ namespace Compiler
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -32,24 +32,28 @@ namespace Compiler
         {
             Console.WriteLine("\nSTART FLAG --------");
             
-            ClassName className1 = new ClassName("A");
-            className1.Specification.Add(new ClassName("T"));
+            var className1 = new ClassName("A");
+            className1.Specification.Add(new ClassName("T") {Parent = className1});
             
-            Class class1 = new Class(className1);
+            var class1 = new Class(className1);
             
-            ClassName className2 = new ClassName("A");
-            className2.Specification.Add(new ClassName("T"));
-            className2.Specification.Add(new ClassName("F"));
+            var className2 = new ClassName("A");
+            className2.Specification.Add(new ClassName("T") {Parent = className2});
+            className2.Specification.Add(new ClassName("F") {Parent = className2});
             
-            Class class2 = new Class(className2);
+            var class2 = new Class(className2);
             
-            List<Class> classList = new List<Class>();
-            classList.Add(class1);
-            classList.Add(class2);
+            var className3 = new ClassName("A");
+            className3.Specification.Add(new ClassName("G") {Parent = className3});
+            className3.Specification.Add(new ClassName("H") {Parent = className3});
             
-            Analizer analizer = new Analizer(classList);
-            List<Class> retList = new List<Class>();
-            retList = analizer.Analize();
+            var class3 = new Class(className3);
+            
+
+            var classList = new List<Class> {class1, class2, class3};
+
+            var analizer = new Analizer(classList);
+            var retList = analizer.Analize();
   
             foreach (var i in retList)
             {
@@ -60,7 +64,7 @@ namespace Compiler
         private static void CheckTests(string folderName)
         {
             var files = Directory.GetFiles($"./Tests/{folderName}/");
-            foreach(string file in files){
+            foreach(var file in files){
                 Console.WriteLine("\n\n" + file + "\n");
                 var main = new FrontEndCompiler(file);
                 try

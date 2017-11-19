@@ -4,8 +4,14 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class Expression: ICommonTreeInterface
+    public class Expression : ICommonTreeInterface
     {
+        // 5.Plus(4) - 5 is a primary part, всё остальное - calls либо fields
+        public ICommonTreeInterface Parent { get; set; }
+
+        public string ReturnType { get; set; }
+        public IPrimaryExpression PrimaryPart { get; set; }
+        public List<MethodOrFieldCall> Calls { get; set; } = new List<MethodOrFieldCall>();
 
         public Expression(IPrimaryExpression primaryPart)
         {
@@ -23,6 +29,9 @@ namespace Compiler.TreeStructure.Expressions
         {
             PrimaryPart = primaryPart;
             Calls = calls;
+            PrimaryPart.Parent = this;
+            foreach (var methodOrFieldCall in Calls)
+                methodOrFieldCall.Parent = this;
         }
 
         public Expression(Expression expression)
@@ -51,24 +60,12 @@ namespace Compiler.TreeStructure.Expressions
             }
             foreach (var methodOrFieldCall in expression.Calls)
                 Calls.Add(new MethodOrFieldCall(methodOrFieldCall) {Parent = this});
-            
         }
 
-        public string ReturnType { get; set; }
-        public IPrimaryExpression PrimaryPart { get; set; } 
-        public List<MethodOrFieldCall> Calls { get; set; } = new List<MethodOrFieldCall>();
-        // 5.Plus(4) - 5 is a primary part, всё остальное - calls либо fields
-        
-        public override string ToString()
-        {
-            return PrimaryPart.ToString();
-        }
 
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
-        public ICommonTreeInterface Parent { get; set; }
+        //TODO Add method calls
+        public override string ToString() => PrimaryPart.ToString();
     }
 }

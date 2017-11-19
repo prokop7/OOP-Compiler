@@ -6,17 +6,23 @@ namespace Compiler.TreeStructure.MemberDeclarations
 {
     public class ConstructorDeclaration : IMemberDeclaration
     {
+        public ICommonTreeInterface Parent { get; set; }
+        public List<ParameterDeclaration> Parameters { get; set; }
+        public List<IBody> Body { get; set; }
+
+        public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =
+            new Dictionary<string, IVariableDeclaration>();
+
         public ConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
         {
-            
             foreach (var body in constructorDeclaration.Body)
                 SetBody(Body, body);
             foreach (var parameter in constructorDeclaration.Parameters)
             {
                 Parameters.Add(new ParameterDeclaration(parameter) {Parent = this});
             }
-            
-            
+
+
             void SetBody(ICollection<IBody> bodyList, IBody body)
             {
                 switch (body)
@@ -40,17 +46,6 @@ namespace Compiler.TreeStructure.MemberDeclarations
             }
         }
 
-        public List<ParameterDeclaration> Parameters { get; set; }
-        public List<IBody> Body { get; set; }
-
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        public ICommonTreeInterface Parent { get; set; }
-
-        public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =
-            new Dictionary<string, IVariableDeclaration>();
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
     }
 }

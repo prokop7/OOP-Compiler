@@ -5,6 +5,7 @@ namespace Compiler.TreeStructure.Expressions
 {
     public class RealLiteral : IPrimaryExpression
     {
+        public ICommonTreeInterface Parent { get; set; }
         public double Value { get; set; }
 
         public RealLiteral(double value)
@@ -17,16 +18,8 @@ namespace Compiler.TreeStructure.Expressions
             Value = realLiteral.Value;
         }
 
-        public override string ToString()
-        {
-            return Value.ToString(new CultureInfo(0));
-        }
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        public ICommonTreeInterface Parent { get; set; }
+        public override string ToString() => Value.ToString(new CultureInfo(0));
     }
 }

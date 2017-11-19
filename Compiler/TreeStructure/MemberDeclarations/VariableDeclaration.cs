@@ -7,11 +7,16 @@ namespace Compiler.TreeStructure.MemberDeclarations
 {
     public class VariableDeclaration : IMemberDeclaration, IBody, IVariableDeclaration
     {
+        public string Identifier { get; set; } // название
+        public Expression Expression { get; set; } // var i = expresion. Это и есть expression
+        public string ClassName { get; set; } // инициализируется парсером при явном указании типа переменной
+        public ICommonTreeInterface Parent { get; set; }
+        
         public VariableDeclaration(string identifier, Expression expression)
         {
             Identifier = identifier;
             Expression = expression;
-            expression.Parent = this;
+            Expression.Parent = this;
         }
 
         public VariableDeclaration(VariableDeclaration variableDeclaration)
@@ -22,20 +27,13 @@ namespace Compiler.TreeStructure.MemberDeclarations
             if (variableDeclaration.ClassName != null) ClassName = string.Copy(variableDeclaration.ClassName);
         }
 
-        public string Identifier { get; set; } // название
-        public Expression Expression { get; set; } // var i = expresion. Это и есть expression
-        public string ClassName { get; set; } // инициализируется парсером при явном указании типа переменной
 
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public override string ToString()
         {
             return $"var {Identifier}: {Expression}";
         }
 
-        public ICommonTreeInterface Parent { get; set; }
     }
 }

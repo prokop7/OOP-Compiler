@@ -5,12 +5,21 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Statements
 {
-    public class Assignment: IStatement
+    public class Assignment : IStatement
     {
+        public ICommonTreeInterface Parent { get; set; }
+        public string Identifier { get; set; }
+
+        public Expression Expression { get; set; }
+        // a = true
+        //  a - identifier
+        //  true - expression
+
         public Assignment(string identifier, Expression expression)
         {
             Identifier = identifier;
             Expression = expression;
+            expression.Parent = this;
         }
 
         public Assignment(Assignment assignment)
@@ -19,22 +28,11 @@ namespace Compiler.TreeStructure.Statements
             Expression = new Expression(assignment.Expression) {Parent = this};
         }
 
-        public string Identifier { get; set; }
-        public Expression Expression { get; set; }
-        // a = true
-        //  a - identifier
-        //  true - expression
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public override string ToString()
         {
             return $"{Identifier}:= {Expression}";
         }
-
-        public void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
-        public ICommonTreeInterface Parent { get; set; }
     }
 }
