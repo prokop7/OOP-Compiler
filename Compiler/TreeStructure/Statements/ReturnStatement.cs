@@ -3,22 +3,26 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Statements
 {
-    public class ReturnStatement: IStatement
+    public class ReturnStatement : IStatement
     {
-        public ReturnStatement(){}
+        public Expression Expression { get; set; }
+        public ICommonTreeInterface Parent { get; set; }
+
+        public ReturnStatement()
+        {
+        }
 
         public ReturnStatement(Expression expression)
         {
             Expression = expression;
+            Expression.Parent = this;
         }
 
-        public Expression Expression { get; set; }
-
-        public void Accept(IVisitor visitor)
+        public ReturnStatement(ReturnStatement returnStatement)
         {
-            visitor.Visit(this);
+            Expression = new Expression(returnStatement.Expression) {Parent = this};
         }
 
-        public ICommonTreeInterface Parent { get; set; }
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
     }
 }

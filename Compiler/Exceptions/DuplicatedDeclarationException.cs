@@ -6,7 +6,7 @@ namespace Compiler.Exceptions
     {
         public DuplicatedDeclarationException(string identifier) : base(identifier)
         {
-            Message = $"Name: \"{identifier}\" is already declared";
+            Message = $"Method/Class/Variable with name or signature \"{identifier}\" is already declared";
         }
 
         public DuplicatedDeclarationException()

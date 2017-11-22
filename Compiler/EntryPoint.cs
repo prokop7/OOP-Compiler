@@ -1,17 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
 using Compiler.FrontendPart;
 using Compiler.FrontendPart.SemanticAnalyzer;
-using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
-using Compiler.TreeStructure.Expressions;
-using Compiler.TreeStructure.MemberDeclarations;
-using Compiler.TreeStructure.Statements;
-using Compiler.TreeStructure.Visitors;
+
 
 namespace Compiler
 {
@@ -19,90 +12,59 @@ namespace Compiler
     {
         static void Main(string[] args)
         {
+            L.LogLevel = 100;
             try
             {
-                AntonTests();
+//                AntonTests.VariableDeclaration();
+//                AntonTests.GenericClassSetup();
+                IlyuzaTests();
+//                CheckTests("Valid");
+//                CheckTests("Not Valid");
+//                CheckTests("Composite");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
             }
-            
-//            CheckTests("Valid");
-//            CheckTests("Not Valid");
-//            CheckTests("Composite");
         }
-        
-        private static void AntonTests()
+
+        private static void IlyuzaTests()
         {
-            var @class = GenerateClass();
-            var a = new Analizer(new List<Class> {@class});
-            a.VariableDeclarationCheck();
+            Console.WriteLine("\nSTART FLAG --------");
             
-            Class GenerateClass()
+            var className1 = new ClassName("A");
+            className1.Specification.Add(new ClassName("T") {Parent = className1});
+            
+            var class1 = new Class(className1);
+            
+            var className2 = new ClassName("A");
+            className2.Specification.Add(new ClassName("T") {Parent = className2});
+            className2.Specification.Add(new ClassName("F") {Parent = className2});
+            
+            var class2 = new Class(className2);
+            
+            var className3 = new ClassName("A");
+            className3.Specification.Add(new ClassName("G") {Parent = className3});
+            className3.Specification.Add(new ClassName("H") {Parent = className3});
+            
+            var class3 = new Class(className3);
+            
+
+            var classList = new List<Class> {class1, class2, class3};
+
+            var analizer = new Analizer(classList);
+            var retList = analizer.Analize();
+  
+            foreach (var i in retList)
             {
-                var mainClass = new Class(new ClassName("Program"));
-                var method = new MethodDeclaration("FooBar");
-                method.Parent = mainClass;
-                mainClass.MemberDeclarations.Add(method);
-            
-            
-                var expA = new Expression(new IntegerLiteral(10));
-                var varA = new VariableDeclaration("a", expA);
-                varA.Parent = method;
-                method.Body.Add(varA);
-
-                var expB = new Expression(new RealLiteral(1.5));
-                var varB = new VariableDeclaration("b", expB);
-                varB.Parent = method;
-                method.Body.Add(varB);
-            
-                var expB2 = new Expression(new RealLiteral(124.1));
-                var varB2 = new VariableDeclaration("b", expB2);
-                varB2.Parent = mainClass;
-                mainClass.MemberDeclarations.Add(varB2);
-                mainClass.Members.Add("b", varB2);
-                return mainClass;
+                Console.WriteLine(i);
             }
-        }
-
-        private static void TreeBuildingExample()
-        {
-            var mainClass = new Class(new ClassName("Program"));
-            StaticTables.ClassTable.Add("Program", mainClass);
-            StaticTables.ClassTable.Add("Integer", mainClass);
-            StaticTables.ClassTable.Add("Real", mainClass);
-            StaticTables.ClassTable.Add("Boolean", mainClass);
-
-            var expA = new Expression(new IntegerLiteral(10));
-            var varA = new VariableDeclaration("a", expA);
-            mainClass.MemberDeclarations.Add(varA);
-            
-            var method = new MethodDeclaration("FooBar");
-            method.ResulType = "Integer";
-            
-            var expB = new Expression(new RealLiteral(1.5));
-            var varB = new VariableDeclaration("b", expB);
-            method.Body.Add(varB);
-            var assignment = new Assignment("b", new Expression(new IntegerLiteral(22)));
-            var expIf = new Expression(new BooleanLiteral(true));
-            
-            var ifBody = new List<IBody> {assignment};
-//            var ifBody = new List<IBody>();
-//            ifBody.Add(assignment);
-            
-            
-//            var ifStatement = new IfStatement(expIf, ifBody);
-            var ifStatement = new IfStatement(expIf, ifBody, ifBody);
-            method.Body.Add(ifStatement);
-            
-            mainClass.MemberDeclarations.Add(method);
         }
 
         private static void CheckTests(string folderName)
         {
             var files = Directory.GetFiles($"./Tests/{folderName}/");
-            foreach(string file in files){
+            foreach(var file in files){
                 Console.WriteLine("\n\n" + file + "\n");
                 var main = new FrontEndCompiler(file);
                 try

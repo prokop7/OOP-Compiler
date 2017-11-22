@@ -65,7 +65,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         #endregion
 
-        private static bool IsDeclared(ICommonTreeInterface node, string identifier)
+        public static bool IsDeclared(ICommonTreeInterface node, string identifier)
         {
             switch (node)
             {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
 
@@ -6,26 +7,33 @@ namespace Compiler.TreeStructure.MemberDeclarations
 {
     public class VariableDeclaration : IMemberDeclaration, IBody, IVariableDeclaration
     {
+        public string Identifier { get; set; } // название
+        public Expression Expression { get; set; } // var i = expresion. Это и есть expression
+        public string ClassName { get; set; } // инициализируется парсером при явном указании типа переменной
+        public ICommonTreeInterface Parent { get; set; }
+        
         public VariableDeclaration(string identifier, Expression expression)
         {
             Identifier = identifier;
             Expression = expression;
+            Expression.Parent = this;
         }
 
-        public string Identifier { get; set; } // название
-        public Expression Expression { get; set; } // var i = expresion. Это и есть expression
-        public string ClassName { get; set; } // инициализируется парсером при явном указании типа переменной
-
-        public void Accept(IVisitor visitor)
+        public VariableDeclaration(VariableDeclaration variableDeclaration)
         {
-            visitor.Visit(this);
+            Identifier = string.Copy(variableDeclaration.Identifier);
+            Expression = new Expression(variableDeclaration.Expression) {Parent = this};
+
+            if (variableDeclaration.ClassName != null) ClassName = string.Copy(variableDeclaration.ClassName);
         }
+
+
+        public void Accept(IVisitor visitor) => visitor.Visit(this);
 
         public override string ToString()
         {
-            return $"Var: {Identifier}";
+            return $"var {Identifier}: {Expression}";
         }
 
-        public ICommonTreeInterface Parent { get; set; }
     }
 }

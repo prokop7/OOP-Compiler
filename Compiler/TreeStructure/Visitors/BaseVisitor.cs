@@ -13,6 +13,7 @@ namespace Compiler.TreeStructure.Visitors
 	{
 		public virtual void Visit(Class @class)
         {
+            @class.SelfClassName.Accept(this);
             foreach (var classMemberDeclaration in @class.MemberDeclarations)
                 classMemberDeclaration.Accept(this);
         }
@@ -91,9 +92,13 @@ namespace Compiler.TreeStructure.Visitors
             throw new NotImplementedException();
         }
 
-	    public virtual void Visit(ClassName methodOrFieldCall)
+	    public virtual void Visit(ClassName className)
 	    {
-	        throw new NotImplementedException();
+		    for (var i = 0; i < className.Specification.Count; i++)
+		    {
+			    var name = className.Specification[i];
+			    name.Accept(this);
+		    }
 	    }
 
 	    public virtual void Visit(Base @base)
