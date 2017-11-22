@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.MemberDeclarations;
 using static Compiler.L;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
@@ -65,11 +66,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public List<Class> Analize()
         {
             FillStaticTable();
-            InitClasses();
-//            FillMethodsTable();
-            AddInheritedMembers();
-            VariableDeclarationCheck();
-            CheckMethodDeclaration();
+//            InitClasses();
+            FillMethodsTable();
+//            AddInheritedMembers();
+//            VariableDeclarationCheck();
+//            CheckMethodDeclaration();
             return _classList;
         }
 
@@ -82,7 +83,34 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 
         private void FillMethodsTable()
         {
-            throw new System.NotImplementedException();
+            Log($"Fill class method tables: start", 1);
+            foreach (var i in _classList)
+            {
+                foreach (var j in i.MemberDeclarations)
+                {
+                    if (j is MethodDeclaration methodDeclaration)
+                    {
+                       
+//                        if (StaticTables.ClassTable[i.SelfClassName.Identifier].Count == 1)
+//                        {
+//                            StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).MemberDeclarations.Add(j);
+//                        }
+//                        else
+//                        {
+//                            
+//                        }
+//                        Console.WriteLine(StaticTables.ClassTable[i.SelfClassName.Identifier]);
+                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Add(i.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
+                        Console.WriteLine("Hrrrr");
+                    }
+                    else
+                    {
+                        Console.WriteLine("ZHHHHHHHHHHHHH");
+                    }
+                }
+                
+            }
+            
         }
 
         private void FillStaticTable()

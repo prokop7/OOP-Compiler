@@ -14,10 +14,10 @@ namespace Compiler.TreeStructure
         public ClassName SelfClassName { get; set; }
         public ClassName BaseClassName { get; set; }
         public Class Base { get; set; } // класс от которого наследуется текущий класс
-
         public List<IMemberDeclaration> MemberDeclarations { get; set; } =
             new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции
-
+        public Dictionary<string, List<MethodDeclaration>> ClassMethods = new Dictionary<string, List<MethodDeclaration>>();
+        
         public Class(ClassName name)
         {
             SelfClassName = name;
