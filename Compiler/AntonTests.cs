@@ -63,14 +63,14 @@ namespace Compiler
                 className.Parent = mainClass;
                 var method = new MethodDeclaration("Foo")
                 {
-                    ResultType = "A",
+                    ResultType = new ClassName("A"),
                     Parent = mainClass
                 };
                 mainClass.MemberDeclarations.Add(method);
                 className.Parent = mainClass;
                 var method2 = new MethodDeclaration("Bar")
                 {
-                    ResultType = "T",
+                    ResultType = new ClassName("T"),
                     Parent = mainClass
                 };
                 mainClass.MemberDeclarations.Add(method2);

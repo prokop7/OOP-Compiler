@@ -40,7 +40,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                             //TODO do something
                             break;
                         case MethodDeclaration methodDeclaration:
-                            inputType = methodDeclaration.ResultType;
+                            inputType = methodDeclaration.ResultType.Identifier;
                             if (string.IsNullOrEmpty(inputType) && i < expression.Calls.Count - 1)
                                 throw new Exception("Cannot call method from void");
                             break;
