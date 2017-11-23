@@ -6,6 +6,8 @@ namespace Compiler.TreeStructure.Expressions
     {
         public ICommonTreeInterface Parent { get; set; }
         public int Value { get; set; }
+        public string Type { get; set; } = "Integer";
+
 
         public IntegerLiteral(int value)
         {

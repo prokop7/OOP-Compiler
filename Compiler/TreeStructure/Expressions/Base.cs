@@ -5,6 +5,7 @@ namespace Compiler.TreeStructure.Expressions
     public class Base: IPrimaryExpression
     {
         public ICommonTreeInterface Parent { get; set; }
+        public string Type { get; set; }
 
         public Base(Base @base)
         {

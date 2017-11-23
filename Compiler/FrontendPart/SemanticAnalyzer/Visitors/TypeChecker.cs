@@ -1,4 +1,6 @@
-﻿using Compiler.Exceptions;
+﻿using System.Runtime.CompilerServices;
+using System.Threading;
+using Compiler.Exceptions;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
@@ -12,6 +14,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		public override void Visit(Expression expression)
 		{
 			base.Visit(expression);
+			if (!(expression.PrimaryPart is ClassName className)) return;
+			
+			if (!StaticTables.ClassTable.ContainsKey(className.Identifier))
+				throw new ClassNotFoundException(className.Identifier);
 			//TODO check sequantial calls.
 		}
 

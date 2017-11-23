@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using Compiler.Exceptions;
 using Compiler.TreeStructure;
@@ -15,8 +14,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(Assignment assignment)
         {
             base.Visit(assignment);
-            if (IsDeclared(assignment, assignment.Identifier))
-                throw new DuplicatedDeclarationException(assignment.Identifier);
+            if (!IsDeclared(assignment, assignment.Identifier))
+                throw new VariableNotFoundException(assignment.Identifier);
         }
 
         public override void Visit(This @this)

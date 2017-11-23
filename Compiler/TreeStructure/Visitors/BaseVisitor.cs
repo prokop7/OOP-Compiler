@@ -76,7 +76,9 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(WhileLoop whileLoop)
         {
-            whileLoop.Expression.Accept(this);
+	        foreach (var body in whileLoop.Body)
+		        body.Accept(this);
+	        whileLoop.Expression.Accept(this);
         }
 
         public virtual void Visit(ConstructorDeclaration constructorDeclaration)

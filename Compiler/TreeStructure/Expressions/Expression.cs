@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
@@ -66,6 +67,11 @@ namespace Compiler.TreeStructure.Expressions
         public void Accept(IVisitor visitor) => visitor.Visit(this);
 
         //TODO Add method calls
-        public override string ToString() => PrimaryPart.ToString();
+        public override string ToString()
+        {
+            var s = "";
+            Calls.ForEach(call => s += "." + call.Identifier);
+            return PrimaryPart + s;
+        }
     }
 }
