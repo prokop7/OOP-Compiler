@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
 
@@ -12,6 +13,7 @@ namespace Compiler.TreeStructure
         public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков
         public ICommonTreeInterface Parent { get; set; }
         public string Type { set; get; }
+        public Class ClassRef => StaticTables.ClassTable.ContainsKey(Identifier) ? StaticTables.ClassTable[Identifier][0] : null;
 
 
         public ClassName(string name)

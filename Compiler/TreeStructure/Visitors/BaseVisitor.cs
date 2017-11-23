@@ -91,7 +91,7 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ParameterDeclaration parameter)
         {
-            throw new NotImplementedException();
+            parameter.Type.Accept(this);
         }
 
 	    public virtual void Visit(ClassName className)

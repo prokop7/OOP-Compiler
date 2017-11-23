@@ -77,7 +77,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         case ConstructorDeclaration _:
                             return classIdentifier;
                         case MethodDeclaration methodDeclaration:
-                            return methodDeclaration.ResultType;
+                            return methodDeclaration.ResultType.Identifier;
                         case VariableDeclaration variableDeclaration:
                             return variableDeclaration.Expression.ReturnType;
                     }

@@ -18,17 +18,16 @@ namespace Compiler
             {
 //                AntonTests.VariableDeclaration();
 //                AntonTests.GenericClassSetup();
-//                AntonTests.SimpleClassesTest();
+                AntonTests.SimpleClassesTest();
 //                IlyuzaTests();
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");
                 
-                var g = new Generator();
-                g.GenerateProgram();
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 L.LogError(e);
             }
         }

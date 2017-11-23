@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Security.Cryptography.X509Certificates;
+using Compiler.BackendPart;
 using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
@@ -63,14 +64,14 @@ namespace Compiler
                 className.Parent = mainClass;
                 var method = new MethodDeclaration("Foo")
                 {
-                    ResultType = "A",
+                    ResultType = new ClassName("A"),
                     Parent = mainClass
                 };
                 mainClass.MemberDeclarations.Add(method);
                 className.Parent = mainClass;
                 var method2 = new MethodDeclaration("Bar")
                 {
-                    ResultType = "T",
+                    ResultType = new ClassName("T"),
                     Parent = mainClass
                 };
                 mainClass.MemberDeclarations.Add(method2);
@@ -120,20 +121,24 @@ namespace Compiler
             var class2 = GenerateClass2();
             var class3 = GenerateClass3();
             
+            
             var analyzer = new Analizer(new List<Class> {class1, class2, class3});
-            analyzer.Analize();
+            var list = analyzer.Analize();
+            
+            var g = new Generator(list);
+            g.GenerateProgram();
 
             Class GenerateClass1()
             {
                 var bClass = new ClassName("B");
                 var mainClass = new Class(bClass);
 
-                var aClassName = new ClassName("A");
-                var expB2 = new Expression(aClassName);
-                aClassName.Parent = expB2;
+//                var aClassName = new ClassName("A");
+//                var expB2 = new Expression(aClassName);
+//                aClassName.Parent = expB2;
 
-                var varB2 = new VariableDeclaration("c", expB2) {Parent = mainClass};
-                mainClass.MemberDeclarations.Add(varB2);
+//                var varB2 = new VariableDeclaration("c", expB2) {Parent = mainClass};
+//                mainClass.MemberDeclarations.Add(varB2);
                 return mainClass;
             }
 
@@ -150,27 +155,33 @@ namespace Compiler
                 var className = new ClassName("C");
                 var mainClass = new Class(className);
 
-                var method = new MethodDeclaration("Foo") {Parent = mainClass};
+                var method = new MethodDeclaration("Main") {Parent = mainClass};
+                method.Parameters.Add(new ParameterDeclaration("variable", new ClassName("A")));
                 mainClass.MemberDeclarations.Add(method);
-
-                var booleanLiteral = new BooleanLiteral(true);
-                var whileExpression = new Expression(booleanLiteral);
-                booleanLiteral.Parent = whileExpression;
-
-                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
-
-                var varExpression = new Expression(new ClassName("C"));
-                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
                 
-                var body1 = new VariableDeclaration("a", varExpression) {Parent = whileLoop};
-                var body2 = new Assignment("a", new Expression(varExpression)) {Parent = whileLoop};
+                var method2 = new MethodDeclaration("Foo") {Parent = mainClass};
+                method2.Parameters.Add(new ParameterDeclaration("variable", new ClassName("B")) {Parent = method2});
+                method2.Parameters.Add(new ParameterDeclaration("variable2", new ClassName("A")) {Parent = method2});
+                mainClass.MemberDeclarations.Add(method2);
+//
+//                var booleanLiteral = new BooleanLiteral(true);
+//                var whileExpression = new Expression(booleanLiteral);
+//                booleanLiteral.Parent = whileExpression;
+//
+//                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
+//
+//                var varExpression = new Expression(new ClassName("C"));
+//                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
+//                
+//                var body1 = new VariableDeclaration("a", varExpression) {Parent = whileLoop};
+//                var body2 = new Assignment("a", new Expression(varExpression)) {Parent = whileLoop};
 
-                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
+//                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
                 
-//                var body3 = new Assignment("a", new Expression(varExpression)) {Parent = method};
+////                var body3 = new Assignment("a", new Expression(varExpression)) {Parent = method};
                 
-                method.Body.Add(whileLoop);
-//                method.Body.Add(body3);
+//                method.Body.Add(whileLoop);
+////                method.Body.Add(body3);
 
                 return mainClass;
             }
