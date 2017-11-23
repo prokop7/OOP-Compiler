@@ -57,7 +57,7 @@ namespace Compiler
             var classList = new List<Class> {class1};
 
             var analizer = new Analizer(classList);
-            var retList = analizer.Analize();
+            
          
             class1.MemberDeclarations.Add(methodDeclaration);
 
@@ -66,7 +66,7 @@ namespace Compiler
                 Console.WriteLine(i);
             }
             
-            Console.WriteLine("JJJJJJJJJJ");
+//            var retList = analizer.Analize();
 //            foreach (var i in retList)
 //            {
 //                foreach (var j in i.MemberDeclarations)

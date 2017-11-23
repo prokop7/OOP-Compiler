@@ -1,4 +1,5 @@
-﻿using Compiler.Exceptions;
+﻿using System;
+using Compiler.Exceptions;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
@@ -29,6 +30,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 			// TODO get variable type by idenetifier.
 //            if (assignment.Expression.ReturnType != assignment.Identifier)
 //                throw new NotValidExpressionTypeException();
+			Console.WriteLine("Asssss");
 		}
 
 		public override void Visit(IfStatement ifStatement)
@@ -40,8 +42,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
 		public override void Visit(ReturnStatement returnStatement)
 		{
+			
 			base.Visit(returnStatement);
 			//TODO check returning type and Expression type
+			if (!(returnStatement.Parent is MethodDeclaration @methodDeclaration)) return;
+			if (!(returnStatement.Expression.ReturnType.Equals(@methodDeclaration.ResultType)))
+			{
+				throw new InvalidReturnType($"Expected {@methodDeclaration.ResultType}, got {returnStatement.Expression.ReturnType}");
+			}
 		}
 
 		public override void Visit(WhileLoop whileLoop)

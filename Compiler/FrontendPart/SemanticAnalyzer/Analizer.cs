@@ -71,6 +71,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 //            AddInheritedMembers();
 //            VariableDeclarationCheck();
 //            CheckMethodDeclaration();
+            TypeCheck();
             return _classList;
         }
 
@@ -101,6 +102,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 }
                 
             }
+            Log($"Fill class method tables: finish", 1);
             
         }
 
@@ -171,6 +173,17 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             foreach (var @class in _classList)
                 visitor.Visit(@class);
             Log($"Variable declaration check: finish", 1);
+        }
+
+        public void TypeCheck()
+        {
+            Log($"Type check: start", 1);
+            var visitor = new TypeChecker();
+            foreach (var @class in _classList)
+            {
+                visitor.Visit(@class);
+            }
+            Log($"Type check: finish", 1);
         }
     }
 }
