@@ -33,6 +33,13 @@ namespace Compiler.TreeStructure.Expressions
             foreach (var methodOrFieldCall in Calls)
                 methodOrFieldCall.Parent = this;
         }
+        
+        public Expression(List<MethodOrFieldCall> calls)
+        {
+            Calls = calls;
+            foreach (var methodOrFieldCall in Calls)
+                methodOrFieldCall.Parent = this;
+        }
 
         public Expression(Expression expression)
         {

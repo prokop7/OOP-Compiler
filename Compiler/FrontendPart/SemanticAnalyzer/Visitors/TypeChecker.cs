@@ -18,9 +18,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		public override void Visit(MethodDeclaration methodDeclaration)
 		{
 			base.Visit(methodDeclaration);
-			if (methodDeclaration.ResultType != null &&
-			    !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType))
-				throw new ClassNotFoundException(methodDeclaration.ResultType);
+//			if (methodDeclaration.ResultType != null &&
+//			    !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType))
+//				throw new ClassNotFoundException(methodDeclaration.ResultType);
 		}
 
 		public override void Visit(Assignment assignment)

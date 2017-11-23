@@ -52,38 +52,33 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         private void CheckTokenTypeStrong(Token token, Type expectedType, string expectation = " token")
         {
             if (token == null)
-            {
                 throw new UnexpectedTokenException(prevToken.lineNumber, prevToken.positionNumber, Token.StringValueOf(expectedType) + expectation);
-            }
             if(!token.type.Equals(expectedType))
-            {
                 throw new UnexpectedTokenException(token.lineNumber, token.positionNumber, Token.StringValueOf(expectedType) + expectation);
-            }
         }
         
         /* Checks optional tokens */
         private bool CheckTokenTypeWeak(Token token, Type expectedType)
         {
             if (token == null)
-            {
                 throw new UnexpectedTokenException(prevToken.lineNumber, prevToken.positionNumber);
-            }
             return token.type.Equals(expectedType);
         }
         
         private Class ParseClass()
         {
             if (GetNextToken() == null)
-            {
                 return null;
-            }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.ClassKey);
             GetNextToken();
             var classObj = new Class(ParseClassName());
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.ExtendsKey))
             {
                 GetNextToken();
-                classObj.BaseClassName = ParseClassName();
+                var baseClassName = ParseClassName();
+                if(baseClassName == null)
+                    throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "base class name");
+                classObj.BaseClassName.Parent = classObj;
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.IsKey);
 
@@ -92,6 +87,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             GetNextToken();
             while ((memberDeclaration = ParseMemberDeclaration()) != null)
             {
+                memberDeclaration.Parent = classObj;
                 classObj.MemberDeclarations.Add(memberDeclaration);
                 GetNextToken();
             }
@@ -108,7 +104,11 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             var genericParams = ParseGenericParams();
             if (genericParams != null)
             {
-                className.Specification = genericParams;
+                foreach (var genericParam in genericParams)
+                {
+                    genericParam.Parent = className;
+                    className.Specification.Add(genericParam);
+                }
             }
             return className;
 
@@ -117,22 +117,18 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         private List<ClassName> ParseGenericParams()
         {
             if (!CheckTokenTypeWeak(PeekCurrentToken(), Type.SqrtLparen))
-            {
                 return null;
-            }
             var genericParams = new List<ClassName>();
             do
             {
                 GetNextToken();
                 var param = ParseClassName();
                 if (param == null)
-                {
                     throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().lineNumber, "class name");
-                }
                 genericParams.Add(param);
             } while (CheckTokenTypeWeak(PeekCurrentToken(), Type.Comma));
             CheckTokenTypeStrong(PeekCurrentToken(), Type.SqrtRparen);
-            
+            GetNextToken();
             return genericParams;
         }
 
@@ -141,25 +137,15 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             switch (PeekCurrentToken().type)
             {
                 case Type.EndKey:
-                {
                     return null;
-                }
                 case Type.VarKey:
-                {
                     return ParseVariableDeclaration();
-                }
                 case Type.MethodKey:
-                {
                     return ParseMethodDeclaration();
-                }
                 case Type.ThisKey:
-                {
                     return ParseConstructorDeclaration();
-                }
                 default:
-                {
                     throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber);
-                }
             }
         }
 
@@ -167,23 +153,26 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         {
             CheckTokenTypeStrong(GetNextToken(), Type.Id, " of variable name");
             var varName = (string)PeekCurrentToken().value;
+            var varDeclaration = new VariableDeclaration(varName);
             ClassName className = null;
             if (CheckTokenTypeWeak(GetNextToken(), Type.Colon))
             {
                 GetNextToken();
                 className = ParseClassName();
+                if (className == null)
+                    throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "class name");
+                className.Parent = varDeclaration;
+                varDeclaration.Classname = className;
             }
-            CheckTokenTypeStrong(PeekCurrentToken(), Type.IsKey);
-            GetNextToken();
-            var expression = ParseExpression();
-            if (expression == null)
+            if (CheckTokenTypeWeak(PeekCurrentToken(), Type.IsKey))
             {
-                throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "expression");
-            }
-            var varDeclaration = new VariableDeclaration(varName, expression);
-            if (className != null)
-            {
-                varDeclaration.ClassName = className;
+                GetNextToken();
+                var expression = ParseExpression();
+                if (expression == null)
+                    throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber,
+                        "expression");
+                expression.Parent = varDeclaration;
+                varDeclaration.Expression = expression;
             }
             return varDeclaration;
         }
@@ -195,15 +184,27 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             var parameters = ParseParameters();
             if (parameters != null)
             {
-                method.Parameters = parameters;
+                foreach (var parameter in parameters)
+                {
+                    parameter.Parent = method;
+                    method.Parameters.Add(parameter);
+                }
             }
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.Colon))
             {
-                CheckTokenTypeStrong(GetNextToken(), Type.Id, " of return value type");
+                var resultType = ParseClassName();
+                if(resultType == null)
+                    throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "class name");
+                resultType.Parent = method;
+                method.ResultType = resultType;
             }
             GetNextToken();
             var body = ParseBody();
-            method.Body = body;
+            foreach (var bodyItem in body)
+            {
+                bodyItem.Parent = method;
+                method.Body.Add(bodyItem);
+            }
             
             CheckTokenTypeStrong(PeekCurrentToken(), Type.EndKey);
 
@@ -212,19 +213,14 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
 
         private ConstructorDeclaration ParseConstructorDeclaration()
         {
-            var constructor = new ConstructorDeclaration();
             var parameters = ParseParameters();
-            if (parameters != null)
-            {
-                constructor.Parameters = parameters;
-            }
+            //if (parameters != null)
             CheckTokenTypeStrong(PeekCurrentToken(), Type.IsKey);
             GetNextToken();
             var body = ParseBody();
-            constructor.Body = body;
             
             CheckTokenTypeStrong(PeekCurrentToken(), Type.EndKey);
-            return constructor;
+            return new ConstructorDeclaration(parameters, body);
         }
 
         private Expression ParseExpression()
@@ -235,7 +231,15 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                 return null;
             }
             List<MethodOrFieldCall> calls = new List<MethodOrFieldCall>();
-            
+            //GetNextToken();
+            if (CheckTokenTypeWeak(PeekCurrentToken(), Type.Lparen))
+            {
+                var args = ParseArguments();
+                CheckTokenTypeStrong(PeekCurrentToken(), Type.Rparen);
+                calls.Add(new MethodOrFieldCall(primary.ToString(), args));
+                primary = null;
+                GetNextToken();
+            }
             while (CheckTokenTypeWeak(PeekCurrentToken(), Type.Dot))
             {
                 CheckTokenTypeStrong(GetNextToken(), Type.Id);
@@ -251,9 +255,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         private List<ParameterDeclaration> ParseParameters()
         {
             if (!CheckTokenTypeWeak(GetNextToken(), Type.Lparen)) // if method declaration without empty parantheses
-            {
                 return null;
-            }
             List<ParameterDeclaration> parameters = new List<ParameterDeclaration>();
             var parameter = ParseParameterDeclaration();
             if (parameter != null) // there is at least one parameter in parantheses
@@ -263,9 +265,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                 {
                     parameter = ParseParameterDeclaration();
                     if (parameter == null) // if no parameter after comma
-                    {
                         throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber);
-                    }
                 }
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.Rparen);
@@ -275,16 +275,12 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         private ParameterDeclaration ParseParameterDeclaration()
         {
             if (!CheckTokenTypeWeak(GetNextToken(), Type.Id))
-            {
                 return null;
-            }
             var paramName = (string)PeekCurrentToken().value;
             CheckTokenTypeStrong(GetNextToken(), Type.Colon);
             var className = ParseClassName();
             if (className == null)
-            {
                 throw  new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "class name");
-            }
             return new ParameterDeclaration(paramName, className);
         }
 
@@ -296,20 +292,16 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                 switch (PeekCurrentToken().type)
                 {
                     case Type.VarKey:
-                    {
                         body.Add(ParseVariableDeclaration());
                         break;
-                    }
                     case Type.Id:
-                    {
                         var id = (string)PeekCurrentToken().value;
                         if (CheckTokenTypeWeak(GetNextToken(), Type.Assignment))
                         {
+                            GetNextToken();
                             var expression = ParseExpression();
                             if (expression == null)
-                            {
                                 throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "expression");
-                            }
                             body.Add(new Assignment(id, expression));
                             break;
                         }
@@ -323,7 +315,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                             {
                                 throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "method call");
                             }
-                            body.Add(new Expression(new MethodCall));
+                            //body.Add(new Expression(new MethodOrFieldCall(method, arguments)));
                             break;
                         }
                         if (CheckTokenTypeWeak(PeekCurrentToken(), Type.Lparen)) // current class' method call
@@ -332,33 +324,25 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                             GetNextToken();
                             var arguments = ParseArguments();
                             if (arguments == null)
-                            {
                                 throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "method call");
-                            }
-                            body.Add(new Expression(new MethodCall));
+                            //body.Add(new Expression(new MethodCall()));
                             break;
                         }
                         throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber);
-                    }
                     case Type.WhileKey:
-                    {
                         body.Add(ParseWhileLoop());
+                        GetNextToken();
                         break;
-                    }
                     case Type.IfKey:
-                    {
                         body.Add(ParseIfStatement());
+                        GetNextToken();
                         break;
-                    }
                     case Type.ReturnKey:
-                    {
                         body.Add(ParseReturnStatement());
+                        GetNextToken();
                         break;
-                    }
                     default:
-                    {
                         throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber);
-                    }
                 }
             }
             return body;
@@ -383,9 +367,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             GetNextToken();
             var expression = ParseExpression();
             if (expression == null)
-            {
                 throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "expression");
-            }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.LoopKey);
             GetNextToken();
             var body = ParseBody();
@@ -398,9 +380,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             GetNextToken();
             var expression = ParseExpression();
             if (expression == null)
-            {
                 throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "expression");
-            }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.ThenKey);
             GetNextToken();
             var body = ParseBody();
@@ -426,52 +406,41 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             switch (token.type)
             {
                 case Type.Num:
-                {
+                    GetNextToken();
                     if (token.value is Int32)    
                     {
                         return new IntegerLiteral((int)token.value);
                     }
                     return new RealLiteral((double)token.value);
-                }
                 case Type.True:
-                {
+                    GetNextToken();
                     return new BooleanLiteral(true);
-                }
                 case Type.False:
-                {
+                    GetNextToken();
                     return new BooleanLiteral(false);
-                }
                 case Type.ThisKey:
-                {
+                    GetNextToken();
                     return new This();
-                }
                 case Type.BaseKey:
-                {
+                    GetNextToken();
                     return new Base();
-                }
                 case Type.Id:
-                {
                     var id = (string)PeekCurrentToken().value;
                     var className = ParseClassName();
                     if (className == null || className.Specification == null || className.Specification.Count == 0)
                     {
-                        return new Identifier(id);
+                        return new ClassName(id); // should be identifier
                     }
                     return className;
-                }
                 default:
-                {
                     return null;
-                }
             }
         }
 
         private List<Expression> ParseArguments()
         {
             if (!CheckTokenTypeWeak(PeekCurrentToken(), Type.Lparen))
-            {
                 return null;
-            }
             List<Expression> expressions = new List<Expression>();
             GetNextToken();
             
@@ -479,13 +448,11 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             if (expression != null) // there is at least one argument in parantheses
             {
                 expressions.Add(expression);
-                while (CheckTokenTypeWeak(GetNextToken(), Type.Comma))
+                while (CheckTokenTypeWeak(PeekCurrentToken(), Type.Comma))
                 {
                     expression = ParseExpression();
                     if (expression == null) // if no parameter after comma
-                    {
                         throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber);
-                    }
                 }
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.Rparen);

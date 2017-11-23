@@ -46,6 +46,44 @@ namespace Compiler.TreeStructure.MemberDeclarations
             }
         }
 
+        public ConstructorDeclaration(List<ParameterDeclaration> parameters, List<IBody> bodies)
+        {
+            foreach (var body in bodies)
+                SetBody(Body, body);
+            foreach (var parameter in parameters)
+            {
+                parameter.Parent = this;
+                Parameters.Add(parameter);
+            }   
+            
+            void SetBody(ICollection<IBody> bodyList, IBody body)
+            {
+                switch (body)
+                {
+                    case VariableDeclaration variableDeclaration:
+                        variableDeclaration.Parent = this;
+                        bodyList.Add(variableDeclaration);
+                        break;
+                    case Assignment assignment:
+                        assignment.Parent = this;
+                        bodyList.Add(assignment);
+                        break;
+                    case IfStatement @if:
+                        @if.Parent = this;
+                        bodyList.Add(@if);
+                        break;
+                    case ReturnStatement returnStatement:
+                        returnStatement.Parent = this;
+                        bodyList.Add(returnStatement);
+                        break;
+                    case WhileLoop whileLoop:
+                        whileLoop.Parent = this;
+                        bodyList.Add(whileLoop);
+                        break;
+                }
+            }
+        }
+
         public void Accept(IVisitor visitor) => visitor.Visit(this);
     }
 }

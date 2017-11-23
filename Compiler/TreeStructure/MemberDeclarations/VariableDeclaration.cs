@@ -9,8 +9,13 @@ namespace Compiler.TreeStructure.MemberDeclarations
     {
         public string Identifier { get; set; } // название
         public Expression Expression { get; set; } // var i = expresion. Это и есть expression
-        public string ClassName { get; set; } // инициализируется парсером при явном указании типа переменной
+        public ClassName Classname { get; set; } // инициализируется парсером при явном указании типа переменной
         public ICommonTreeInterface Parent { get; set; }
+        
+        public VariableDeclaration(string identifier)
+        {
+            Identifier = identifier;
+        }
         
         public VariableDeclaration(string identifier, Expression expression)
         {
@@ -24,7 +29,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
             Identifier = string.Copy(variableDeclaration.Identifier);
             Expression = new Expression(variableDeclaration.Expression) {Parent = this};
 
-            if (variableDeclaration.ClassName != null) ClassName = string.Copy(variableDeclaration.ClassName);
+            if (variableDeclaration.Classname != null) Classname = new ClassName(variableDeclaration.Classname);
         }
 
 

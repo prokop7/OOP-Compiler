@@ -1,6 +1,6 @@
 class Program is
     this is
-        var a is 20
+        var a
         var b is 100
         a := b
     
