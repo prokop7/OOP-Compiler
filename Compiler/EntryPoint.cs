@@ -23,6 +23,9 @@ namespace Compiler
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");
+                
+                var g = new Generator();
+                g.GenerateProgram();
             }
             catch (Exception e)
             {

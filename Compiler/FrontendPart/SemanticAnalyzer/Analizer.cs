@@ -37,7 +37,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             var genericUsages = usageFinder.GenericUsages;
             foreach (var genericUsage in genericUsages)
             {
-                var genericClasses = StaticTables.GenericClassTable.GetValueOrDefault(genericUsage.Identifier);
+                List<GenericClass> genericClasses = null;
+                if (StaticTables.GenericClassTable.ContainsKey(genericUsage.Identifier))
+                    genericClasses = StaticTables.GenericClassTable[genericUsage.Identifier];
+
                 if (genericClasses == null)
                     throw new ClassNotFoundException(genericUsage.ToString());
                 var mapList = new Dictionary<string, ClassName>();
@@ -78,9 +81,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void GenericTypesCheck()
         {
             Log($"Generic types check: start", 1);
-            foreach (var (key, list) in StaticTables.GenericClassTable)
+            foreach (var pair in StaticTables.GenericClassTable)
             {
-                foreach (var gClass in list)
+                foreach (var gClass in pair.Value)
                 {
                     Log($"Go into {gClass}: start", 4);
                     var visitor = new GenericTypesCheck(gClass);
@@ -166,9 +169,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 // TODO something strange. Test it!!!
                 AddParentMethods(@class.Base);
                 var members = @class.Members;
-                foreach (var (key, pair) in @class.Base.Members)
-                    if (!members.ContainsKey(key))
-                        members.Add(key, pair);
+                foreach (var pair in @class.Base.Members)
+                    if (!members.ContainsKey(pair.Key))
+                        members.Add(pair.Key, pair.Value);
             }
 
             Log($"Inheritance extending: finish", 2);
