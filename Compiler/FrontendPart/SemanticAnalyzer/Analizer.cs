@@ -88,24 +88,15 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 foreach (var j in i.MemberDeclarations)
                 {
-                    if (j is MethodDeclaration methodDeclaration)
+                    if (!(j is MethodDeclaration methodDeclaration)) continue;
+                    if (StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Count == 0)
                     {
-                       
-//                        if (StaticTables.ClassTable[i.SelfClassName.Identifier].Count == 1)
-//                        {
-//                            StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).MemberDeclarations.Add(j);
-//                        }
-//                        else
-//                        {
-//                            
-//                        }
-//                        Console.WriteLine(StaticTables.ClassTable[i.SelfClassName.Identifier]);
                         StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Add(i.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
-                        Console.WriteLine("Hrrrr");
+                            
                     }
                     else
                     {
-                        Console.WriteLine("ZHHHHHHHHHHHHH");
+                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods[i.SelfClassName.Identifier].Add(methodDeclaration);
                     }
                 }
                 
