@@ -156,16 +156,15 @@ namespace Compiler
                 var mainClass = new Class(className);
 
                 var method = new MethodDeclaration("Main") {Parent = mainClass};
-                method.Parameters.Add(new ParameterDeclaration("variable", new ClassName("A")));
                 mainClass.MemberDeclarations.Add(method);
                 
                 var method2 = new MethodDeclaration("Foo") {Parent = mainClass};
                 method2.Parameters.Add(new ParameterDeclaration("variable", new ClassName("B")) {Parent = method2});
                 method2.Parameters.Add(new ParameterDeclaration("variable2", new ClassName("A")) {Parent = method2});
                 mainClass.MemberDeclarations.Add(method2);
-//
-//                var booleanLiteral = new BooleanLiteral(true);
-//                var whileExpression = new Expression(booleanLiteral);
+
+                var booleanLiteral = new BooleanLiteral(true);
+                var whileExpression = new Expression(booleanLiteral);
 //                booleanLiteral.Parent = whileExpression;
 //
 //                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
@@ -173,8 +172,10 @@ namespace Compiler
 //                var varExpression = new Expression(new ClassName("C"));
 //                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
 //                
-//                var body1 = new VariableDeclaration("a", varExpression) {Parent = whileLoop};
-//                var body2 = new Assignment("a", new Expression(varExpression)) {Parent = whileLoop};
+                var body1 = new VariableDeclaration("a", whileExpression) {Parent = method2};
+                method2.Body.Add(body1);
+                var body2 = new Assignment("a", new Expression(whileExpression)) {Parent = method2};
+                method2.Body.Add(body2);
 
 //                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
                 

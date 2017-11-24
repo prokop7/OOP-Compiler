@@ -4,9 +4,12 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Compiler.FrontendPart.SemanticAnalyzer;
+using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Statements;
+using Microsoft.Win32.SafeHandles;
 
 namespace Compiler.BackendPart
 {
@@ -39,13 +42,13 @@ namespace Compiler.BackendPart
             modb.CreateGlobalFunctions();
 
 
-//            ILGenerator ctorIL = ctorBuilder.GetILGenerator();
-//            ctorIL.Emit(OpCodes.Ldarg_0);
-//
-//            Type[] ctorArgs = new Type[0];
-//            ConstructorInfo ctor = typeof(object).GetConstructor(ctorArgs);
-//            ctorIL.Emit(OpCodes.Call, ctor);
-//            ctorIL.Emit(OpCodes.Ret);
+            //            ILGenerator ctorIL = ctorBuilder.GetILGenerator();
+            //            ctorIL.Emit(OpCodes.Ldarg_0);
+            //
+            //            Type[] ctorArgs = new Type[0];
+            //            ConstructorInfo ctor = typeof(object).GetConstructor(ctorArgs);
+            //            ctorIL.Emit(OpCodes.Call, ctor);
+            //            ctorIL.Emit(OpCodes.Ret);
 
             foreach (var cls in _classList)
             {
@@ -70,13 +73,13 @@ namespace Compiler.BackendPart
                 // IL_0001:  call       instance void [mscorlib]System.Object::.ctor()
                 // IL_0006:  ret
 
-                var ctorIL = ctorBuilder.GetILGenerator();
-                ctorIL.Emit(OpCodes.Ldarg_0);
+                var ctorIl = ctorBuilder.GetILGenerator();
+                ctorIl.Emit(OpCodes.Ldarg_0);
 
                 var ctorArgs = new Type[0];
-                var ctor = typeof(System.Object).GetConstructor(ctorArgs);
-                ctorIL.Emit(OpCodes.Call, ctor);
-                ctorIL.Emit(OpCodes.Ret);
+                var ctor = typeof(object).GetConstructor(ctorArgs);
+                ctorIl.Emit(OpCodes.Call, ctor);
+                ctorIl.Emit(OpCodes.Ret);
 
                 foreach (var memberDeclaration in cls.MemberDeclarations)
                 {
@@ -89,7 +92,7 @@ namespace Compiler.BackendPart
                             if (method.Identifier == "Main") methodAttrs |= MethodAttributes.Static;
 
 
-                            Type resType = null;
+                            Type resType;
                             if (method.ResultType == null) resType = typeof(void);
                             else
                             {
@@ -104,7 +107,7 @@ namespace Compiler.BackendPart
                             foreach (var par in method.Parameters)
                             {
                                 var t = par.Type;
-                                Type parType = null;
+                                Type parType;
                                 parType = t.ClassRef == null ? typeof(int) : classes[t.Identifier].typeBuilder;
                                 parTypes[i] = parType;
                                 i++;
@@ -121,7 +124,7 @@ namespace Compiler.BackendPart
 
             foreach (var cls in _classList)
             {
-                TypeBuilder typeBuilder = classes[cls.SelfClassName.Identifier].typeBuilder;
+                var typeBuilder = classes[cls.SelfClassName.Identifier].typeBuilder;
                 currentClass = cls;
 
                 // Generating bodies of class methods
@@ -133,10 +136,10 @@ namespace Compiler.BackendPart
                             break;
                         case MethodDeclaration method:
                             currentMethod = method;
-                            MethodBuilder methodBuilder =
+                            var methodBuilder =
                                 classes[cls.SelfClassName.Identifier].methodBuilders[method.Identifier];
 
-                            ILGenerator il = methodBuilder.GetILGenerator();
+                            var il = methodBuilder.GetILGenerator();
 
                             // Generating method locals
                             foreach (var parameter in method.Parameters)
@@ -146,7 +149,7 @@ namespace Compiler.BackendPart
                             IBody last = null;
                             foreach (var body in method.Body)
                             {
-                                generateStatement(il, body);
+                                GenerateStatement(il, body);
                                 last = body;
                             }
                             if (!(last is ReturnStatement) && method.ResultType == null) il.Emit(OpCodes.Ret);
@@ -165,14 +168,161 @@ namespace Compiler.BackendPart
             ab.Save(Path.GetFileName("test generator.exe"));
         }
 
-        private void generateStatement(ILGenerator il, IBody body)
+        private void GenerateStatement(ILGenerator il, IBody body)
         {
-            throw new NotImplementedException();
+            switch (body)
+            {
+                case VariableDeclaration variableDeclaration:
+                    break;
+                case Assignment assignment:
+//                    if ( left is SELECTOR )
+//                    {
+//                    }
+//                    else if ( left is ARRAY_ELEM )
+//                    {
+//                    }
+//                    else // left is just NAME
+                {
+                    var declaration =
+                        VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
+                    
+                    if (declaration.Parent is Class)
+                    {
+                        if (declaration is VariableDeclaration vDecl)
+                        {
+                            var fb = classes[currentClass.SelfClassName.Identifier].fieldBuilders[vDecl.Identifier];
+//                        if (l.isStatic)
+//                        {
+//                            generateExpression(il, assignment.expression);
+//                            il.Emit(OpCodes.Stsfld, fb);
+//                        }
+//                        else
+                            {
+                                il.Emit(OpCodes.Ldarg_0);
+                                generateExpression(il, assignment.Expression);
+                                il.Emit(OpCodes.Stfld, fb);
+                            }
+                        }
+                    }
+                    else if (declaration is ParameterDeclaration pd)
+                    {
+                        // TODO fix number
+                        generateExpression(il, assignment.Expression);
+                        il.Emit(OpCodes.Starg, 0);
+                    }
+                    else
+                    {
+                        // TODO fix number
+                        generateExpression(il, assignment.Expression);
+                        il.Emit(OpCodes.Stloc, 0);
+                    }
+                }
+                    return;
+                case IfStatement ifStmt:
+                    var branchFalse = il.DefineLabel();
+//                    GenerateRelation(il, ifStmt.Expression, branchFalse);
+
+                    foreach (var e in ifStmt.Body)
+                        GenerateStatement(il, e);
+
+                    if (ifStmt.ElseBody != null)
+                    {
+                        var branchExit = il.DefineLabel();
+                        il.Emit(OpCodes.Br, branchExit);
+
+                        il.MarkLabel(branchFalse);
+
+                        foreach (var e in ifStmt.ElseBody)
+                            GenerateStatement(il, e);
+
+                        il.MarkLabel(branchExit);
+                    }
+                    else
+                        il.MarkLabel(branchFalse);
+                    return;
+                case ReturnStatement returnStatement:
+                    if (returnStatement.Expression != null)
+                        generateExpression(il, returnStatement.Expression);
+                    il.Emit(OpCodes.Ret);
+                    break;
+                case WhileLoop whileLoop:
+                    break;
+            }
         }
+
+        //        private void GenerateRelation(ILGenerator il, Expression expression, Label labelFalse)
+        //        {
+        //            generateExpression(il, expression);
+        //            switch (expression.op)
+        //            {
+        //                case TokenCode.LESS:
+        //                    il.Emit(OpCodes.Bge, labelFalse);
+        //                    break;
+        //                case TokenCode.GREATER:
+        //                    il.Emit(OpCodes.Ble, labelFalse);
+        //                    break;
+        //                case TokenCode.EQUAL:
+        //                    il.Emit(OpCodes.Bne_Un, labelFalse);
+        //                    break;
+        //                case TokenCode.NOT_EQUAL:
+        //                    il.Emit(OpCodes.Beq, labelFalse);
+        //                    break;
+        //            }
+        //        }
+
+        private void generateExpression(ILGenerator il, Expression expression)
+        {
+            var type = expression.PrimaryPart.Type;
+            GenerateFactor(il, expression);
+
+//            generateTerm(il, expression.term);
+//            if (!expression.positive) il.Emit(OpCodes.Neg);
+//            for (int i = 0; i < expression.terms.Count; i++)
+//            {
+//                generateTerm(il, expression.terms[i]);
+//                switch (expression.ops[i])
+//                {
+//                    case TokenCode.PLUS:
+//                        il.Emit(OpCodes.Add);
+//                        break;
+//                    case TokenCode.MINUS:
+//                        il.Emit(OpCodes.Sub);
+//                        break;
+//                }
+//            }
+        }
+
+
+        private void ExpressInteger(ILGenerator il, MethodOrFieldCall call)
+        {
+            switch (call.Identifier)
+            {
+                case "Minus":
+
+                    break;
+            }
+        }
+
+        private void GenerateFactor(ILGenerator il, Expression expression)
+        {
+            switch (expression.PrimaryPart)
+            {
+                case BooleanLiteral booleanLiteral:
+                    il.Emit(OpCodes.Ldc_I4, booleanLiteral.Value ? 1 : 0);
+                    break;
+                case IntegerLiteral integerLiteral:
+                    il.Emit(OpCodes.Ldc_I4, integerLiteral.Value);
+                    break;
+                case RealLiteral realLiteral:
+                    il.Emit(OpCodes.Ldc_R8, realLiteral.Value);
+                    break;
+            }
+        }
+
 
         private void GenerateLocal(ILGenerator il, ParameterDeclaration field)
         {
-            ClassName t = field.Type;
+            var t = field.Type;
             Type type = null;
             if (t.ClassRef == null)
             {
@@ -186,7 +336,7 @@ namespace Compiler.BackendPart
                 type = classes[t.Identifier].typeBuilder;
                 //if ( t.isArray ) type = type.MakeArrayType();
             }
-            LocalBuilder local = il.DeclareLocal(type);
+            var local = il.DeclareLocal(type);
             if (t.ClassRef == null)
             {
                 //if ( t.isArray ) il.Emit(OpCodes.Ldnull);
