@@ -20,6 +20,7 @@ namespace Compiler.BackendPart
         {
             public TypeBuilder typeBuilder;
             public Dictionary<string, MethodBuilder> methodBuilders;
+            public Dictionary<string, List<LocalBuilder>> locals;
             public ConstructorBuilder ctorBuilder;
             public Dictionary<string, FieldBuilder> fieldBuilders;
         }
@@ -59,7 +60,8 @@ namespace Compiler.BackendPart
                 {
                     typeBuilder = typeBuilder,
                     methodBuilders = new Dictionary<string, MethodBuilder>(),
-                    fieldBuilders = new Dictionary<string, FieldBuilder>()
+                    fieldBuilders = new Dictionary<string, FieldBuilder>(),
+                    locals = new Dictionary<string, List<LocalBuilder>>()
                 };
 
                 var ctorTypes = new Type[0];
@@ -154,6 +156,7 @@ namespace Compiler.BackendPart
                                 GenerateStatement(il, body);
                                 last = body;
                             }
+                            PrintAllVariables(il);
                             if (!(last is ReturnStatement) && method.ResultType == null) il.Emit(OpCodes.Ret);
 
                             // Defining the program entry point
@@ -177,45 +180,7 @@ namespace Compiler.BackendPart
                 case VariableDeclaration variableDeclaration:
                     break;
                 case Assignment assignment:
-                {
-                    var declaration =
-                        VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
-
-                    if (declaration.Parent is Class)
-                    {
-                        if (declaration is VariableDeclaration vDecl)
-                        {
-                            var fb = classes[currentClass.SelfClassName.Identifier].fieldBuilders[vDecl.Identifier];
-//                        if (l.isStatic)
-//                        {
-//                            generateExpression(il, assignment.expression);
-//                            il.Emit(OpCodes.Stsfld, fb);
-//                        }
-//                        else
-                            {
-                                il.Emit(OpCodes.Ldarg_0);
-                                generateExpression(il, assignment.Expression);
-                                il.Emit(OpCodes.Stfld, fb);
-                            }
-                        }
-                    }
-                    else if (declaration is ParameterDeclaration pd)
-                    {
-                        // TODO fix number
-                        generateExpression(il, assignment.Expression);
-                        il.Emit(OpCodes.Starg, "s");
-                    }
-                    else
-                    {
-                        // TODO fix number
-                        var i = currentMethod.VariableDeclarations
-                            .Where(pair => pair.Value is VariableDeclaration)
-                            .TakeWhile(pair => pair.Key != assignment.Identifier)
-                            .Count();
-                        generateExpression(il, assignment.Expression);
-                        il.Emit(OpCodes.Stloc, i);
-                    }
-                }
+                    GenerateAssignment(il, assignment);
                     return;
                 case IfStatement ifStmt:
                     var branchFalse = il.DefineLabel();
@@ -249,12 +214,65 @@ namespace Compiler.BackendPart
             }
         }
 
+        private void GenerateAssignment(ILGenerator il, Assignment assignment)
+        {
+            var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
+
+            if (declaration.Parent is Class)
+            {
+                // Set values for field
+                // TODO change type to Field
+                if (declaration is VariableDeclaration vDecl)
+                {
+                    var fb = classes[currentClass.SelfClassName.Identifier].fieldBuilders[vDecl.Identifier];
+                    il.Emit(OpCodes.Ldarg_0);
+                    generateExpression(il, assignment.Expression);
+                    il.Emit(OpCodes.Stfld, fb);
+                }
+            }
+            else if (declaration is ParameterDeclaration pd)
+            {
+                // TODO fix number
+                switch (pd.Parent)
+                {
+                    case ConstructorDeclaration constructorDeclaration:
+                        break;
+                    case MethodDeclaration methodDeclaration:
+                        int i = methodDeclaration.Parameters.IndexOf(pd, 0);
+                        generateExpression(il, assignment.Expression);
+                        il.Emit(OpCodes.Starg, i);
+                        break;
+                }
+            }
+            else 
+            {
+                var i = currentMethod.VariableDeclarations
+                    .Where(pair => pair.Value is VariableDeclaration)
+                    .TakeWhile(pair => pair.Key != assignment.Identifier)
+                    .Count();
+                generateExpression(il, assignment.Expression);
+                il.Emit(OpCodes.Stloc, i);
+            }
+        }
+
         private void generateExpression(ILGenerator il, Expression expression)
         {
             var type = expression.PrimaryPart.Type;
             GenerateFactor(il, expression);
         }
 
+        private void PrintAllVariables(ILGenerator il)
+        {
+            var varList = currentMethod.VariableDeclarations.Values;
+            var @class = classes[currentClass.SelfClassName.Identifier];
+            var locals = classes[currentClass.SelfClassName.Identifier].locals.ContainsKey(currentMethod.Identifier)
+                    ? classes[currentClass.SelfClassName.Identifier].locals[currentMethod.Identifier]
+                    : new List<LocalBuilder>();
+            foreach (var local in locals)
+            {
+                il.EmitWriteLine(local);
+            }
+        }
 
         private void ExpressInteger(ILGenerator il, ICall call)
         {
@@ -308,6 +326,15 @@ namespace Compiler.BackendPart
                     break;
             }
             var local = il.DeclareLocal(type);
+            List<LocalBuilder> locals;
+            if (classes[currentClass.SelfClassName.Identifier].locals.ContainsKey(currentMethod.Identifier))
+                locals = classes[currentClass.SelfClassName.Identifier].locals[currentMethod.Identifier];
+            else
+            {
+                locals = new List<LocalBuilder>();
+                classes[currentClass.SelfClassName.Identifier].locals.Add(currentMethod.Identifier, locals);
+            }
+            locals.Add(local);
             il.Emit(t == null ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
             il.Emit(OpCodes.Stloc, local);
         }

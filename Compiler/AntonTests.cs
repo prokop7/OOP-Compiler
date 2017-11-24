@@ -166,7 +166,9 @@ namespace Compiler
 //                var method2 = new MethodDeclaration("Foo") {Parent = mainClass};
 
                 var booleanLiteral = new BooleanLiteral(true);
+                var booleanLiteralFalse = new BooleanLiteral(false);
                 var expression = new Expression(booleanLiteral);
+                var expressionFalse = new Expression(booleanLiteralFalse);
 //                booleanLiteral.Parent = whileExpression;
 //
 //                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
@@ -180,6 +182,8 @@ namespace Compiler
                 method.Body.Add(body1);
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
                 method.Body.Add(body2);
+                var body4 = new Assignment("b", new Expression(expressionFalse)) {Parent = method};
+                method.Body.Add(body4);
 
 //                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
                 
