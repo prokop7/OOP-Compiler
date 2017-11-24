@@ -270,6 +270,9 @@ namespace Compiler
                 
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = whileLoop};
                 whileLoop.Body.Add(body2);
+                
+                var returnStatement = new ReturnStatement {Parent = whileLoop};
+                whileLoop.Body.Add(returnStatement);
 
                 return mainClass;
             }
