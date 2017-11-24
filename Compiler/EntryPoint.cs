@@ -16,7 +16,7 @@ namespace Compiler
             L.LogLevel = 100;
             try
             {
-                CheckTests("");
+                CheckTests("Valid");
 //                AntonTests.VariableDeclaration();
 //                AntonTests.GenericClassSetup();
 //                AntonTests.SimpleClassesTest();
@@ -25,11 +25,12 @@ namespace Compiler
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");
                 
-                var g = new Generator();
-                g.GenerateProgram();
+//                var g = new Generator();
+//                g.GenerateProgram();
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 L.LogError(e);
             }
         }
@@ -69,10 +70,10 @@ namespace Compiler
 
         private static void CheckTests(string folderName)
         {
-            var files = Directory.GetFiles($"./Tests/{folderName}/");
+            var files = Directory.GetFiles($"./../../Tests/{folderName}/");
         //    foreach(var file in files){
         //        Console.WriteLine("\n\n" + file + "\n");
-            var file = "./Tests/Valid/Assignment.o";
+            var file = "./../../Tests/Valid/Assignment.o";
                 var main = new FrontEndCompiler(file);
                 try
                 {

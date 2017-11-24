@@ -5,7 +5,7 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class Expression : ICommonTreeInterface
+    public class Expression : ICommonTreeInterface, IBody
     {
         // 5.Plus(4) - 5 is a primary part, всё остальное - calls либо fields
         public ICommonTreeInterface Parent { get; set; }

@@ -18,7 +18,7 @@ namespace Compiler.BackendPart
 
         private Dictionary<string, ClassStructure> classes = new Dictionary<string, ClassStructure>();
 
-        public void GenerateProgram()
+        /*public void GenerateProgram()
         {
             AssemblyName an = new AssemblyName {Name = Path.GetFileNameWithoutExtension("test generator")};
             AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
@@ -72,6 +72,6 @@ namespace Compiler.BackendPart
             typeBuilder.CreateType();
             // Saving the assembly
             ab.Save(Path.GetFileName("test generator.exe"));
-        }
+        }*/
     }
 }

@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Security.Principal;
 using Compiler.Exceptions;
 using Compiler.FrontendPart.LexicalAnalyzer;
 using Compiler.TreeStructure;
@@ -325,7 +322,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                             var arguments = ParseArguments();
                             if (arguments == null)
                                 throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "method call");
-                            //body.Add(new Expression(new MethodCall()));
+                            body.Add(new Expression(new Fie));
                             break;
                         }
                         throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber);
@@ -347,20 +344,6 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             }
             return body;
         }
-
-/*        private Assignment ParseAssignment()
-        {
-            CheckTokenTypeStrong(PeekCurrentToken(), Type.Id);
-            var id = (string)PeekCurrentToken().value;
-            CheckTokenTypeStrong(GetNextToken(), Type.Assignment);
-            GetNextToken();
-            var expression = ParseExpression();
-            if (expression == null)
-            {
-                throw new UnexpectedTokenException(PeekCurrentToken().lineNumber, PeekCurrentToken().positionNumber, "expression");
-            }
-            return new Assignment(id, expression);
-        }*/
 
         private WhileLoop ParseWhileLoop()
         {
@@ -408,9 +391,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                 case Type.Num:
                     GetNextToken();
                     if (token.value is Int32)    
-                    {
                         return new IntegerLiteral((int)token.value);
-                    }
                     return new RealLiteral((double)token.value);
                 case Type.True:
                     GetNextToken();
