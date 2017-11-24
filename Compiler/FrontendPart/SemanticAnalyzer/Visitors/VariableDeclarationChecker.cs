@@ -27,6 +27,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         {
             switch (Stack.Last())
             {
+                case Class el:
+                    el.NameMap.Add(identifier, newIdentifier);
+                    break;
                 case ConstructorDeclaration el:
                     el.NameMap.Add(identifier, newIdentifier);
                     break;
@@ -48,6 +51,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             if (!HasMap(assignment.Identifier))
                 throw new VariableNotFoundException(assignment.Identifier);
             assignment.Identifier = GetValueFromMap(assignment.Identifier);
+        }
+
+        public override void Visit(Class @class)
+        {
+            Stack.Add(@class);
+            base.Visit(@class);
+            Stack.RemoveAt(Stack.Count - 1);
         }
 
         public override void Visit(This @this)
@@ -92,7 +102,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             var newName = GetContextIdentifier(parameter.Identifier);
             SetMap(parameter.Identifier, newName);
             parameter.Identifier = newName;
-            switch (Stack[0])
+            switch (Stack[1])
             {
                 case ConstructorDeclaration constructorDeclaration:
                     constructorDeclaration.VariableDeclarations.Add(parameter.Identifier, parameter);
@@ -110,7 +120,12 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             var newName = GetContextIdentifier(variable.Identifier);
             SetMap(variable.Identifier, newName);
             variable.Identifier = newName;
-            switch (Stack[0])
+            if (variable.Parent is Class @class)
+            {
+                @class.Members.Add(variable.Identifier, variable);
+                return;
+            }
+            switch (Stack[1])
             {
                 case MethodDeclaration method:
                     method.VariableDeclarations.Add(variable.Identifier, variable);
@@ -134,6 +149,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             foreach (var commonTreeInterface in Stack)
                 switch (commonTreeInterface)
                 {
+                    case Class el when el.NameMap.ContainsKey(identifier):
+                        return el.NameMap[identifier];
                     case ConstructorDeclaration el when el.NameMap.ContainsKey(identifier):
                         return el.NameMap[identifier];
                     case MethodDeclaration el when el.NameMap.ContainsKey(identifier):

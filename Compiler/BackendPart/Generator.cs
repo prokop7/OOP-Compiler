@@ -51,7 +51,6 @@ namespace Compiler.BackendPart
             //            ConstructorInfo ctor = typeof(object).GetConstructor(ctorArgs);
             //            ctorIL.Emit(OpCodes.Call, ctor);
             //            ctorIL.Emit(OpCodes.Ret);
-
             foreach (var cls in _classList)
             {
                 var classAttrs = TypeAttributes.Public;
@@ -65,11 +64,10 @@ namespace Compiler.BackendPart
                 };
 
                 var ctorTypes = new Type[0];
-                var ctorBuilder =
-                    typeBuilder.DefineConstructor(
-                        MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
-                        CallingConventions.Standard,
-                        ctorTypes);
+                var ctorBuilder = typeBuilder.DefineConstructor(
+                    MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                    CallingConventions.Standard,
+                    ctorTypes);
                 classes[cls.SelfClassName.Identifier].ctorBuilder = ctorBuilder;
 
                 // IL_0000:  ldarg.0
@@ -83,7 +81,11 @@ namespace Compiler.BackendPart
                 var ctor = typeof(object).GetConstructor(ctorArgs);
                 ctorIl.Emit(OpCodes.Call, ctor);
                 ctorIl.Emit(OpCodes.Ret);
+            }
 
+            foreach (var cls in _classList)
+            {
+                var typeBuilder = classes[cls.SelfClassName.Identifier].typeBuilder;
                 foreach (var memberDeclaration in cls.MemberDeclarations)
                 {
                     switch (memberDeclaration)
@@ -119,6 +121,26 @@ namespace Compiler.BackendPart
                             classes[cls.SelfClassName.Identifier].methodBuilders.Add(method.Identifier, mb);
                             break;
                         case VariableDeclaration variableDeclaration:
+                            var resultType = variableDeclaration.Expression.ReturnType;
+                            Type type = null;
+                            if (resultType == null)
+                            {
+//                                if (resulType.isArray) type = typeof(int[]);
+//                                else 
+                                type = typeof(void);
+                            }
+                            else
+                            {
+                                if (resultType == "Boolean")
+                                    type = typeof(bool);
+                                else
+                                    type = classes[resultType].typeBuilder;
+
+//                                if (resultType.isArray) type = type.MakeArrayType();
+                            }
+                            var attrs = FieldAttributes.Public | FieldAttributes.Static;
+                            FieldBuilder fb = typeBuilder.DefineField(variableDeclaration.Identifier, type, attrs);
+                            classes[cls.SelfClassName.Identifier].fieldBuilders.Add(variableDeclaration.Identifier, fb);
                             break;
                     }
                 }
@@ -206,7 +228,7 @@ namespace Compiler.BackendPart
                     return;
                 case ReturnStatement returnStatement:
                     if (returnStatement.Expression != null)
-                        generateExpression(il, returnStatement.Expression);
+                        GenerateExpression(il, returnStatement.Expression);
                     il.Emit(OpCodes.Ret);
                     break;
                 case WhileLoop whileLoop:
@@ -214,6 +236,13 @@ namespace Compiler.BackendPart
             }
         }
 
+        /// <summary>
+        /// Works with local variables.
+        /// Not tested with parameters.
+        /// Not tested with fields.
+        /// </summary>
+        /// <param name="il"></param>
+        /// <param name="assignment"></param>
         private void GenerateAssignment(ILGenerator il, Assignment assignment)
         {
             var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
@@ -222,12 +251,13 @@ namespace Compiler.BackendPart
             {
                 // Set values for field
                 // TODO change type to Field
+                // BUG Doesn't work without static commands
                 if (declaration is VariableDeclaration vDecl)
                 {
                     var fb = classes[currentClass.SelfClassName.Identifier].fieldBuilders[vDecl.Identifier];
-                    il.Emit(OpCodes.Ldarg_0);
-                    generateExpression(il, assignment.Expression);
-                    il.Emit(OpCodes.Stfld, fb);
+//                    il.Emit(OpCodes.Ldarg_0);
+                    GenerateExpression(il, assignment.Expression);
+                    il.Emit(OpCodes.Stsfld, fb);
                 }
             }
             else if (declaration is ParameterDeclaration pd)
@@ -239,23 +269,23 @@ namespace Compiler.BackendPart
                         break;
                     case MethodDeclaration methodDeclaration:
                         int i = methodDeclaration.Parameters.IndexOf(pd, 0);
-                        generateExpression(il, assignment.Expression);
+                        GenerateExpression(il, assignment.Expression);
                         il.Emit(OpCodes.Starg, i);
                         break;
                 }
             }
-            else 
+            else
             {
                 var i = currentMethod.VariableDeclarations
                     .Where(pair => pair.Value is VariableDeclaration)
                     .TakeWhile(pair => pair.Key != assignment.Identifier)
                     .Count();
-                generateExpression(il, assignment.Expression);
+                GenerateExpression(il, assignment.Expression);
                 il.Emit(OpCodes.Stloc, i);
             }
         }
 
-        private void generateExpression(ILGenerator il, Expression expression)
+        private void GenerateExpression(ILGenerator il, Expression expression)
         {
             var type = expression.PrimaryPart.Type;
             GenerateFactor(il, expression);
@@ -263,11 +293,9 @@ namespace Compiler.BackendPart
 
         private void PrintAllVariables(ILGenerator il)
         {
-            var varList = currentMethod.VariableDeclarations.Values;
-            var @class = classes[currentClass.SelfClassName.Identifier];
             var locals = classes[currentClass.SelfClassName.Identifier].locals.ContainsKey(currentMethod.Identifier)
-                    ? classes[currentClass.SelfClassName.Identifier].locals[currentMethod.Identifier]
-                    : new List<LocalBuilder>();
+                ? classes[currentClass.SelfClassName.Identifier].locals[currentMethod.Identifier]
+                : new List<LocalBuilder>();
             foreach (var local in locals)
             {
                 il.EmitWriteLine(local);

@@ -156,7 +156,6 @@ namespace Compiler
                 var mainClass = new Class(className);
 
                 var method = new MethodDeclaration("Main") {Parent = mainClass};
-                mainClass.MemberDeclarations.Add(method);
                 
                 
 //                method.Parameters.Add(new ParameterDeclaration("variable", new ClassName("B")) {Parent = method});
@@ -169,6 +168,7 @@ namespace Compiler
                 var booleanLiteralFalse = new BooleanLiteral(false);
                 var expression = new Expression(booleanLiteral);
                 var expressionFalse = new Expression(booleanLiteralFalse);
+                
 //                booleanLiteral.Parent = whileExpression;
 //
 //                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
@@ -176,10 +176,12 @@ namespace Compiler
 //                var varExpression = new Expression(new ClassName("C"));
 //                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
 //                
-                var body1 = new VariableDeclaration("a", expression) {Parent = method};
+                var field = new VariableDeclaration("a", expression) {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(field);
+                mainClass.MemberDeclarations.Add(method);
+                
                 var body3 = new VariableDeclaration("b", expression) {Parent = method};
                 method.Body.Add(body3);
-                method.Body.Add(body1);
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
                 method.Body.Add(body2);
                 var body4 = new Assignment("b", new Expression(expressionFalse)) {Parent = method};
