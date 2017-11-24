@@ -23,6 +23,12 @@ namespace Compiler.TreeStructure.Statements
             foreach (var el in Body)
                 el.Parent = this;
         }
+        
+        public WhileLoop(Expression expression)
+        {
+            Expression = expression;
+            Expression.Parent = this;
+        }
 
         public WhileLoop(WhileLoop whileLoop)
         {

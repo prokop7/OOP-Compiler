@@ -14,5 +14,11 @@ namespace Compiler
 			if (level <= L.LogLevel)
 				Console.WriteLine($"{DateTime.Now}\t{spaces}{message}");
 		}
+
+		public static void LogError(Exception e)
+		{
+			var line = string.Concat(Enumerable.Repeat("-", 70));
+			Console.WriteLine($"{line}\n{DateTime.Now}\tCompilation failed.\n\t\t\t\t{e.GetType()}: {e.Message}");
+		}
 	}
 }

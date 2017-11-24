@@ -49,7 +49,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             for (var i = 0; i < expression.Calls.Count; i++)
             {
                 if (GenericTypes.Contains(type))
-                    throw new ClassMemberNotFoundException("");
+                    throw new ClassMemberNotFoundException();
                 type = GetType(type, expression.Calls[i].Identifier);
             }
             
@@ -77,7 +77,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         case ConstructorDeclaration _:
                             return classIdentifier;
                         case MethodDeclaration methodDeclaration:
-                            return methodDeclaration.ResultType;
+                            return methodDeclaration.ResultType.Identifier;
                         case VariableDeclaration variableDeclaration:
                             return variableDeclaration.Expression.ReturnType;
                     }
