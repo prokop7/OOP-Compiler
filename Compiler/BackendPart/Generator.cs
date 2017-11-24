@@ -185,7 +185,7 @@ namespace Compiler.BackendPart
                 {
                     var declaration =
                         VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
-                    
+
                     if (declaration.Parent is Class)
                     {
                         if (declaration is VariableDeclaration vDecl)

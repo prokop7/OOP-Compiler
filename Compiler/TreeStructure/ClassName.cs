@@ -18,6 +18,7 @@ namespace Compiler.TreeStructure
             get => Identifier;
         }
         public Class ClassRef => StaticTables.ClassTable.ContainsKey(Identifier) ? StaticTables.ClassTable[Identifier][0] : null;
+        public int? ArrSize { get; set; } = null;
 
 
         public ClassName(string name)

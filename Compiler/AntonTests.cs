@@ -78,8 +78,8 @@ namespace Compiler
 
                 var t = new ClassName("A");
                 var expB2 = new Expression(t);
-                expB2.Calls.Add(new MethodOrFieldCall("Bar") {Parent = expB2});
-                expB2.Calls.Add(new MethodOrFieldCall("Foo") {Parent = expB2});
+                expB2.Calls.Add(new Call("Bar") {Parent = expB2});
+                expB2.Calls.Add(new Call("Foo") {Parent = expB2});
                 t.Parent = expB2;
 
                 var varB2 = new VariableDeclaration("b", expB2) {Parent = mainClass};
