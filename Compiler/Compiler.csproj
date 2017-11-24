@@ -72,10 +72,12 @@
     <Compile Include="TreeStructure\ClassName.cs" />
     <Compile Include="TreeStructure\Expressions\Base.cs" />
     <Compile Include="TreeStructure\Expressions\BooleanLiteral.cs" />
+    <Compile Include="TreeStructure\Expressions\Call.cs" />
     <Compile Include="TreeStructure\Expressions\Expression.cs" />
+    <Compile Include="TreeStructure\Expressions\FieldCall.cs" />
+    <Compile Include="TreeStructure\Expressions\ICall.cs" />
     <Compile Include="TreeStructure\Expressions\IntegerLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\IPrimaryExpression.cs" />
-    <Compile Include="TreeStructure\Expressions\MethodOrFieldCall.cs" />
     <Compile Include="TreeStructure\Expressions\RealLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\This.cs" />
     <Compile Include="TreeStructure\GenericClass.cs" />

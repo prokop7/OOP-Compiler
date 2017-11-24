@@ -293,12 +293,11 @@ namespace Compiler.BackendPart
         }
 
 
-        private void ExpressInteger(ILGenerator il, MethodOrFieldCall call)
+        private void ExpressInteger(ILGenerator il, ICall call)
         {
-            switch (call.Identifier)
+            switch (call.InputType)
             {
                 case "Minus":
-
                     break;
             }
         }

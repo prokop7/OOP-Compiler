@@ -113,10 +113,15 @@ namespace Compiler.TreeStructure.Visitors
 	        throw new NotImplementedException();
 	    }
 
-	    public virtual void Visit(MethodOrFieldCall call)
-        {
-            foreach (var argument in call.Arguments)
-                argument.Accept(this);
-        }
+		public virtual void Visit(Call call)
+		{
+			foreach (var argument in call.Arguments)
+				argument.Accept(this);
+		}
+
+		public virtual void Visit(FieldCall fieldCall)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
