@@ -37,6 +37,7 @@ namespace Compiler.BackendPart
 
         public void GenerateProgram()
         {
+            L.Log("Code generating: start", 1);
             var an = new AssemblyName {Name = Path.GetFileNameWithoutExtension("test generator")};
             var ab = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
             var modb = ab.DefineDynamicModule(an.Name, an.Name + ".exe", true);
@@ -53,6 +54,7 @@ namespace Compiler.BackendPart
             //            ctorIL.Emit(OpCodes.Ret);
             foreach (var cls in _classList)
             {
+                L.Log($"Creating class {cls}", 3);
                 var classAttrs = TypeAttributes.Public;
                 var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier, classAttrs);
                 classes[cls.SelfClassName.Identifier] = new ClassStructure
@@ -93,9 +95,9 @@ namespace Compiler.BackendPart
                         case ConstructorDeclaration constructorDeclaration:
                             break;
                         case MethodDeclaration method:
+                            L.Log($"Creating method {method}", 4);
                             var methodAttrs = MethodAttributes.Public;
                             if (method.Identifier == "Main") methodAttrs |= MethodAttributes.Static;
-
 
                             Type resType;
                             if (method.ResultType == null) resType = typeof(void);
@@ -121,6 +123,7 @@ namespace Compiler.BackendPart
                             classes[cls.SelfClassName.Identifier].methodBuilders.Add(method.Identifier, mb);
                             break;
                         case VariableDeclaration variableDeclaration:
+                            L.Log($"Creating field {variableDeclaration}", 4);
                             var resultType = variableDeclaration.Expression.ReturnType;
                             Type type = null;
                             if (resultType == null)
@@ -160,6 +163,7 @@ namespace Compiler.BackendPart
                         case ConstructorDeclaration constructorDeclaration:
                             break;
                         case MethodDeclaration method:
+                            L.Log($"Filling method {method}", 5);
                             currentMethod = method;
                             var methodBuilder =
                                 classes[cls.SelfClassName.Identifier].methodBuilders[method.Identifier];
@@ -193,6 +197,9 @@ namespace Compiler.BackendPart
             }
             // Saving the assembly
             ab.Save(Path.GetFileName("test generator.exe"));
+            L.Log("Code generating: finish", 1);
+            
+            L.Log($"Output file = {Path.GetFullPath("test generator.exe")}", 0);
         }
 
         private void GenerateStatement(ILGenerator il, IBody body)
@@ -202,9 +209,11 @@ namespace Compiler.BackendPart
                 case VariableDeclaration variableDeclaration:
                     break;
                 case Assignment assignment:
+                    L.Log($"Generate assignment {assignment}", 6);
                     GenerateAssignment(il, assignment);
                     return;
                 case IfStatement ifStmt:
+                    L.Log($"Generate method {ifStmt}", 6);
                     var branchFalse = il.DefineLabel();
 //                    GenerateRelation(il, ifStmt.Expression, branchFalse);
 
@@ -225,6 +234,7 @@ namespace Compiler.BackendPart
                     }
                     else
                         il.MarkLabel(branchFalse);
+                    L.Log($"Generate method {ifStmt}: finish", 6);
                     return;
                 case ReturnStatement returnStatement:
                     if (returnStatement.Expression != null)
