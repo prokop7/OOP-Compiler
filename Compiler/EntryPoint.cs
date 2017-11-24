@@ -19,7 +19,8 @@ namespace Compiler
 //                AntonTests.VariableDeclaration();
 //                AntonTests.GenericClassSetup();
 //                AntonTests.SimpleClassesTest();
-                AntonTests.BranchTest();
+//                AntonTests.BranchTest();
+                AntonTests.WhileTest();
                 
 //                IlyuzaTests();
 //                CheckTests("Valid");

@@ -142,7 +142,7 @@ namespace Compiler.BackendPart
 //                                if (resultType.isArray) type = type.MakeArrayType();
                             }
                             var attrs = FieldAttributes.Public | FieldAttributes.Static;
-                            FieldBuilder fb = typeBuilder.DefineField(variableDeclaration.Identifier, type, attrs);
+                            var fb = typeBuilder.DefineField(variableDeclaration.Identifier, type, attrs);
                             classes[cls.SelfClassName.Identifier].fieldBuilders.Add(variableDeclaration.Identifier, fb);
                             break;
                     }
@@ -198,7 +198,7 @@ namespace Compiler.BackendPart
             // Saving the assembly
             ab.Save(Path.GetFileName("test generator.exe"));
             L.Log("Code generating: finish", 1);
-            
+
             L.Log($"Output file = {Path.GetFullPath("test generator.exe")}", 0);
         }
 
@@ -214,28 +214,7 @@ namespace Compiler.BackendPart
                     return;
                 case IfStatement ifStmt:
                     L.Log($"Generate if {ifStmt}", 6);
-                    var branchFalse = il.DefineLabel();
-                    
-                    GenerateRelation(il, ifStmt.Expression, branchFalse);
-
-                    foreach (var e in ifStmt.Body)
-                        GenerateStatement(il, e);
-
-                    if (ifStmt.ElseBody != null)
-                    {
-                        var branchExit = il.DefineLabel();
-                        il.Emit(OpCodes.Br, branchExit);
-
-                        il.MarkLabel(branchFalse);
-
-                        foreach (var e in ifStmt.ElseBody)
-                            GenerateStatement(il, e);
-
-                        il.MarkLabel(branchExit);
-                    }
-                    else
-                        il.MarkLabel(branchFalse);
-                    L.Log($"Generate if {ifStmt}: finish", 6);
+                    GenerateIfStatement(il, ifStmt);
                     return;
                 case ReturnStatement returnStatement:
                     if (returnStatement.Expression != null)
@@ -243,8 +222,47 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Ret);
                     break;
                 case WhileLoop whileLoop:
+                    L.Log($"Generate while {whileLoop}", 6);
+                    GenerateWhile(il, whileLoop);
                     break;
             }
+        }
+
+        private void GenerateWhile(ILGenerator il, WhileLoop whileLoop)
+        {
+            var next = il.DefineLabel();
+            var exit = il.DefineLabel();
+            il.MarkLabel(next);
+            GenerateRelation(il, whileLoop.Expression, exit);
+            foreach (var e in whileLoop.Body)
+                GenerateStatement(il, e);
+            il.Emit(OpCodes.Br, next);
+            il.MarkLabel(exit);
+        }
+
+        private void GenerateIfStatement(ILGenerator il, IfStatement ifStmt)
+        {
+            var branchFalse = il.DefineLabel();
+
+            GenerateRelation(il, ifStmt.Expression, branchFalse);
+
+            foreach (var e in ifStmt.Body)
+                GenerateStatement(il, e);
+
+            if (ifStmt.ElseBody != null)
+            {
+                var branchExit = il.DefineLabel();
+                il.Emit(OpCodes.Br, branchExit);
+
+                il.MarkLabel(branchFalse);
+
+                foreach (var e in ifStmt.ElseBody)
+                    GenerateStatement(il, e);
+
+                il.MarkLabel(branchExit);
+            }
+            else
+                il.MarkLabel(branchFalse);
         }
 
         private void GenerateRelation(ILGenerator il, Expression ifStmtExpression, Label branchFalse)
@@ -285,7 +303,7 @@ namespace Compiler.BackendPart
                     case ConstructorDeclaration constructorDeclaration:
                         break;
                     case MethodDeclaration methodDeclaration:
-                        int i = methodDeclaration.Parameters.IndexOf(pd, 0);
+                        var i = methodDeclaration.Parameters.IndexOf(pd, 0);
                         GenerateExpression(il, assignment.Expression);
                         il.Emit(OpCodes.Starg, i);
                         break;

@@ -237,5 +237,42 @@ namespace Compiler
                 return mainClass;
             }
         }
+        
+        public static void WhileTest()
+        {
+            var class1 = GenerateClass1();
+
+            var analyzer = new Analizer(new List<Class> {class1});
+            var list = analyzer.Analize();
+
+            var g = new Generator(list);
+            g.GenerateProgram();
+
+            Class GenerateClass1()
+            {
+                var bClass = new ClassName("A");
+                var mainClass = new Class(bClass);
+
+                var method = new MethodDeclaration("Main") {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(method);
+
+                var booleanLiteral = new BooleanLiteral(true);
+                var booleanLiteralFalse = new BooleanLiteral(false);
+                var expression = new Expression(booleanLiteral);
+                var expressionFalse = new Expression(booleanLiteralFalse);
+
+
+                var body3 = new VariableDeclaration("a", expression) {Parent = method};
+                method.Body.Add(body3);
+
+                var whileLoop = new WhileLoop(new Expression(expression), new List<IBody>()) {Parent = method};
+                method.Body.Add(whileLoop);
+                
+                var body2 = new Assignment("a", new Expression(expression)) {Parent = whileLoop};
+                whileLoop.Body.Add(body2);
+
+                return mainClass;
+            }
+        }
     }
 }
