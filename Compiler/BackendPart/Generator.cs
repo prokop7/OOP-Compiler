@@ -213,9 +213,10 @@ namespace Compiler.BackendPart
                     GenerateAssignment(il, assignment);
                     return;
                 case IfStatement ifStmt:
-                    L.Log($"Generate method {ifStmt}", 6);
+                    L.Log($"Generate if {ifStmt}", 6);
                     var branchFalse = il.DefineLabel();
-//                    GenerateRelation(il, ifStmt.Expression, branchFalse);
+                    
+                    GenerateRelation(il, ifStmt.Expression, branchFalse);
 
                     foreach (var e in ifStmt.Body)
                         GenerateStatement(il, e);
@@ -234,7 +235,7 @@ namespace Compiler.BackendPart
                     }
                     else
                         il.MarkLabel(branchFalse);
-                    L.Log($"Generate method {ifStmt}: finish", 6);
+                    L.Log($"Generate if {ifStmt}: finish", 6);
                     return;
                 case ReturnStatement returnStatement:
                     if (returnStatement.Expression != null)
@@ -244,6 +245,12 @@ namespace Compiler.BackendPart
                 case WhileLoop whileLoop:
                     break;
             }
+        }
+
+        private void GenerateRelation(ILGenerator il, Expression ifStmtExpression, Label branchFalse)
+        {
+            GenerateExpression(il, ifStmtExpression);
+            il.Emit(OpCodes.Brfalse, branchFalse);
         }
 
         /// <summary>

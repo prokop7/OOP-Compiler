@@ -120,11 +120,11 @@ namespace Compiler
             var class1 = GenerateClass1();
             var class2 = GenerateClass2();
             var class3 = GenerateClass3();
-            
-            
+
+
             var analyzer = new Analizer(new List<Class> {class1, class2, class3});
             var list = analyzer.Analize();
-            
+
             var g = new Generator(list);
             g.GenerateProgram();
 
@@ -156,19 +156,19 @@ namespace Compiler
                 var mainClass = new Class(className);
 
                 var method = new MethodDeclaration("Main") {Parent = mainClass};
-                
-                
+
+
 //                method.Parameters.Add(new ParameterDeclaration("variable", new ClassName("B")) {Parent = method});
 //                method.Parameters.Add(new ParameterDeclaration("variable2", new ClassName("A")) {Parent = method});
 //                mainClass.MemberDeclarations.Add(method);
-                
+
 //                var method2 = new MethodDeclaration("Foo") {Parent = mainClass};
 
                 var booleanLiteral = new BooleanLiteral(true);
                 var booleanLiteralFalse = new BooleanLiteral(false);
                 var expression = new Expression(booleanLiteral);
                 var expressionFalse = new Expression(booleanLiteralFalse);
-                
+
 //                booleanLiteral.Parent = whileExpression;
 //
 //                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
@@ -179,7 +179,7 @@ namespace Compiler
                 var field = new VariableDeclaration("a", expression) {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(field);
                 mainClass.MemberDeclarations.Add(method);
-                
+
                 var body3 = new VariableDeclaration("b", expression) {Parent = method};
                 method.Body.Add(body3);
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
@@ -188,11 +188,51 @@ namespace Compiler
                 method.Body.Add(body4);
 
 //                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
-                
+
 ////                var body3 = new Assignment("a", new Expression(varExpression)) {Parent = method};
-                
+
 //                method.Body.Add(whileLoop);
 ////                method.Body.Add(body3);
+
+                return mainClass;
+            }
+        }
+
+        public static void BranchTest()
+        {
+            var class1 = GenerateClass1();
+
+            var analyzer = new Analizer(new List<Class> {class1});
+            var list = analyzer.Analize();
+
+            var g = new Generator(list);
+            g.GenerateProgram();
+
+            Class GenerateClass1()
+            {
+                var bClass = new ClassName("A");
+                var mainClass = new Class(bClass);
+
+                var method = new MethodDeclaration("Main") {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(method);
+
+                var booleanLiteral = new BooleanLiteral(true);
+                var booleanLiteralFalse = new BooleanLiteral(false);
+                var expression = new Expression(booleanLiteral);
+                var expressionFalse = new Expression(booleanLiteralFalse);
+
+
+                var body3 = new VariableDeclaration("a", expression) {Parent = method};
+                method.Body.Add(body3);
+
+                var @if = new IfStatement(new Expression(expression), new List<IBody>()) {Parent = method};
+                method.Body.Add(@if);
+                
+                var body2 = new Assignment("a", new Expression(expression)) {Parent = @if};
+                @if.Body.Add(body2);
+                var body4 = new Assignment("a", new Expression(expressionFalse)) {Parent = @if};
+                @if.ElseBody.Add(body4);
+
 
                 return mainClass;
             }
