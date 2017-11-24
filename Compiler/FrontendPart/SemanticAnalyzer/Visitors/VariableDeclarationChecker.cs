@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics;
-using Compiler.Exceptions;
+﻿using Compiler.Exceptions;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
@@ -64,29 +62,42 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         #endregion
 
+
+        public static ICommonTreeInterface GetTypeVariable(ICommonTreeInterface node, string identifier)
+        {
+            while (true)
+            {
+                switch (node)
+                {
+                    case null:
+                        return null;
+                    case Class @class:
+                        return @class.Members.ContainsKey(identifier) ? @class.Members[identifier] : null;
+                    case MethodDeclaration method:
+                        if (method.VariableDeclarations.ContainsKey(identifier))
+                            return method.VariableDeclarations[identifier];
+                        break;
+                    case IfStatement ifStatement:
+                        if (ifStatement.VariableDeclarations.ContainsKey(identifier))
+                            return ifStatement.VariableDeclarations[identifier];
+                        break;
+                    case WhileLoop whileLoop:
+                        if (whileLoop.VariableDeclarations.ContainsKey(identifier))
+                            return whileLoop.VariableDeclarations[identifier];
+                        break;
+                    case ConstructorDeclaration constructorDeclaration:
+                        if (constructorDeclaration.VariableDeclarations.ContainsKey(identifier))
+                            return constructorDeclaration.VariableDeclarations[identifier];
+                        break;
+                }
+                node = node.Parent;
+            }
+        }
+
         public static bool IsDeclared(ICommonTreeInterface node, string identifier)
         {
-            switch (node)
-            {
-                case null:
-                    return false;
-                case Class @class:
-                    return @class.Members.ContainsKey(identifier);
-                case MethodDeclaration method:
-                    return method.VariableDeclarations.ContainsKey(identifier)
-                           || IsDeclared(node.Parent, identifier);
-                case IfStatement ifStatement:
-                    return ifStatement.VariableDeclarations.ContainsKey(identifier)
-                           || IsDeclared(node.Parent, identifier);
-                case WhileLoop whileLoop:
-                    return whileLoop.VariableDeclarations.ContainsKey(identifier) ||
-                           IsDeclared(node.Parent, identifier);
-                case ConstructorDeclaration constructorDeclaration:
-                    return constructorDeclaration.VariableDeclarations.ContainsKey(identifier) ||
-                           IsDeclared(node.Parent, identifier);
-                default:
-                    return IsDeclared(node.Parent, identifier);
-            }
+            var res = GetTypeVariable(node, identifier);
+            return res != null;
         }
     }
 }

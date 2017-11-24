@@ -91,7 +91,7 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ParameterDeclaration parameter)
         {
-            throw new NotImplementedException();
+            parameter.Type.Accept(this);
         }
 
 	    public virtual void Visit(ClassName className)
@@ -113,10 +113,15 @@ namespace Compiler.TreeStructure.Visitors
 	        throw new NotImplementedException();
 	    }
 
-	    public virtual void Visit(MethodOrFieldCall call)
-        {
-            foreach (var argument in call.Arguments)
-                argument.Accept(this);
-        }
+		public virtual void Visit(Call call)
+		{
+			foreach (var argument in call.Arguments)
+				argument.Accept(this);
+		}
+
+		public virtual void Visit(FieldCall fieldCall)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

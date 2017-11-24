@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
+namespace Compiler.Exceptions
 {
     public class VariableNotFoundException : Exception
     {

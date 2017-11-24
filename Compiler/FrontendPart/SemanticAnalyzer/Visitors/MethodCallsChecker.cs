@@ -17,11 +17,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 //                throw new ClassNotFoundException(className.Identifier);
 //        }
 
-        public override void Visit(MethodOrFieldCall call)
+        public override void Visit(FieldCall field)
+        {
+            base.Visit(field);
+            if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
+                throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
+        }
+        
+        //TODO check method call
+        public override void Visit(Call call)
         {
             base.Visit(call);
-            if (!VariableDeclarationChecker.IsDeclared(call, call.Identifier))
-                throw new ClassMemberNotFoundException(call.InputType, call.Identifier);
+            GetMethod(call.InputType, call.Identifier);
         }
 
         public override void Visit(Expression expression)

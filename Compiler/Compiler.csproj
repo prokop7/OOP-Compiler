@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AntonTests.cs" />
     <Compile Include="BackendPart\Generator.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Exceptions\ClassMemberNotFoundException.cs" />
@@ -51,7 +50,7 @@
     <Compile Include="Exceptions\OverflowException.cs" />
     <Compile Include="Exceptions\UnexpectedDigitException.cs" />
     <Compile Include="Exceptions\UnexpectedTokenException.cs" />
-    <Compile Include="Exceptions\VariableDeclarationChecker.cs" />
+    <Compile Include="Exceptions\VariableNotFoundException.cs" />
     <Compile Include="FrontendPart\FileScanner.cs" />
     <Compile Include="FrontendPart\FrontEndCompiler.cs" />
     <Compile Include="FrontendPart\LexicalAnalyzer\Lexer.cs" />
@@ -62,7 +61,7 @@
     <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\GenericUsageFinder.cs" />
     <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\MethodCallsChecker.cs" />
     <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\TypeChecker.cs" />
-    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\VariableNotFoundException.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\VariableDeclarationChecker.cs" />
     <Compile Include="FrontendPart\SyntacticalAnalyzer\Parser.cs" />
     <Compile Include="FrontendPart\Token.cs" />
     <Compile Include="L.cs" />
@@ -71,10 +70,12 @@
     <Compile Include="TreeStructure\ClassName.cs" />
     <Compile Include="TreeStructure\Expressions\Base.cs" />
     <Compile Include="TreeStructure\Expressions\BooleanLiteral.cs" />
+    <Compile Include="TreeStructure\Expressions\Call.cs" />
     <Compile Include="TreeStructure\Expressions\Expression.cs" />
+    <Compile Include="TreeStructure\Expressions\FieldCall.cs" />
+    <Compile Include="TreeStructure\Expressions\ICall.cs" />
     <Compile Include="TreeStructure\Expressions\IntegerLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\IPrimaryExpression.cs" />
-    <Compile Include="TreeStructure\Expressions\MethodOrFieldCall.cs" />
     <Compile Include="TreeStructure\Expressions\RealLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\This.cs" />
     <Compile Include="TreeStructure\GenericClass.cs" />

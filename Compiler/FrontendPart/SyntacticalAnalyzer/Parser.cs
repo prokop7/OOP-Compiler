@@ -98,7 +98,12 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             var className = new ClassName((string)PeekCurrentToken().value);
 
             GetNextToken();
-            var genericParams = ParseGenericParams();
+            if (CheckTokenTypeWeak(PeekCurrentToken(), Type.SqrtLparen))
+            {
+                GetNextToken();
+                CheckTokenTypeStrong(PeekCurrentToken(), Type.Id);
+            }
+/*            var genericParams = ParseGenericParams();
             if (genericParams != null)
             {
                 foreach (var genericParam in genericParams)
@@ -106,7 +111,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                     genericParam.Parent = className;
                     className.Specification.Add(genericParam);
                 }
-            }
+            }*/
             return className;
 
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
 
@@ -16,6 +17,7 @@ namespace Compiler.TreeStructure
             set => Identifier = value;
             get => Identifier;
         }
+        public Class ClassRef => StaticTables.ClassTable.ContainsKey(Identifier) ? StaticTables.ClassTable[Identifier][0] : null;
 
 
         public ClassName(string name)

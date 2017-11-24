@@ -4,21 +4,20 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    // 5.Plus(4) - Plus is Identifier, 4 is Argument
-    public class MethodOrFieldCall : ICommonTreeInterface
+    public class Call: ICall
     {
         public ICommonTreeInterface Parent { get; set; }
-        public string Identifier { get; set; }
-        public List<Expression> Arguments { get; set; } = new List<Expression>();
         public string InputType { get; set; }
         public IMemberDeclaration MemberDeclaration { get; set; }
-
-        public MethodOrFieldCall(string identifier)
+        public string Identifier { get; set; }
+        public List<Expression> Arguments { get; set; } = new List<Expression>();
+        
+        public Call(string identifier)
         {
             Identifier = identifier;
         }
 
-        public MethodOrFieldCall(string identifier, List<Expression> arguments)
+        public Call(string identifier, List<Expression> arguments)
         {
             Identifier = identifier;
             Arguments = arguments;
@@ -26,11 +25,11 @@ namespace Compiler.TreeStructure.Expressions
                 expression.Parent = this;
         }
 
-        public MethodOrFieldCall(MethodOrFieldCall methodOrFieldCall)
+        public Call(Call call)
         {
-            Identifier = string.Copy(methodOrFieldCall.Identifier);
-            if (methodOrFieldCall.InputType != null) InputType = string.Copy(methodOrFieldCall.InputType);
-            switch (methodOrFieldCall.MemberDeclaration)
+            Identifier = string.Copy(call.Identifier);
+            if (call.InputType != null) InputType = string.Copy(call.InputType);
+            switch (call.MemberDeclaration)
             {
                 case ConstructorDeclaration constructorDeclaration:
                     MemberDeclaration = new ConstructorDeclaration(constructorDeclaration);
@@ -42,7 +41,7 @@ namespace Compiler.TreeStructure.Expressions
                     MemberDeclaration = new VariableDeclaration(variableDeclaration);
                     break;
             }
-            foreach (var expression in methodOrFieldCall.Arguments)
+            foreach (var expression in call.Arguments)
                 Arguments.Add(new Expression(expression) {Parent = this});
         }
 
