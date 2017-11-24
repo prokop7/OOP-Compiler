@@ -12,6 +12,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =
             new Dictionary<string, IVariableDeclaration>();
+        
+        public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
 
         public ConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
         {
@@ -44,6 +46,9 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         break;
                 }
             }
+            
+            foreach (var keyValuePair in constructorDeclaration.NameMap)
+                NameMap.Add(keyValuePair.Key, keyValuePair.Value);
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);

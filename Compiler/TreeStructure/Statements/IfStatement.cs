@@ -17,6 +17,8 @@ namespace Compiler.TreeStructure.Statements
 
         public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } =
             new Dictionary<string, VariableDeclaration>();
+        
+        public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
 
         // if expression is true, выполняется Body, else - elsebody
         public IfStatement(Expression expression, List<IBody> body)
@@ -69,6 +71,9 @@ namespace Compiler.TreeStructure.Statements
                         break;
                 }
             }
+            
+            foreach (var keyValuePair in ifStatement.NameMap)
+                NameMap.Add(keyValuePair.Key, keyValuePair.Value);
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);

@@ -16,6 +16,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public List<ParameterDeclaration> Parameters { get; set; } =
             new List<ParameterDeclaration>(); // параметры метода
+        
+        public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
 
         public MethodDeclaration(string identifier)
         {
@@ -49,6 +51,9 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         break;
                 }
             }
+            foreach (var keyValuePair in methodDeclaration.NameMap)
+                NameMap.Add(keyValuePair.Key, keyValuePair.Value);
+            
         }
 
         public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =

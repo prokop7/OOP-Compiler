@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Compiler.FrontendPart.SemanticAnalyzer;
@@ -142,8 +143,9 @@ namespace Compiler.BackendPart
                             var il = methodBuilder.GetILGenerator();
 
                             // Generating method locals
-                            foreach (var parameter in method.Parameters)
-                                GenerateLocal(il, parameter);
+                            foreach (var pair in method.VariableDeclarations)
+                                if (pair.Value is VariableDeclaration value)
+                                    GenerateLocal(il, value);
 
                             // Generating method's bodies
                             IBody last = null;
@@ -175,13 +177,6 @@ namespace Compiler.BackendPart
                 case VariableDeclaration variableDeclaration:
                     break;
                 case Assignment assignment:
-//                    if ( left is SELECTOR )
-//                    {
-//                    }
-//                    else if ( left is ARRAY_ELEM )
-//                    {
-//                    }
-//                    else // left is just NAME
                 {
                     var declaration =
                         VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
@@ -208,13 +203,17 @@ namespace Compiler.BackendPart
                     {
                         // TODO fix number
                         generateExpression(il, assignment.Expression);
-                        il.Emit(OpCodes.Starg, 0);
+                        il.Emit(OpCodes.Starg, "s");
                     }
                     else
                     {
                         // TODO fix number
+                        var i = currentMethod.VariableDeclarations
+                            .Where(pair => pair.Value is VariableDeclaration)
+                            .TakeWhile(pair => pair.Key != assignment.Identifier)
+                            .Count();
                         generateExpression(il, assignment.Expression);
-                        il.Emit(OpCodes.Stloc, 0);
+                        il.Emit(OpCodes.Stloc, i);
                     }
                 }
                     return;
@@ -250,46 +249,10 @@ namespace Compiler.BackendPart
             }
         }
 
-        //        private void GenerateRelation(ILGenerator il, Expression expression, Label labelFalse)
-        //        {
-        //            generateExpression(il, expression);
-        //            switch (expression.op)
-        //            {
-        //                case TokenCode.LESS:
-        //                    il.Emit(OpCodes.Bge, labelFalse);
-        //                    break;
-        //                case TokenCode.GREATER:
-        //                    il.Emit(OpCodes.Ble, labelFalse);
-        //                    break;
-        //                case TokenCode.EQUAL:
-        //                    il.Emit(OpCodes.Bne_Un, labelFalse);
-        //                    break;
-        //                case TokenCode.NOT_EQUAL:
-        //                    il.Emit(OpCodes.Beq, labelFalse);
-        //                    break;
-        //            }
-        //        }
-
         private void generateExpression(ILGenerator il, Expression expression)
         {
             var type = expression.PrimaryPart.Type;
             GenerateFactor(il, expression);
-
-//            generateTerm(il, expression.term);
-//            if (!expression.positive) il.Emit(OpCodes.Neg);
-//            for (int i = 0; i < expression.terms.Count; i++)
-//            {
-//                generateTerm(il, expression.terms[i]);
-//                switch (expression.ops[i])
-//                {
-//                    case TokenCode.PLUS:
-//                        il.Emit(OpCodes.Add);
-//                        break;
-//                    case TokenCode.MINUS:
-//                        il.Emit(OpCodes.Sub);
-//                        break;
-//                }
-//            }
         }
 
 
@@ -319,31 +282,33 @@ namespace Compiler.BackendPart
         }
 
 
-        private void GenerateLocal(ILGenerator il, ParameterDeclaration field)
+        private void GenerateLocal(ILGenerator il, VariableDeclaration variableDeclaration)
         {
-            var t = field.Type;
+            var t = variableDeclaration.Expression.ReturnType;
             Type type = null;
-            if (t.ClassRef == null)
+            switch (t)
             {
-                //TODO Поддержка array
+                case "Boolean":
+                    type = typeof(bool);
+                    break;
+                case "Integer":
+                    type = typeof(int);
+                    break;
+                case "Real":
+                    type = typeof(double);
+                    break;
+                case null:
+                    //TODO Поддержка array
 //                if (t.isArray) type = typeof(int[]);
 //                else 
-                type = typeof(void);
-            }
-            else
-            {
-                type = classes[t.Identifier].typeBuilder;
-                //if ( t.isArray ) type = type.MakeArrayType();
+                    type = typeof(void);
+                    break;
+                default:
+                    type = classes[t].typeBuilder;
+                    break;
             }
             var local = il.DeclareLocal(type);
-            if (t.ClassRef == null)
-            {
-                //if ( t.isArray ) il.Emit(OpCodes.Ldnull);
-                /*else*/
-                il.Emit(OpCodes.Ldc_I4_0);
-            }
-            else
-                il.Emit(OpCodes.Ldnull);
+            il.Emit(t == null ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
             il.Emit(OpCodes.Stloc, local);
         }
     }
