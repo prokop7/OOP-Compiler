@@ -9,9 +9,10 @@ namespace Compiler.Exceptions
             Message = message;
         }
 
-        public UnexpectedDigitException(int line, int position) : base($"Unexpected digit at {line} line, {position} position. ")
+        public UnexpectedDigitException(int line, int position) 
+            : base($"Unexpected digit at {line} line, {position} position. ")
         {
-            Message = $"Unexpected digit at {line} line, {position} position. ";
+            Message = base.Message;
         }
 
         public UnexpectedDigitException()

@@ -36,7 +36,7 @@ namespace Compiler
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.Message);
                 L.LogError(e);
             }
         }
@@ -76,7 +76,8 @@ namespace Compiler
 
         private static void CheckTests(string folderName)
         {
-            var files = Directory.GetFiles($"./Tests/{folderName}/");
+            var files = Directory.GetFiles($"./../../Tests/{folderName}/");
+//            var files = new List<string>(){"./../../Tests/Valid/Boolean.o"};
             foreach(var file in files){
                 Console.WriteLine("\n\n" + file + "\n");
                 var main = new FrontEndCompiler(file);

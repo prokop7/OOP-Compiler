@@ -1,6 +1,6 @@
 class Program is
     this is
-        var bool: true
+        var bool is true
         var not is bool.Not(1) // something
     end	
 end

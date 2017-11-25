@@ -1,7 +1,8 @@
 class Class is
   var x is 5
-  x := Integer(0).Plus(1)
-
+  this is
+      x := Integer(0).Plus(1)
+  end
 end
 
 // Вызов конструктора внутри Expression.

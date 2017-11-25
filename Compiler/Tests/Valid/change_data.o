@@ -1,7 +1,7 @@
 class Program is    //valid case
 
   var x : Integer is 0
-  method setX(i : Integer) : is
+  method setX(i : Integer)  is
     x:= i
   end
 
@@ -10,8 +10,9 @@ end
 class Change is
 
   var y is Program()
-  y.setX(5)              // change data using only methods of this class
-
+  this is
+    y.setX(5)              // change data using only methods of this class
+  end
 end
 
 // Изменять данные класса можно только через методы этого класса.

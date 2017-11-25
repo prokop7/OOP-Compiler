@@ -24,7 +24,7 @@ class A is
 
 end
 
-Class B is 
+class B is 
 	var c is A(2, 4.2)
 
   this is 

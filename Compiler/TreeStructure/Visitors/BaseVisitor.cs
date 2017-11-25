@@ -126,5 +126,10 @@ namespace Compiler.TreeStructure.Visitors
 		public virtual void Visit(LocalCall localCall)
 		{
 		}
+
+		public virtual void Visit(ConstructorCall constructorCall)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

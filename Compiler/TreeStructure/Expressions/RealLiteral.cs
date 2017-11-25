@@ -22,6 +22,6 @@ namespace Compiler.TreeStructure.Expressions
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
 
-        public override string ToString() => Value.ToString(new CultureInfo(0));
+        public override string ToString() => Value.ToString();
     }
 }

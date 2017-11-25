@@ -15,7 +15,7 @@ class A is
   end
 end
 
-Class B is 
+class B is 
 	var c is A(2, 4)
 
   this is 

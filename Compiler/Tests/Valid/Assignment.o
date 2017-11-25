@@ -1,7 +1,7 @@
 class Program is
     this is
-        var a is 20
-        var b is 100
+        var a: Integer
+        var b is 100.Plus(1)
         a := b
     
         var b1 is true
@@ -9,8 +9,8 @@ class Program is
     
         b1 := b2
     
-        var arr1 is Array[Integer](10)
-        var arr2 is Array[Integer](15)
+        var arr1 is Array[5](10)
+        var arr2 is Array[10](15)
     
         arr1.set(0, 12)
     

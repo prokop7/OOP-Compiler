@@ -5,11 +5,10 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class LocalCall : IPrimaryExpression
+    public class LocalCall: IPrimaryExpression, ICommonCall
     {
         //BUG might happen when you copy. 
         public ICommonTreeInterface Parent { get; set; }
-
         public string Identifier { get; set; }
         public string Type { get; set; }
         public List<Expression> Parameters { get; set; } = null;
@@ -18,6 +17,15 @@ namespace Compiler.TreeStructure.Expressions
         {
             Identifier = identifier;
         }
+        
+        public LocalCall(string identifier, List<Expression> arguments) : this(identifier)
+        {
+            Arguments = arguments;
+            foreach (var expression in arguments)
+                expression.Parent = this;
+        }
+        
+        
 
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);

@@ -1,11 +1,11 @@
-class A[T] is
-    this(t: T)
+class A<T> is
+    this(t: T) is
         var b is t
     end
 end
 
-class B[TKey, TValue] is
-    this(k: TKey, v: TValue)
+class B<TKey, TValue> is
+    this(k: TKey, v: TValue) is
         var key is k
         var value is v
     end
@@ -13,7 +13,7 @@ end
 
 class C is
     this is
-        var a is A[Integer](4)
-        var b is B[Integer, Boolean](1, true)
+        var a is A<Integer>(4)
+        var b is B<Integer, Boolean>(1, true)
     end
 end
