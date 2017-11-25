@@ -14,6 +14,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		{
 			base.Visit(expression);
 			//TODO check sequantial calls.
+			if (expression.PrimaryPart.Equals(expression))
+			{
+				
+			}
 		}
 
 		public override void Visit(MethodDeclaration methodDeclaration)
@@ -27,10 +31,15 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		public override void Visit(Assignment assignment)
 		{
 			base.Visit(assignment);
-			// TODO get variable type by idenetifier.
+			 //TODO get variable type by idenetifier. - Done
+			// Дстать переменную по идентификатору - look at variable declaration
+			
 //            if (assignment.Expression.ReturnType != assignment.Identifier)
 //                throw new NotValidExpressionTypeException();
-			Console.WriteLine("Asssss");
+			if (!(assignment.Parent.GetType().Equals(assignment.Expression.ReturnType)))
+			{
+				throw new NotValidExpressionTypeException();
+			}
 		}
 
 		public override void Visit(IfStatement ifStatement)
@@ -44,11 +53,17 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		{
 			
 			base.Visit(returnStatement);
-			//TODO check returning type and Expression type
-			if (!(returnStatement.Parent is MethodDeclaration @methodDeclaration)) return;
-			if (!(returnStatement.Expression.ReturnType.Equals(@methodDeclaration.ResultType)))
+			//TODO check returning type and Expression type - Done
+			if (!(returnStatement.Parent is MethodDeclaration @methodDeclaration))
 			{
-				throw new InvalidReturnType($"Expected {@methodDeclaration.ResultType}, got {returnStatement.Expression.ReturnType}");
+				// go to parent};
+				//@methodDeclaration = returnStatement.Parent;
+
+//				if (!(returnStatement.Expression.ReturnType.Equals(@methodDeclaration.ResultType)))
+//				{
+//					throw new InvalidReturnType(
+//						$"Expected {@methodDeclaration.ResultType}, got {returnStatement.Expression.ReturnType}");
+//				}
 			}
 		}
 
@@ -63,6 +78,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		{
 			base.Visit(parameter);
 			//TODO get type by identifier
+			
 			if (!StaticTables.ClassTable.ContainsKey(parameter.Type.ToString()))
 				throw new ClassNotFoundException();
 		}
