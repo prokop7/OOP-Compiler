@@ -18,9 +18,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public string GetContextIdentifier(string identifier)
         {
-            var newIdentifier = string.Copy(identifier) + VariableNum;
+            var newIdentifier = string.Copy(identifier) + "$" + VariableNum;
             VariableNum++;
-            return $"${newIdentifier}";
+            return newIdentifier;
         }
 
         public void SetMap(string identifier, string newIdentifier)
