@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 
@@ -79,7 +80,7 @@ namespace Compiler.TreeStructure.Expressions
         public override string ToString()
         {
             var s = "";
-            Calls.ForEach(call => s += "." + call.Identifier);
+            Calls.ForEach(call => s += "." + call.ToString());
             return PrimaryPart + s;
         }
     }

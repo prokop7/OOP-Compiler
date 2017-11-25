@@ -20,15 +20,15 @@ namespace Compiler
 //                AntonTests.GenericClassSetup();
 //                AntonTests.SimpleClassesTest();
 //                AntonTests.BranchTest();
-                AntonTests.WhileTest();
+                AntonTests.SimpleClassesTest();
 //                AntonTests.IntegerTest();
                 
-                IlyuzaTests();
+//                IlyuzaTests();
                 //Compiler.IlyuzaTests.FillClassMethodTable();
                 
 //                IlyuzaTests.FillClassMethodTable();
-                Compiler.IlyuzaTests.FillClassStaticTables();
-                Compiler.IlyuzaTests.FillClassMethodTable();
+//                Compiler.IlyuzaTests.FillClassStaticTables();
+//                Compiler.IlyuzaTests.FillClassMethodTable();
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");

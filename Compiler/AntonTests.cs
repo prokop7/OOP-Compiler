@@ -144,7 +144,7 @@ namespace Compiler
                 var varExpression = new Expression(new ClassName("Integer"));
                 var body3 = new VariableDeclaration("b", varExpression) {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(body3);
-                mainClass.Members.Add("b", body3);
+//                mainClass.Members.Add("b", body3);
                 return mainClass;
             }
 
@@ -155,7 +155,7 @@ namespace Compiler
 
                 var method = new MethodDeclaration("Foo") {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(method);
-                mainClass.Members.Add("Foo", method);
+//                mainClass.Members.Add("Foo", method);
 
                 var booleanLiteral = new BooleanLiteral(true);
                 var booleanLiteralFalse = new BooleanLiteral(false);
@@ -246,7 +246,7 @@ namespace Compiler
                 var bClass = new ClassName("A");
                 var mainClass = new Class(bClass);
 
-                var method = new MethodDeclaration("Main") {Parent = mainClass};
+                var method = new MethodDeclaration("Foo") {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(method);
 
                 var booleanLiteral = new BooleanLiteral(true);
@@ -276,7 +276,7 @@ namespace Compiler
                 var whileLoop = new WhileLoop(subExpression, new List<IBody>()) {Parent = method};
                 method.Body.Add(whileLoop);
 
-                var body2 = new Assignment("a", new Expression(expression)) {Parent = whileLoop};
+                var body2 = new Assignment("a", new Expression(integerExpression)) {Parent = whileLoop};
                 whileLoop.Body.Add(body2);
 
 //                var returnStatement = new ReturnStatement {Parent = whileLoop};

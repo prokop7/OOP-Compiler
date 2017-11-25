@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class Call: ICall
+    public class Call : ICall
     {
         public ICommonTreeInterface Parent { get; set; }
         public string InputType { get; set; }
         public IMemberDeclaration MemberDeclaration { get; set; }
         public string Identifier { get; set; }
         public List<Expression> Arguments { get; set; } = new List<Expression>();
-        
+
         public Call(string identifier)
         {
             Identifier = identifier;
@@ -46,5 +47,8 @@ namespace Compiler.TreeStructure.Expressions
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+
+        public override string ToString() =>
+            Identifier + $"({Arguments.Aggregate("", (current, p) => current + (p + ", "))})";
     }
 }

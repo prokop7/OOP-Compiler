@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Dynamic;
+using System.Linq;
 using Compiler.Exceptions;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
@@ -14,7 +15,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         {
             if (localCall.Parameters == null)
             {
-                var variable = (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
+                var variable =
+                    (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
                 switch (variable)
                 {
                     case VariableDeclaration variableDeclaration:
@@ -47,8 +49,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         //TODO check method call
         public override void Visit(Call call)
         {
-            base.Visit(call);
-            GetMethod(call.InputType, call.Identifier);
+//            var method = GetMethod(call.InputType, call.Identifier);
+//            var newName = $"{call.Identifier}$" +
+//                          $"{call.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
+//            Console.WriteLine(newName);
         }
 
         public override void Visit(Expression expression)
@@ -56,29 +60,43 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             expression.PrimaryPart.Accept(this);
             var inputType = expression.PrimaryPart.Type;
             expression.ReturnType = inputType;
-            if (expression.Calls.Count > 0)
+            for (var i = 0; i < expression.Calls.Count; i++)
             {
-                for (var i = 0; i < expression.Calls.Count; i++)
+                var call = expression.Calls[i];
+                call.InputType = inputType;
+
+                var newName = call.Identifier;
+                switch (call)
                 {
-                    var call = expression.Calls[i];
-                    call.InputType = inputType;
-                    var callDeclaration = GetMethod(inputType, call.Identifier);
-                    switch (callDeclaration)
-                    {
-                        case ConstructorDeclaration constructorDeclaration:
-                            //TODO do something
-                            break;
-                        case MethodDeclaration methodDeclaration:
-                            inputType = methodDeclaration.ResultType?.Identifier;
-                            expression.ReturnType = inputType;
-                            if (string.IsNullOrEmpty(inputType) && i < expression.Calls.Count - 1)
-                                throw new Exception("Cannot call method from void");
-                            break;
-                        case VariableDeclaration variableDeclaration:
-                            inputType = variableDeclaration.Expression.ReturnType;
-                            break;
-                    }
+                    case Call c:
+                        newName = $"{c.Identifier}$" +
+                                  $"{c.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
+                        break;
+                    case FieldCall fc:
+                        var @class = StaticTables.ClassTable[inputType ?? throw new NullReferenceException()][0];
+                        if (@class.NameMap.ContainsKey(fc.Identifier))
+                            newName = @class.NameMap[fc.Identifier];
+                        break;
                 }
+                var callDeclaration = GetMethod(inputType, newName);
+                switch (callDeclaration)
+                {
+                    case ConstructorDeclaration constructorDeclaration:
+                        //TODO do something
+                        break;
+                    case MethodDeclaration methodDeclaration:
+                        inputType = methodDeclaration.ResultType?.Identifier;
+                        expression.ReturnType = inputType;
+                        if (string.IsNullOrEmpty(inputType) && i < expression.Calls.Count - 1)
+                            throw new Exception("Cannot call method from void");
+                        break;
+                    case VariableDeclaration variableDeclaration:
+                        inputType = variableDeclaration.Expression.ReturnType;
+                        expression.ReturnType = inputType;
+                        break;
+                }
+                if (call is Call)
+                    call.Identifier = newName;
             }
         }
 

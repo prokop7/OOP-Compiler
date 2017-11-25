@@ -30,6 +30,24 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             _classList = classList;
         }
 
+        public List<Class> Analize()
+        {
+            FillStaticTable();
+//            GenericTypesCheck();
+//            InitClasses();
+            FillMethodsTable();
+            AddInheritedMembers();
+            VariableDeclarationCheck();
+            CheckMethodDeclaration();
+            foreach (var @class in _classList)
+            {
+                var fieldVisitor = new FieldChangeVisitor();
+                fieldVisitor.Visit(@class);
+            }
+            TypeCheck();
+            return _classList;
+        }
+
         public void InitClasses()
         {
             Log($"Initialization generic classes: start", 1);
@@ -69,24 +87,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Initialization of generic classes: finish", 2);
         }
 
-        public List<Class> Analize()
-        {
-            FillStaticTable();
-//            GenericTypesCheck();
-//            InitClasses();
-//            FillMethodsTable();
-            AddInheritedMembers();
-            VariableDeclarationCheck();
-            CheckMethodDeclaration();
-            foreach (var @class in _classList)
-            {
-                var fieldVisitor = new FieldChangeVisitor();
-                fieldVisitor.Visit(@class);
-            }
-            TypeCheck();
-            return _classList;
-        }
-
         private void GenericTypesCheck()
         {
             Log($"Generic types check: start", 1);
@@ -120,28 +120,35 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Method declaration checking: finish", 2);
         }
 
+
         private void FillMethodsTable()
         {
             Log($"Fill class method tables: start", 1);
-            foreach (var i in _classList)
+            foreach (var @class in _classList)
             {
-                foreach (var j in i.MemberDeclarations)
+                foreach (var member in @class.MemberDeclarations)
                 {
-                    if (!(j is MethodDeclaration methodDeclaration)) continue;
-                    if (StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Count == 0)
+                    switch (member)
                     {
-                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Add(i.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
-                            
-                    }
-                    else
-                    {
-                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods[i.SelfClassName.Identifier].Add(methodDeclaration);
+                        case ConstructorDeclaration constructorDeclaration:
+                            break;
+                        case MethodDeclaration methodDeclaration:
+                            if (methodDeclaration.Identifier == "Main")
+                                break;
+                            var newName = GetNewName(methodDeclaration);
+                            if (@class.Members.ContainsKey(newName))
+                                throw new DuplicatedDeclarationException(methodDeclaration.Identifier);
+                            methodDeclaration.Identifier = newName;
+                            @class.Members.Add(newName, methodDeclaration);
+                            break;
+                        case VariableDeclaration variableDeclaration:
+                            break;
                     }
                 }
-                
+                string GetNewName(MethodDeclaration methodDeclaration) => $"{methodDeclaration.Identifier}$" +
+                                                                          $"{methodDeclaration.Parameters.Aggregate("", (s, declaration) => s += declaration.Identifier)}";
             }
             Log($"Fill class method tables: finish", 1);
-            
         }
 
         private void FillStaticTable()
@@ -152,7 +159,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             AnalyzeClass(BuiltInClasses.GenerateReal());
             foreach (var i in _classList)
                 AnalyzeClass(i);
-            
+
             void AnalyzeClass(Class i)
             {
                 if (i.SelfClassName.Specification.Count != 0)
@@ -169,7 +176,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                     throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
                 else
                     PutToClassTable(i.SelfClassName.Identifier, i);
-
             }
 
             void PutToClassTable(string key, Class value)
@@ -201,7 +207,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 if (@class.Base == null)
                     return;
-                
+
                 // TODO something strange. Test it!!!
                 AddParentMethods(@class.Base);
                 var members = @class.Members;
@@ -230,7 +236,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         }
     }
 
-    public class FieldChangeVisitor: BaseVisitor
+    public class FieldChangeVisitor : BaseVisitor
     {
         public override void Visit(FieldCall fieldCall)
         {
@@ -243,7 +249,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         }
     }
 
-    public class FillVariablesVisitor: BaseVisitor
+    public class FillVariablesVisitor : BaseVisitor
     {
         public override void Visit(WhileLoop whileLoop)
         {

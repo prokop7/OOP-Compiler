@@ -5,10 +5,11 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class LocalCall: IPrimaryExpression
+    public class LocalCall : IPrimaryExpression
     {
         //BUG might happen when you copy. 
         public ICommonTreeInterface Parent { get; set; }
+
         public string Identifier { get; set; }
         public string Type { get; set; }
         public List<Expression> Parameters { get; set; } = null;
@@ -20,10 +21,12 @@ namespace Compiler.TreeStructure.Expressions
 
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
-        
+
         public override string ToString()
         {
-            return Identifier + $"({Parameters?.Aggregate("", (current, p) => current + (p + ", "))})";
+            return Identifier + (Parameters == null
+                       ? ""
+                       : $"({Parameters.Aggregate("", (current, p) => current + (p + ", "))})");
         }
     }
 }
