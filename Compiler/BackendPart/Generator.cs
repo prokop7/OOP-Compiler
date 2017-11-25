@@ -323,29 +323,7 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Stsfld, fb);
                 }
             }
-            else if (declaration is ParameterDeclaration pd)
-            {
-                // TODO fix number
-                switch (pd.Parent)
-                {
-                    case ConstructorDeclaration constructorDeclaration:
-                        break;
-                    case MethodDeclaration methodDeclaration:
-                        var i = methodDeclaration.Parameters.IndexOf(pd, 0);
-                        GenerateExpression(il, assignment.Expression);
-                        il.Emit(OpCodes.Starg, i);
-                        break;
-                }
-            }
-            else
-            {
-                var i = currentMethod.VariableDeclarations
-                    .Where(pair => pair.Value is VariableDeclaration)
-                    .TakeWhile(pair => pair.Key != assignment.Identifier)
-                    .Count();
-                GenerateExpression(il, assignment.Expression);
-                il.Emit(OpCodes.Stloc, i);
-            }
+            SetVariabelByName(il, assignment.Identifier);
         }
 
         private void GenerateExpression(ILGenerator il, Expression expression)
@@ -413,35 +391,7 @@ namespace Compiler.BackendPart
             {
                 case LocalCall localCall:
                     if (localCall.Parameters == null)
-                    {
-                        var isParam = false;
-                        var parCount = 0;
-                        var varCount = 0;
-                        foreach (var pair in currentMethod.VariableDeclarations)
-                        {
-                            switch (pair.Value)
-                            {
-                                case VariableDeclaration variableDeclaration:
-                                    if (variableDeclaration.Identifier == localCall.Identifier)
-                                        goto exit;
-                                    varCount++;
-                                    break;
-                                case ParameterDeclaration parameterDeclaration:
-                                    if (parameterDeclaration.Identifier == localCall.Identifier)
-                                    {
-                                        isParam = true;
-                                        goto exit;
-                                    }
-                                    parCount++;
-                                    break;
-                            }
-                        }
-                        exit:
-                        if (isParam)
-                            il.Emit(OpCodes.Ldarg, parCount);
-                        else
-                            il.Emit(OpCodes.Ldloc, varCount);
-                    }
+                        SetVariabelByName(il, localCall.Identifier);
                     else
                     {
                         localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
@@ -460,6 +410,37 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Ldc_R8, realLiteral.Value);
                     break;
             }
+        }
+
+        private void SetVariabelByName(ILGenerator il, string identifier)
+        {
+            var isParam = false;
+            var parCount = 0;
+            var varCount = 0;
+            foreach (var pair in currentMethod.VariableDeclarations)
+            {
+                switch (pair.Value)
+                {
+                    case VariableDeclaration variableDeclaration:
+                        if (variableDeclaration.Identifier == identifier)
+                            goto exit;
+                        varCount++;
+                        break;
+                    case ParameterDeclaration parameterDeclaration:
+                        if (parameterDeclaration.Identifier == identifier)
+                        {
+                            isParam = true;
+                            goto exit;
+                        }
+                        parCount++;
+                        break;
+                }
+            }
+            exit:
+            if (isParam)
+                il.Emit(OpCodes.Ldarg, parCount);
+            else
+                il.Emit(OpCodes.Ldloc, varCount);
         }
 
         private void PrintAllVariables(ILGenerator il)
