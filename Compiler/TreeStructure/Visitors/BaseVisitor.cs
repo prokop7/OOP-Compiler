@@ -121,7 +121,6 @@ namespace Compiler.TreeStructure.Visitors
 
 		public virtual void Visit(FieldCall fieldCall)
 		{
-			throw new NotImplementedException();
 		}
 
 		public virtual void Visit(LocalCall localCall)

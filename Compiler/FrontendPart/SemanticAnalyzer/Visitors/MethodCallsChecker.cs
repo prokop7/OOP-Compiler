@@ -40,7 +40,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(FieldCall field)
         {
-            base.Visit(field);
             if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
                 throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
         }

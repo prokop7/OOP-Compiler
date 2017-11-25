@@ -139,6 +139,12 @@ namespace Compiler
             {
                 var className = new ClassName("A");
                 var mainClass = new Class(className);
+                
+                
+                var varExpression = new Expression(new ClassName("Integer"));
+                var body3 = new VariableDeclaration("b", varExpression) {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(body3);
+                mainClass.Members.Add("b", body3);
                 return mainClass;
             }
 
@@ -159,6 +165,16 @@ namespace Compiler
                 var varExpression = new Expression(new ClassName("Integer"));
                 var body3 = new VariableDeclaration("b", varExpression) {Parent = method};
                 method.Body.Add(body3);
+                
+                var varExpression2 = new Expression(new ClassName("A"));
+                var body4 = new VariableDeclaration("a", varExpression2) {Parent = method};
+                method.Body.Add(body4);
+                
+                
+                var call = new Expression(new LocalCall("a"));
+                call.Calls.Add(new FieldCall("b") {Parent = call});
+                var assignment = new Assignment("b", call) {Parent = method};
+                method.Body.Add(assignment);
          
                 return mainClass;
             }

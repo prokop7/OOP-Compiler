@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 using static Compiler.L;
@@ -76,6 +77,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             AddInheritedMembers();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
+            foreach (var @class in _classList)
+            {
+                var fieldVisitor = new FieldChangeVisitor();
+                fieldVisitor.Visit(@class);
+            }
             TypeCheck();
             return _classList;
         }
@@ -200,6 +206,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 fillVariables.Visit(@class);
             }
             Log($"Variable declaration check: finish", 2);
+        }
+    }
+
+    public class FieldChangeVisitor: BaseVisitor
+    {
+        public override void Visit(FieldCall fieldCall)
+        {
+            var inputType = fieldCall.InputType;
+            var inputClass = StaticTables.ClassTable[inputType][0];
+            if (inputClass.NameMap.ContainsKey(fieldCall.Identifier))
+                fieldCall.Identifier = inputClass.NameMap[fieldCall.Identifier];
+            else
+                throw new ClassMemberNotFoundException(inputType, fieldCall.Identifier);
         }
     }
 

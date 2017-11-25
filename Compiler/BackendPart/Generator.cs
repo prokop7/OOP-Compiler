@@ -115,7 +115,9 @@ namespace Compiler.BackendPart
                             foreach (var par in method.Parameters)
                             {
                                 var t = par.Type;
-                                var parType = t.ClassRef == null ? typeof(void) : GetTypeByClassIdentifier(t.Identifier);
+                                var parType = t.ClassRef == null
+                                    ? typeof(void)
+                                    : GetTypeByClassIdentifier(t.Identifier);
                                 parTypes[i] = parType;
                                 i++;
                             }
@@ -307,7 +309,11 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Stsfld, fb);
                 }
             }
-            SetVariabelByName(il, assignment.Identifier);
+            else
+            {
+                GenerateExpression(il, assignment.Expression);
+                VariabelByName(il, assignment.Identifier, true);
+            }
         }
 
         private void GenerateExpression(ILGenerator il, Expression expression)
@@ -336,12 +342,15 @@ namespace Compiler.BackendPart
                                 ExpressReal(il, call);
                                 break;
                             default:
-                                var method = classes[expressionCall.InputType].methodBuilders[expressionCall.Identifier];
+                                var method = classes[expressionCall.InputType]
+                                    .methodBuilders[expressionCall.Identifier];
                                 il.EmitCall(OpCodes.Callvirt, method, new Type[0]);
                                 break;
                         }
                         break;
                     case FieldCall fieldCall:
+                        var fb = classes[fieldCall.InputType].fieldBuilders[fieldCall.Identifier];
+                        il.Emit(OpCodes.Ldfld, fb);
                         break;
                 }
             }
@@ -371,11 +380,11 @@ namespace Compiler.BackendPart
                 case "Mult":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Mul);
-                    break;    
+                    break;
                 case "Div":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Div_Un);
-                    break;   
+                    break;
                 case "Equals":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
@@ -387,7 +396,7 @@ namespace Compiler.BackendPart
                 case "Less":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Clt);
-                    break;   
+                    break;
                 case "Rem":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Rem);
@@ -406,7 +415,7 @@ namespace Compiler.BackendPart
                     break;
             }
         }
-        
+
         private void ExpressReal(ILGenerator il, Call call)
         {
             switch (call.Identifier)
@@ -422,11 +431,11 @@ namespace Compiler.BackendPart
                 case "Mult":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Mul);
-                    break;    
+                    break;
                 case "Div":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Div_Un);
-                    break;   
+                    break;
                 case "Equals":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
@@ -438,7 +447,7 @@ namespace Compiler.BackendPart
                 case "Less":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Clt);
-                    break; 
+                    break;
                 case "Rem":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Rem);
@@ -478,11 +487,11 @@ namespace Compiler.BackendPart
                             il.Emit(OpCodes.Newobj, local);
                             break;
                     }
-                    
+
                     break;
                 case LocalCall localCall:
                     if (localCall.Parameters == null)
-                        SetVariabelByName(il, localCall.Identifier);
+                        VariabelByName(il, localCall.Identifier);
                     else
                     {
                         localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
@@ -503,7 +512,7 @@ namespace Compiler.BackendPart
             }
         }
 
-        private void SetVariabelByName(ILGenerator il, string identifier)
+        private void VariabelByName(ILGenerator il, string identifier, bool isSet=false)
         {
             var isParam = false;
             var parCount = 0;
@@ -529,9 +538,9 @@ namespace Compiler.BackendPart
             }
             exit:
             if (isParam)
-                il.Emit(OpCodes.Ldarg, parCount);
+                il.Emit(isSet ? OpCodes.Starg : OpCodes.Ldarg, parCount);
             else
-                il.Emit(OpCodes.Ldloc, varCount);
+                il.Emit(isSet ? OpCodes.Stloc : OpCodes.Ldloc, varCount);
         }
 
         private void PrintAllVariables(ILGenerator il)
