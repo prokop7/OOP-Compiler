@@ -123,6 +123,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Fill static tables: start", 1);
             AnalyzeClass(BuiltInClasses.GenerateBoolean());
             AnalyzeClass(BuiltInClasses.GenerateInteger());
+            AnalyzeClass(BuiltInClasses.GenerateReal());
             foreach (var i in _classList)
                 AnalyzeClass(i);
             
