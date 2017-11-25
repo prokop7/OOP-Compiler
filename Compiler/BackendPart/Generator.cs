@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -353,6 +353,9 @@ namespace Compiler.BackendPart
                             case "Integer":
                                 ExpressInteger(il, call);
                                 break;
+                            case "Real":
+                                ExpressReal(il, call);
+                                break;
                         }
                         break;
                     case FieldCall fieldCall:
@@ -371,6 +374,25 @@ namespace Compiler.BackendPart
         }
 
         private void ExpressInteger(ILGenerator il, Call call)
+        {
+            switch (call.Identifier)
+            {
+                case "Minus":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Sub);
+                    break;
+                case "Equals":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Ceq);
+                    break;
+                case "Greater":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Cgt);
+                    break;
+            }
+        }
+        
+        private void ExpressReal(ILGenerator il, Call call)
         {
             switch (call.Identifier)
             {
@@ -478,5 +500,6 @@ namespace Compiler.BackendPart
             il.Emit(t == null ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
             il.Emit(OpCodes.Stloc, local);
         }
+       
     }
 }
