@@ -11,7 +11,7 @@ namespace Compiler.TreeStructure.Expressions
         public ICommonTreeInterface Parent { get; set; }
         public string Identifier { get; set; }
         public string Type { get; set; }
-        public List<Expression> Parameters { get; set; } = null;
+        public List<Expression> Arguments { get; set; } = null;
 
         public LocalCall(string identifier)
         {
@@ -32,9 +32,9 @@ namespace Compiler.TreeStructure.Expressions
 
         public override string ToString()
         {
-            return Identifier + (Parameters == null
+            return Identifier + (Arguments == null
                        ? ""
-                       : $"({Parameters.Aggregate("", (current, p) => current + (p + ", "))})");
+                       : $"({Arguments.Aggregate("", (current, p) => current + (p + ", "))})");
         }
     }
 }

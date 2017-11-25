@@ -13,7 +13,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
     {
         public override void Visit(LocalCall localCall)
         {
-            if (localCall.Parameters == null)
+            if (localCall.Arguments == null)
             {
                 var variable =
                     (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
@@ -36,7 +36,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             if (parent == null)
                 throw new Exception("WTF!?");
             var newName = $"{localCall.Identifier}$" +
-                          $"{localCall.Parameters.Aggregate("", (s, exp) => s += exp.ReturnType)}";
+                          $"{localCall.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
             var method =
                 GetMethod(((Class) parent).SelfClassName.Identifier, newName) as MethodDeclaration;
             localCall.Type = method?.ResultType?.Identifier;
@@ -81,7 +81,17 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                             newName = @class.NameMap[fc.Identifier];
                         break;
                 }
-                var callDeclaration = GetMethod(inputType, newName);
+                switch (call.InputType)
+                {
+                    case "Integer":
+                    case "Boolean":
+                    case "Real":
+                        break;
+                    default:
+                        call.Identifier = newName;
+                        break;
+                }
+                var callDeclaration = GetMethod(inputType, call.Identifier);
                 switch (callDeclaration)
                 {
                     case ConstructorDeclaration constructorDeclaration:
@@ -99,16 +109,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         break;
                 }
                 if (!(call is Call)) continue;
-                switch (call.InputType)
-                {
-                    case "Integer":
-                    case "Boolean":
-                    case "Real":
-                        break;
-                    default:
-                        call.Identifier = newName;
-                        break;
-                }
             }
         }
 

@@ -20,7 +20,7 @@ namespace Compiler
 //                AntonTests.GenericClassSetup();
 //                AntonTests.SimpleClassesTest();
 //                AntonTests.BranchTest();
-                AntonTests.SimpleClassesTest();
+//                AntonTests.SimpleClassesTest();
 //                AntonTests.IntegerTest();
                 
 //                IlyuzaTests();
@@ -29,7 +29,8 @@ namespace Compiler
 //                IlyuzaTests.FillClassMethodTable();
 //                Compiler.IlyuzaTests.FillClassStaticTables();
 //                Compiler.IlyuzaTests.FillClassMethodTable();
-//                CheckTests("Valid");
+                CheckTests("Valid");
+                
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");
                 
@@ -83,11 +84,15 @@ namespace Compiler
                 var main = new FrontEndCompiler(file);
                 try
                 {
-                    main.Process();
+                    AntonTests.TestParser(main.GetClasses());
+                    break;
+//                    main.Process();
                 }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e);
                     Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
+                    break;
                 }
             }
         }

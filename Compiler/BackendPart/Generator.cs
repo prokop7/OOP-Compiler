@@ -523,12 +523,12 @@ namespace Compiler.BackendPart
                     }
                     break;
                 case LocalCall localCall:
-                    if (localCall.Parameters == null)
+                    if (localCall.Arguments == null)
                         VariabelByName(il, localCall.Identifier);
                     else
                     {
                         il.Emit(OpCodes.Ldarg_0);
-                        localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
+                        localCall.Arguments.ForEach(exp => GenerateExpression(il, exp));
                         var method = classes[_currentClass.SelfClassName.Identifier]
                             .MethodBuilders[localCall.Identifier];
                         il.EmitCall(OpCodes.Call, method, new Type[0]);

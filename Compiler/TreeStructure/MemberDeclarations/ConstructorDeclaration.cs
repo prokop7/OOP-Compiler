@@ -100,8 +100,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
         
         public override string ToString()
         {
-            var body = $"Constructor: ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})" 
-                       + $"[{Body.Aggregate("\n", (current, p) => current + (p + "\n"))}]";
+            var body = $"Constructor: ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})";
             return body;
         }
     }

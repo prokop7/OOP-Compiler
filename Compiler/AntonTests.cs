@@ -115,6 +115,20 @@ namespace Compiler
             }
         }
 
+        public static void TestParser(List<Class> classList)
+        {
+            var startClass = PreProcessor.SetupCompiler("Program", "Foo");
+            classList.Insert(0, startClass);
+            var analyzer = new Analizer(classList);
+            classList = analyzer.Analize();
+            var g = new Generator(classList);
+            g.GenerateProgram();
+
+        }
+        
+        
+        
+        
         public static void SimpleClassesTest()
         {
             var class1 = GenerateClass1();
@@ -175,7 +189,7 @@ namespace Compiler
                 method.Body.Add(body4);
 
                 var localCall = new LocalCall("Bar");
-                localCall.Parameters =
+                localCall.Arguments =
                     new List<Expression> {new Expression(new IntegerLiteral(2)) {Parent = localCall}};
                 var barExpression = new Expression(localCall) {Parent = method};
                 method.Body.Add(barExpression);
@@ -218,8 +232,8 @@ namespace Compiler
                 var integerLiteral = new IntegerLiteral(123);
                 var integerExpression = new Expression(integerLiteral);
 
-                var localCall = new LocalCall("Foo") {Parameters = new List<Expression>()};
-                localCall.Parameters.Add(new Expression(integerLiteral) {Parent = localCall});
+                var localCall = new LocalCall("Foo") {Arguments = new List<Expression>()};
+                localCall.Arguments.Add(new Expression(integerLiteral) {Parent = localCall});
                 var localCallExpression = new Expression(localCall);
 
                 var body3 = new VariableDeclaration("a", localCallExpression) {Parent = method};

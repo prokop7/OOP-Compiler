@@ -1,9 +1,11 @@
 ﻿﻿using System;
-using System.ComponentModel;
+ using System.Collections.Generic;
+ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices.ComTypes;
 using Compiler.FrontendPart.LexicalAnalyzer;
 using Compiler.FrontendPart.SyntacticalAnalyzer;
+ using Compiler.TreeStructure;
 
 namespace Compiler.FrontendPart
 {
@@ -34,6 +36,14 @@ namespace Compiler.FrontendPart
             var treeString = "";
             tree.ForEach(t => treeString += t);
             Console.WriteLine(treeString);
+        }
+
+        public List<Class> GetClasses()
+        {
+            parser = new Parser(lexer);
+            
+            var tree = parser.Analyze();
+            return tree;
         }
     }
 }
