@@ -121,7 +121,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillStaticTable()
         {
             Log($"Fill static tables: start", 1);
+            AnalyzeClass(BuiltInClasses.GenerateBoolean());
+            AnalyzeClass(BuiltInClasses.GenerateInteger());
             foreach (var i in _classList)
+                AnalyzeClass(i);
+            
+            void AnalyzeClass(Class i)
+            {
                 if (i.SelfClassName.Specification.Count != 0)
                 {
                     if (StaticTables.GenericClassTable.ContainsKey(i.SelfClassName.Identifier))
@@ -137,6 +143,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 else
                     PutToClassTable(i.SelfClassName.Identifier, i);
 
+            }
 
             void PutToClassTable(string key, Class value)
             {

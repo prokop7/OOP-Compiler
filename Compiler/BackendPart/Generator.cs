@@ -11,6 +11,7 @@ using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Statements;
 using Microsoft.Win32.SafeHandles;
+using static Compiler.L;
 
 namespace Compiler.BackendPart
 {
@@ -37,7 +38,7 @@ namespace Compiler.BackendPart
 
         public void GenerateProgram()
         {
-            L.Log("Code generating: start", 1);
+            Log("Code generating: start", 1);
             var an = new AssemblyName {Name = Path.GetFileNameWithoutExtension("test generator")};
             var ab = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
             var modb = ab.DefineDynamicModule(an.Name, an.Name + ".exe", true);
@@ -54,7 +55,7 @@ namespace Compiler.BackendPart
             //            ctorIL.Emit(OpCodes.Ret);
             foreach (var cls in _classList)
             {
-                L.Log($"Creating class {cls}", 3);
+                Log($"Creating class {cls}", 3);
                 var classAttrs = TypeAttributes.Public;
                 var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier, classAttrs);
                 classes[cls.SelfClassName.Identifier] = new ClassStructure
@@ -95,7 +96,7 @@ namespace Compiler.BackendPart
                         case ConstructorDeclaration constructorDeclaration:
                             break;
                         case MethodDeclaration method:
-                            L.Log($"Creating method {method}", 4);
+                            Log($"Creating method {method}", 4);
                             var methodAttrs = MethodAttributes.Public;
                             if (method.Identifier == "Main") methodAttrs |= MethodAttributes.Static;
 
@@ -123,7 +124,7 @@ namespace Compiler.BackendPart
                             classes[cls.SelfClassName.Identifier].methodBuilders.Add(method.Identifier, mb);
                             break;
                         case VariableDeclaration variableDeclaration:
-                            L.Log($"Creating field {variableDeclaration}", 4);
+                            Log($"Creating field {variableDeclaration}", 4);
                             var resultType = variableDeclaration.Expression.ReturnType;
                             Type type = null;
                             if (resultType == null)
@@ -163,7 +164,7 @@ namespace Compiler.BackendPart
                         case ConstructorDeclaration constructorDeclaration:
                             break;
                         case MethodDeclaration method:
-                            L.Log($"Filling method {method}", 5);
+                            Log($"Filling method {method}", 5);
                             currentMethod = method;
                             var methodBuilder =
                                 classes[cls.SelfClassName.Identifier].methodBuilders[method.Identifier];
@@ -197,9 +198,9 @@ namespace Compiler.BackendPart
             }
             // Saving the assembly
             ab.Save(Path.GetFileName("test generator.exe"));
-            L.Log("Code generating: finish", 1);
+            Log("Code generating: finish", 1);
 
-            L.Log($"Output file = {Path.GetFullPath("test generator.exe")}", 0);
+            Log($"Output file = {Path.GetFullPath("test generator.exe")}", 0);
         }
 
         private void GenerateStatement(ILGenerator il, IBody body)
@@ -207,13 +208,15 @@ namespace Compiler.BackendPart
             switch (body)
             {
                 case VariableDeclaration variableDeclaration:
+                    Log($"Initializate variable {variableDeclaration}", 6);
+                    InitLocalVariable(il, variableDeclaration);
                     break;
                 case Assignment assignment:
-                    L.Log($"Generate assignment {assignment}", 6);
+                    Log($"Generate assignment {assignment}", 6);
                     GenerateAssignment(il, assignment);
                     return;
                 case IfStatement ifStmt:
-                    L.Log($"Generate if {ifStmt}", 6);
+                    Log($"Generate if {ifStmt}", 6);
                     GenerateIfStatement(il, ifStmt);
                     return;
                 case ReturnStatement returnStatement:
@@ -222,10 +225,20 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Ret);
                     break;
                 case WhileLoop whileLoop:
-                    L.Log($"Generate while {whileLoop}", 6);
+                    Log($"Generate while {whileLoop}", 6);
                     GenerateWhile(il, whileLoop);
                     break;
             }
+        }
+
+        private void InitLocalVariable(ILGenerator il, VariableDeclaration variableDeclaration)
+        {
+            var i = currentMethod.VariableDeclarations
+                .Where(pair => pair.Value is VariableDeclaration)
+                .TakeWhile(pair => pair.Key != variableDeclaration.Identifier)
+                .Count();
+            GenerateExpression(il, variableDeclaration.Expression);
+            il.Emit(OpCodes.Stloc, i);
         }
 
         private void GenerateWhile(ILGenerator il, WhileLoop whileLoop)
@@ -272,8 +285,6 @@ namespace Compiler.BackendPart
         }
 
         /// <summary>
-        /// Works with local variables.
-        /// Not tested with parameters.
         /// Not tested with fields.
         /// </summary>
         /// <param name="il"></param>
@@ -322,8 +333,84 @@ namespace Compiler.BackendPart
 
         private void GenerateExpression(ILGenerator il, Expression expression)
         {
+            GeneratePrimaryExpression(il, expression);
+            if (expression.Calls.Count > 0)
+                GenerateExpressionCalls(il, expression);
+        }
+
+        private void GenerateExpressionCalls(ILGenerator il, Expression expression)
+        {
+            foreach (var expressionCall in expression.Calls)
+            {
+                switch (expressionCall)
+                {
+                    case Call call:
+                        switch (call.InputType)
+                        {
+                            case "Boolean":
+                                ExpressBoolean(il, call);
+                                break;
+                            case "Integer":
+                                ExpressInteger(il, call);
+                                break;
+                        }
+                        break;
+                    case FieldCall fieldCall:
+                        break;
+                }
+            }
+        }
+
+        private void ExpressBoolean(ILGenerator il, Call call)
+        {
+            if (call.Identifier == "Equals")
+            {
+                GenerateExpression(il, call.Arguments[0]);
+                il.Emit(OpCodes.Ceq);
+            }
+        }
+
+        private void ExpressInteger(ILGenerator il, Call call)
+        {
+            switch (call.Identifier)
+            {
+                case "Minus":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Sub);
+                    break;
+                case "Equals":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Ceq);
+                    break;
+                case "Greater":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Cgt);
+                    break;
+            }
+        }
+
+        private void GeneratePrimaryExpression(ILGenerator il, Expression expression)
+        {
             var type = expression.PrimaryPart.Type;
-            GenerateFactor(il, expression);
+            switch (expression.PrimaryPart)
+            {
+                case LocalCall localCall:
+                    var i = currentMethod.VariableDeclarations
+                        .Where(pair => pair.Value is VariableDeclaration)
+                        .TakeWhile(pair => pair.Key != localCall.Identifier)
+                        .Count();
+                    il.Emit(OpCodes.Ldloc, i);
+                    break;
+                case BooleanLiteral booleanLiteral:
+                    il.Emit(OpCodes.Ldc_I4, booleanLiteral.Value ? 1 : 0);
+                    break;
+                case IntegerLiteral integerLiteral:
+                    il.Emit(OpCodes.Ldc_I4, integerLiteral.Value);
+                    break;
+                case RealLiteral realLiteral:
+                    il.Emit(OpCodes.Ldc_R8, realLiteral.Value);
+                    break;
+            }
         }
 
         private void PrintAllVariables(ILGenerator il)
@@ -334,15 +421,6 @@ namespace Compiler.BackendPart
             foreach (var local in locals)
             {
                 il.EmitWriteLine(local);
-            }
-        }
-
-        private void ExpressInteger(ILGenerator il, ICall call)
-        {
-            switch (call.InputType)
-            {
-                case "Minus":
-                    break;
             }
         }
 
@@ -361,7 +439,6 @@ namespace Compiler.BackendPart
                     break;
             }
         }
-
 
         private void GenerateLocal(ILGenerator il, VariableDeclaration variableDeclaration)
         {

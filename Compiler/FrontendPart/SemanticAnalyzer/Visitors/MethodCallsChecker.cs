@@ -36,6 +36,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             if (expression.Calls.Count > 0)
             {
                 var inputType = expression.PrimaryPart.Type;
+                expression.ReturnType = inputType;
                 for (var i = 0; i < expression.Calls.Count; i++)
                 {
                     var call = expression.Calls[i];
@@ -47,7 +48,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                             //TODO do something
                             break;
                         case MethodDeclaration methodDeclaration:
-                            inputType = methodDeclaration.ResultType.Identifier;
+                            inputType = methodDeclaration.ResultType?.Identifier;
+                            expression.ReturnType = inputType;
                             if (string.IsNullOrEmpty(inputType) && i < expression.Calls.Count - 1)
                                 throw new Exception("Cannot call method from void");
                             break;
@@ -61,6 +63,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public static IMemberDeclaration GetMethod(string className, string identifier)
         {
+//            if (StaticTables.BuiltInClasses.ContainsKey(className))
+//                if (StaticTables.BuiltInClasses[className].Contains(identifier))
+//                    return new Me;
             if (!StaticTables.ClassTable.ContainsKey(className)) throw new ClassNotFoundException(className);
             var @class = StaticTables.ClassTable[className][0];
             if (!@class.Members.ContainsKey(identifier)) throw new ClassMemberNotFoundException(className, identifier);

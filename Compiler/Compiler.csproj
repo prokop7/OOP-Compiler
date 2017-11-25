@@ -68,6 +68,7 @@
     <Compile Include="FrontendPart\Token.cs" />
     <Compile Include="L.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeStructure\BuiltInClasses.cs" />
     <Compile Include="TreeStructure\Class.cs" />
     <Compile Include="TreeStructure\ClassName.cs" />
     <Compile Include="TreeStructure\Expressions\Base.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="TreeStructure\Expressions\ICall.cs" />
     <Compile Include="TreeStructure\Expressions\IntegerLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\IPrimaryExpression.cs" />
+    <Compile Include="TreeStructure\Expressions\LocalCall.cs" />
     <Compile Include="TreeStructure\Expressions\RealLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\This.cs" />
     <Compile Include="TreeStructure\GenericClass.cs" />

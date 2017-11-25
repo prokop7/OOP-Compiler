@@ -53,6 +53,23 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             assignment.Identifier = GetValueFromMap(assignment.Identifier);
         }
 
+        public override void Visit(LocalCall localCall)
+        {
+            if (!HasMap(localCall.Identifier))
+                throw new VariableNotFoundException(localCall.Identifier);
+            localCall.Identifier = GetValueFromMap(localCall.Identifier);
+            var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
+            switch (variable)
+            {
+                case VariableDeclaration variableDeclaration:
+                    localCall.Type = variableDeclaration.Expression.ReturnType;
+                    break;
+                case ParameterDeclaration parameterDeclaration:
+                    localCall.Type = parameterDeclaration.Type.Identifier;
+                    break;
+            }
+        }
+
         public override void Visit(Class @class)
         {
             Stack.Add(@class);
@@ -63,6 +80,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(This @this)
         {
             // TODO checking identifier
+            throw new NotImplementedException();
         }
 
         public override void Visit(MethodDeclaration methodDeclaration)

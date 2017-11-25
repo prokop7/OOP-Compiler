@@ -220,14 +220,15 @@ namespace Compiler
                 var booleanLiteralFalse = new BooleanLiteral(false);
                 var expression = new Expression(booleanLiteral);
                 var expressionFalse = new Expression(booleanLiteralFalse);
+                var integerLiteral = new IntegerLiteral(123);
+                var integerExpression = new Expression(integerLiteral);
 
-
-                var body3 = new VariableDeclaration("a", expression) {Parent = method};
+                var body3 = new VariableDeclaration("a", integerExpression) {Parent = method};
                 method.Body.Add(body3);
 
                 var @if = new IfStatement(new Expression(expression), new List<IBody>()) {Parent = method};
                 method.Body.Add(@if);
-                
+
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = @if};
                 @if.Body.Add(body2);
                 var body4 = new Assignment("a", new Expression(expressionFalse)) {Parent = @if};
@@ -237,7 +238,7 @@ namespace Compiler
                 return mainClass;
             }
         }
-        
+
         public static void WhileTest()
         {
             var class1 = GenerateClass1();
@@ -258,21 +259,36 @@ namespace Compiler
 
                 var booleanLiteral = new BooleanLiteral(true);
                 var booleanLiteralFalse = new BooleanLiteral(false);
+                var integerLiteral = new IntegerLiteral(123);
+                var integerOne = new IntegerLiteral(1);
+                var integerExpression = new Expression(integerLiteral);
+                var integerOneExpression = new Expression(integerOne);
                 var expression = new Expression(booleanLiteral);
                 var expressionFalse = new Expression(booleanLiteralFalse);
 
+                var subExpression = new Expression(new LocalCall("a"));
+                subExpression.Calls.Add(new Call("Minus")
+                {
+                    Arguments = new List<Expression> {new Expression(integerOneExpression) {Parent = subExpression}},
+                    Parent = subExpression
+                });
+                subExpression.Calls.Add(new Call("Greater")
+                {
+                    Arguments = new List<Expression> {new Expression(integerOneExpression) {Parent = subExpression}},
+                    Parent = subExpression
+                });
 
-                var body3 = new VariableDeclaration("a", expression) {Parent = method};
+                var body3 = new VariableDeclaration("a", integerExpression) {Parent = method};
                 method.Body.Add(body3);
 
-                var whileLoop = new WhileLoop(new Expression(expression), new List<IBody>()) {Parent = method};
+                var whileLoop = new WhileLoop(subExpression, new List<IBody>()) {Parent = method};
                 method.Body.Add(whileLoop);
-                
+
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = whileLoop};
                 whileLoop.Body.Add(body2);
-                
-                var returnStatement = new ReturnStatement {Parent = whileLoop};
-                whileLoop.Body.Add(returnStatement);
+
+//                var returnStatement = new ReturnStatement {Parent = whileLoop};
+//                whileLoop.Body.Add(returnStatement);
 
                 return mainClass;
             }
