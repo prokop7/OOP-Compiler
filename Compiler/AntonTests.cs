@@ -121,8 +121,8 @@ namespace Compiler
             var class2 = GenerateClass2();
             var class3 = GenerateClass3();
 
-
-            var analyzer = new Analizer(new List<Class> {class1, class2, class3});
+            var startClass = PreProcessor.SetupCompiler("C", "Foo");
+            var analyzer = new Analizer(new List<Class> {startClass, class1, class2, class3});
             var list = analyzer.Analize();
 
             var g = new Generator(list);
@@ -132,13 +132,6 @@ namespace Compiler
             {
                 var bClass = new ClassName("B");
                 var mainClass = new Class(bClass);
-
-//                var aClassName = new ClassName("A");
-//                var expB2 = new Expression(aClassName);
-//                aClassName.Parent = expB2;
-
-//                var varB2 = new VariableDeclaration("c", expB2) {Parent = mainClass};
-//                mainClass.MemberDeclarations.Add(varB2);
                 return mainClass;
             }
 
@@ -146,7 +139,6 @@ namespace Compiler
             {
                 var className = new ClassName("A");
                 var mainClass = new Class(className);
-
                 return mainClass;
             }
 
@@ -155,52 +147,25 @@ namespace Compiler
                 var className = new ClassName("C");
                 var mainClass = new Class(className);
 
-                var method = new MethodDeclaration("Main") {Parent = mainClass};
-
-
-//                method.Parameters.Add(new ParameterDeclaration("variable", new ClassName("B")) {Parent = method});
-//                method.Parameters.Add(new ParameterDeclaration("variable2", new ClassName("A")) {Parent = method});
-//                mainClass.MemberDeclarations.Add(method);
-
-//                var method2 = new MethodDeclaration("Foo") {Parent = mainClass};
+                var method = new MethodDeclaration("Foo") {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(method);
+                mainClass.Members.Add("Foo", method);
 
                 var booleanLiteral = new BooleanLiteral(true);
                 var booleanLiteralFalse = new BooleanLiteral(false);
                 var expression = new Expression(booleanLiteral);
                 var expressionFalse = new Expression(booleanLiteralFalse);
 
-//                booleanLiteral.Parent = whileExpression;
-//
-//                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
-//
-                var varExpression = new Expression(new ClassName("B"));
-//                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
-//                
-//                var field = new VariableDeclaration("a", expression) {Parent = mainClass};
-//                mainClass.MemberDeclarations.Add(field);
-                mainClass.MemberDeclarations.Add(method);
-
+                var varExpression = new Expression(new ClassName("Integer"));
                 var body3 = new VariableDeclaration("b", varExpression) {Parent = method};
                 method.Body.Add(body3);
-//                var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
-//                method.Body.Add(body2);
-//                var body4 = new Assignment("b", new Expression(expressionFalse)) {Parent = method};
-//                method.Body.Add(body4);
-
-//                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
-
-////                var body3 = new Assignment("a", new Expression(varExpression)) {Parent = method};
-
-//                method.Body.Add(whileLoop);
-////                method.Body.Add(body3);
-
+         
                 return mainClass;
             }
         }
 
         public static void BranchTest()
         {
-            var PreProcess = new PreProcessor();
 //            var main = PreProcess.CreateMain();
             
             var class1 = GenerateClass1();
@@ -234,7 +199,6 @@ namespace Compiler
                 
                 var body3 = new VariableDeclaration("a", localCallExpression) {Parent = method};
                 method.Body.Add(body3);
-                
 
                 var foo = new MethodDeclaration("Foo")
                 {

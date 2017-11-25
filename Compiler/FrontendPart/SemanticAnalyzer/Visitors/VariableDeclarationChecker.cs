@@ -60,16 +60,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             if (!HasMap(localCall.Identifier))
                 throw new VariableNotFoundException(localCall.Identifier);
             localCall.Identifier = GetValueFromMap(localCall.Identifier);
-            var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
-            switch (variable)
-            {
-                case VariableDeclaration variableDeclaration:
-                    localCall.Type = variableDeclaration.Expression.ReturnType;
-                    break;
-                case ParameterDeclaration parameterDeclaration:
-                    localCall.Type = parameterDeclaration.Type.Identifier;
-                    break;
-            }
+            GetTypeVariable(localCall, localCall.Identifier);
         }
 
         public override void Visit(Class @class)

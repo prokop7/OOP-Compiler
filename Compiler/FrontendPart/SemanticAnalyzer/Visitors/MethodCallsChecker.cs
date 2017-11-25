@@ -13,13 +13,28 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(LocalCall localCall)
         {
             if (localCall.Parameters == null)
+            {
+                var variable = (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
+                switch (variable)
+                {
+                    case VariableDeclaration variableDeclaration:
+                        localCall.Type = variableDeclaration.Expression.ReturnType;
+                        break;
+                    case ParameterDeclaration parameterDeclaration:
+                        localCall.Type = parameterDeclaration.Type.Identifier;
+                        break;
+                    default:
+                        throw new VariableNotFoundException(localCall.ToString());
+                }
                 return;
+            }
             var parent = localCall.Parent;
             while (parent != null && !(parent is Class))
                 parent = parent.Parent;
             if (parent == null)
                 throw new Exception("WTF!?");
-            var method = GetMethod(((Class) parent).SelfClassName.Identifier, localCall.Identifier) as MethodDeclaration;
+            var method =
+                GetMethod(((Class) parent).SelfClassName.Identifier, localCall.Identifier) as MethodDeclaration;
             localCall.Type = method?.ResultType.Identifier;
         }
 
@@ -29,7 +44,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
                 throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
         }
-        
+
         //TODO check method call
         public override void Visit(Call call)
         {

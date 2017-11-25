@@ -100,7 +100,6 @@ namespace Compiler.BackendPart
                             Log($"Creating method {method}", 4);
                             var methodAttrs = MethodAttributes.Public;
                             if (method.Identifier == "Main") methodAttrs |= MethodAttributes.Static;
-                            methodAttrs |= MethodAttributes.Static;
 
                             Type resType;
                             if (method.ResultType == null) resType = typeof(void);
@@ -111,54 +110,24 @@ namespace Compiler.BackendPart
                                 resType = t.ClassRef == null
                                     ? typeof(void)
                                     : GetTypeByClassIdentifier(t.Identifier);
-//                                    classes[method.ResultType.Identifier].typeBuilder; 
                             }
                             var parTypes = new Type[method.Parameters.Count];
                             var i = 0;
                             foreach (var par in method.Parameters)
                             {
                                 var t = par.Type;
-                                Type parType;
-                                parType = t.ClassRef == null ? typeof(int) : GetTypeByClassIdentifier(t.Identifier);
+                                var parType = t.ClassRef == null ? typeof(void) : GetTypeByClassIdentifier(t.Identifier);
                                 parTypes[i] = parType;
                                 i++;
                             }
                             var mb = typeBuilder.DefineMethod(method.Identifier, methodAttrs, resType, parTypes);
                             classes[cls.SelfClassName.Identifier].methodBuilders.Add(method.Identifier, mb);
-
-                            Type GetTypeByClassIdentifier(string Identifier)
-                            {
-                                switch (Identifier)
-                                {
-                                    case "Integer":
-                                        return typeof(int);
-                                    case "Boolean":
-                                        return typeof(bool);
-                                    default:
-                                        return classes[Identifier].typeBuilder;
-                                }
-                            }
-
                             break;
                         case VariableDeclaration variableDeclaration:
                             Log($"Creating field {variableDeclaration}", 4);
                             var resultType = variableDeclaration.Expression.ReturnType;
                             Type type = null;
-                            if (resultType == null)
-                            {
-//                                if (resulType.isArray) type = typeof(int[]);
-//                                else 
-                                type = typeof(void);
-                            }
-                            else
-                            {
-                                if (resultType == "Boolean")
-                                    type = typeof(bool);
-                                else
-                                    type = classes[resultType].typeBuilder;
-
-//                                if (resultType.isArray) type = type.MakeArrayType();
-                            }
+                            type = resultType == null ? typeof(void) : GetTypeByClassIdentifier(resultType);
                             var attrs = FieldAttributes.Public | FieldAttributes.Static;
                             var fb = typeBuilder.DefineField(variableDeclaration.Identifier, type, attrs);
                             classes[cls.SelfClassName.Identifier].fieldBuilders.Add(variableDeclaration.Identifier, fb);
@@ -220,10 +189,27 @@ namespace Compiler.BackendPart
             Log($"Output file = {Path.GetFullPath("test generator.exe")}", 0);
         }
 
+        private Type GetTypeByClassIdentifier(string identifier)
+        {
+            switch (identifier)
+            {
+                case "Integer":
+                    return typeof(int);
+                case "Boolean":
+                    return typeof(bool);
+                default:
+                    return classes[identifier].typeBuilder;
+            }
+        }
+
         private void GenerateStatement(ILGenerator il, IBody body)
         {
             switch (body)
             {
+                case Expression expression:
+                    Log($"Generate expression {expression}", 6);
+                    GenerateExpression(il, expression);
+                    break;
                 case VariableDeclaration variableDeclaration:
                     Log($"Initializate variable {variableDeclaration}", 6);
                     InitLocalVariable(il, variableDeclaration);
@@ -318,7 +304,6 @@ namespace Compiler.BackendPart
                 if (declaration is VariableDeclaration vDecl)
                 {
                     var fb = classes[currentClass.SelfClassName.Identifier].fieldBuilders[vDecl.Identifier];
-//                    il.Emit(OpCodes.Ldarg_0);
                     GenerateExpression(il, assignment.Expression);
                     il.Emit(OpCodes.Stsfld, fb);
                 }
@@ -347,6 +332,10 @@ namespace Compiler.BackendPart
                                 break;
                             case "Integer":
                                 ExpressInteger(il, call);
+                                break;
+                            default:
+                                var method = classes[expressionCall.InputType].methodBuilders[expressionCall.Identifier];
+                                il.EmitCall(OpCodes.Callvirt, method, new Type[0]);
                                 break;
                         }
                         break;
@@ -390,8 +379,21 @@ namespace Compiler.BackendPart
             switch (expression.PrimaryPart)
             {
                 case ClassName className:
-                    var local = classes[className.Identifier].ctorBuilder;
-                    il.Emit(OpCodes.Newobj, local);
+                    switch (className.Identifier)
+                    {
+                        case "Integer":
+                        case "Boolean":
+                            il.Emit(OpCodes.Ldc_I4, 0);
+                            break;
+                        case "Real":
+                            il.Emit(OpCodes.Ldc_R8, 0);
+                            break;
+                        default:
+                            var local = classes[className.Identifier].ctorBuilder;
+                            il.Emit(OpCodes.Newobj, local);
+                            break;
+                    }
+                    
                     break;
                 case LocalCall localCall:
                     if (localCall.Parameters == null)
