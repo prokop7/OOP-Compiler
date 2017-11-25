@@ -366,11 +366,31 @@ namespace Compiler.BackendPart
 
         private void ExpressBoolean(ILGenerator il, Call call)
         {
-            if (call.Identifier == "Equals")
+            switch (call.Identifier)
             {
-                GenerateExpression(il, call.Arguments[0]);
-                il.Emit(OpCodes.Ceq);
+                case "Equals":
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Ceq);
+                    break;
+                case "And" :
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.And);
+                    break;
+                case "Or" :
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Or);                      
+                    break;                                     
+                case "Not" :
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Not);                      
+                    break;                                     
+                case "Xor" :
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Xor);                      
+                    break;                                            
             }
+               
+            
         }
 
         private void ExpressInteger(ILGenerator il, Call call)

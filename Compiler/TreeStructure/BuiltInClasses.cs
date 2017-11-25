@@ -11,10 +11,44 @@ namespace Compiler.TreeStructure
 
             var equals = new MethodDeclaration("Equals") {Parent = @class};
             equals.ResultType = new ClassName(className);
-
             equals.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
+            
+            var and = new MethodDeclaration("And")
+            {
+                Parent = @class,
+                ResultType = new ClassName(className)
+            };
+            and.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
+            var or = new MethodDeclaration("Or")
+            {
+                Parent = @class,
+                ResultType = new ClassName(className)
+            };
+            or.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
+            var not = new MethodDeclaration("Not")
+            {
+                Parent = @class,
+                ResultType = new ClassName(className)
+            };
+            not.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
+            var xor = new MethodDeclaration("Xor")
+            {
+                Parent = @class,
+                ResultType = new ClassName(className)
+            };
+            xor.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
+
+            
             @class.MemberDeclarations.Add(equals);
             @class.Members.Add("Equals", equals);
+            @class.MemberDeclarations.Add(and);
+            @class.Members.Add("And", and);
+            @class.MemberDeclarations.Add(not);
+            @class.Members.Add("Not", not);
+            @class.MemberDeclarations.Add(or);
+            @class.Members.Add("Or", or);
+            @class.MemberDeclarations.Add(xor);
+            @class.Members.Add("Xor", xor);
 
             return @class;
         }
