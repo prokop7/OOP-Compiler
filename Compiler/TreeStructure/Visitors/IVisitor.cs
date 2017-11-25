@@ -30,6 +30,7 @@ namespace Compiler.TreeStructure.Visitors
         void Visit(This @this);
         void Visit(Call call);
         void Visit(FieldCall fieldCall);
+        void Visit(LocalCall localCall);
         void Visit(ConstructorCall constructorCall);
     }
 }

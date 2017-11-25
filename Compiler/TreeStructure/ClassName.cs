@@ -12,19 +12,19 @@ namespace Compiler.TreeStructure
         public string Identifier { get; set; } // класс от которого наследуется текущий класс
         public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков
         public ICommonTreeInterface Parent { get; set; }
-        public string Type
-        {
-            set => Identifier = value;
-            get => Identifier;
-        }
-        public Class ClassRef => StaticTables.ClassTable.ContainsKey(Identifier) ? StaticTables.ClassTable[Identifier][0] : null;
+        public string Type { set; get; }
+
+        public Class ClassRef => StaticTables.ClassTable.ContainsKey(Identifier)
+            ? StaticTables.ClassTable[Identifier][0]
+            : null;
+
         public int? ArrSize { get; set; } = null;
 
 
         public ClassName(string name)
         {
             Identifier = name;
-            Type = name;
+//            Type = name;
         }
 
         public ClassName(ClassName className)
@@ -32,7 +32,7 @@ namespace Compiler.TreeStructure
             foreach (var name in className.Specification)
                 Specification.Add(new ClassName(name) {Parent = this});
             Identifier = string.Copy(className.Identifier);
-            Type = string.Copy(className.Type);
+            if (className.Type != null) Type = string.Copy(className.Type);
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);

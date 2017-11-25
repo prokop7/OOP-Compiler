@@ -16,17 +16,17 @@ namespace Compiler
             L.LogLevel = 100;
             try
             {
-                CheckTests("Valid");
 //                AntonTests.VariableDeclaration();
 //                AntonTests.GenericClassSetup();
 //                AntonTests.SimpleClassesTest();
+//                AntonTests.BranchTest();
+                AntonTests.WhileTest();
+                
 //                IlyuzaTests();
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");
                 
-//                var g = new Generator();
-//                g.GenerateProgram();
             }
             catch (Exception e)
             {

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Compiler.Exceptions;
 using Compiler.TreeStructure;
@@ -28,7 +29,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 			    !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType.Identifier))
 				throw new ClassNotFoundException(methodDeclaration.ResultType.Identifier);
 		}
-
+		
 		public override void Visit(Assignment assignment)
 		{
 			base.Visit(assignment);

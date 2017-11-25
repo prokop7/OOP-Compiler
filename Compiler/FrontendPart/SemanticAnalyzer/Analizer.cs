@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Statements;
+using Compiler.TreeStructure.Visitors;
 using static Compiler.L;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
@@ -119,7 +121,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillStaticTable()
         {
             Log($"Fill static tables: start", 1);
+            AnalyzeClass(BuiltInClasses.GenerateBoolean());
+            AnalyzeClass(BuiltInClasses.GenerateInteger());
             foreach (var i in _classList)
+                AnalyzeClass(i);
+            
+            void AnalyzeClass(Class i)
+            {
                 if (i.SelfClassName.Specification.Count != 0)
                 {
                     if (StaticTables.GenericClassTable.ContainsKey(i.SelfClassName.Identifier))
@@ -135,6 +143,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 else
                     PutToClassTable(i.SelfClassName.Identifier, i);
 
+            }
 
             void PutToClassTable(string key, Class value)
             {
@@ -186,8 +195,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 Log($"Go into {@class}: start", 4);
                 visitor.Visit(@class);
                 Log($"Go into {@class}: finish", 4);
+                var fillVariables = new FillVariablesVisitor();
+                fillVariables.Visit(@class);
             }
             Log($"Variable declaration check: finish", 2);
+        }
+    }
+
+    public class FillVariablesVisitor: BaseVisitor
+    {
+        public override void Visit(WhileLoop whileLoop)
+        {
+            base.Visit(whileLoop);
         }
     }
 }

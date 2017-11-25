@@ -71,7 +71,7 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ReturnStatement returnStatement)
         {
-            returnStatement.Expression.Accept(this);
+	        returnStatement.Expression?.Accept(this);
         }
 
         public virtual void Visit(WhileLoop whileLoop)
@@ -122,6 +122,10 @@ namespace Compiler.TreeStructure.Visitors
 		public virtual void Visit(FieldCall fieldCall)
 		{
 			throw new NotImplementedException();
+		}
+
+		public virtual void Visit(LocalCall localCall)
+		{
 		}
 
 		public virtual void Visit(ConstructorCall constructorCall)
