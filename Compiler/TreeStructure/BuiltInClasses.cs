@@ -38,6 +38,13 @@ namespace Compiler.TreeStructure
             };
             xor.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
 
+            var toInt = new MethodDeclaration("ToInteger")
+            {
+                Parent = @class,
+                ResultType = new ClassName("Integer")
+            };
+      
+
             
             @class.MemberDeclarations.Add(equals);
             @class.Members.Add("Equals", equals);
@@ -49,6 +56,8 @@ namespace Compiler.TreeStructure
             @class.Members.Add("Or", or);
             @class.MemberDeclarations.Add(xor);
             @class.Members.Add("Xor", xor);
+            @class.MemberDeclarations.Add(toInt);
+            @class.Members.Add("ToInteger", toInt);
 
             return @class;
         }
@@ -57,6 +66,25 @@ namespace Compiler.TreeStructure
         {
             var className = new ClassName("Integer");
             var @class = new Class(className);
+            
+            
+            var toReal = new MethodDeclaration("ToReal")
+            {
+                Parent = @class,
+                ResultType = new ClassName("Real")
+            };
+            
+            var toBool = new MethodDeclaration("ToBoolean")
+            {
+                Parent = @class,
+                ResultType = new ClassName("Boolean")
+            };
+            
+            var unMinus = new MethodDeclaration("UnaryMinus")
+            {
+                Parent = @class,
+                ResultType = new ClassName("Integer")
+            };
 
             var minus = new MethodDeclaration("Minus")
             {
@@ -195,7 +223,12 @@ namespace Compiler.TreeStructure
 //            greaterEqualReal.Parameters.Add(new ParameterDeclaration("b", new ClassName("Real")));
 
 
-            
+            @class.MemberDeclarations.Add(toReal);
+            @class.Members.Add("ToReal", toReal);
+            @class.MemberDeclarations.Add(toBool);
+            @class.Members.Add("ToBoolean", toBool);
+            @class.MemberDeclarations.Add(unMinus);
+            @class.Members.Add("UnaryMinus", unMinus);
             @class.MemberDeclarations.Add(minus);
             @class.Members.Add("Minus", minus);
 //            @class.MemberDeclarations.Add(minusReal);
@@ -244,6 +277,12 @@ namespace Compiler.TreeStructure
             var className = new ClassName("Real");
             var @class = new Class(className);
 
+            var unMinus = new MethodDeclaration("UnaryMinus")
+            {
+                Parent = @class,
+                ResultType = new ClassName("Real")
+            };
+            
             var minus = new MethodDeclaration("Minus")
             {
                 Parent = @class,
@@ -379,9 +418,18 @@ namespace Compiler.TreeStructure
 //                ResultType = new ClassName("Boolean")
 //            };
 //            greaterEqualInt.Parameters.Add(new ParameterDeclaration("b", new ClassName("Integer")));
-
-
+            var toInt = new MethodDeclaration("ToInteger")
+            {
+                Parent = @class,
+                ResultType = new ClassName("Integer")
+            };
             
+            
+
+            @class.MemberDeclarations.Add(toInt);
+            @class.Members.Add("ToInteger", toInt);
+            @class.MemberDeclarations.Add(unMinus);
+            @class.Members.Add("UnaryMinus", unMinus);
             @class.MemberDeclarations.Add(minus);
             @class.Members.Add("Minus", minus);
 //            @class.MemberDeclarations.Add(minusReal);

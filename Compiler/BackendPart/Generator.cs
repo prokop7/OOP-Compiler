@@ -387,7 +387,11 @@ namespace Compiler.BackendPart
                 case "Xor" :
                     GenerateExpression(il, call.Arguments[0]); 
                     il.Emit(OpCodes.Xor);                      
-                    break;                                            
+                    break; 
+                case "ToInteger" :
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Conv_I4);
+                    break;
             }
                
             
@@ -441,6 +445,18 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Ldc_I4_0);
                     il.Emit(OpCodes.Ceq);
                     break;
+                case "ToReal" :                             
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Conv_R4);                  
+                    break;                                     
+                case "ToBoolean" :                             
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Conv_I4);                  
+                    break;   
+                case "UnaryMinus" :                             
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Neg);                  
+                    break;                                     
             }
         }
         
@@ -492,6 +508,14 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Ldc_I4_0);
                     il.Emit(OpCodes.Ceq);
                     break;
+                case "ToInteger" :                             
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Conv_I4);                  
+                    break;   
+                case "UnaryMinus" :                            
+                    GenerateExpression(il, call.Arguments[0]); 
+                    il.Emit(OpCodes.Neg);                      
+                    break;                                     
             }
         }
 
