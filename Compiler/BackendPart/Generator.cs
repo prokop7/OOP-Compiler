@@ -158,7 +158,11 @@ namespace Compiler.BackendPart
                                 last = body;
                             }
                             PrintAllVariables(il);
-                            if (!(last is ReturnStatement) && method.ResultType == null) il.Emit(OpCodes.Ret);
+                            if (!(last is ReturnStatement) && method.ResultType == null)
+                            {
+//                                il.Emit(OpCodes.Nop);
+                                il.Emit(OpCodes.Ret);
+                            }
 
                             // Defining the program entry point
                             if (method.Identifier == "Main")
@@ -523,6 +527,7 @@ namespace Compiler.BackendPart
                         VariabelByName(il, localCall.Identifier);
                     else
                     {
+                        il.Emit(OpCodes.Ldarg_0);
                         localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
                         var method = classes[_currentClass.SelfClassName.Identifier]
                             .MethodBuilders[localCall.Identifier];

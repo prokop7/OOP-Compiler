@@ -130,8 +130,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 {
                     switch (member)
                     {
-                        case ConstructorDeclaration constructorDeclaration:
-                            break;
                         case MethodDeclaration methodDeclaration:
                             if (methodDeclaration.Identifier == "Main")
                                 break;
@@ -141,12 +139,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                             methodDeclaration.Identifier = newName;
                             @class.Members.Add(newName, methodDeclaration);
                             break;
-                        case VariableDeclaration variableDeclaration:
-                            break;
                     }
                 }
                 string GetNewName(MethodDeclaration methodDeclaration) => $"{methodDeclaration.Identifier}$" +
-                                                                          $"{methodDeclaration.Parameters.Aggregate("", (s, declaration) => s += declaration.Identifier)}";
+                                                                          $"{methodDeclaration.Parameters.Aggregate("", (s, declaration) => s += declaration.Type.Identifier)}";
             }
             Log($"Fill class method tables: finish", 1);
         }

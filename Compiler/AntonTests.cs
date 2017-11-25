@@ -154,8 +154,12 @@ namespace Compiler
                 var mainClass = new Class(className);
 
                 var method = new MethodDeclaration("Foo") {Parent = mainClass};
+                var barInt = new MethodDeclaration("Bar") {Parent = mainClass};
+                var barVoid = new MethodDeclaration("Bar") {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(method);
-//                mainClass.Members.Add("Foo", method);
+                mainClass.MemberDeclarations.Add(barInt);
+                mainClass.MemberDeclarations.Add(barVoid);
+                barInt.Parameters.Add(new ParameterDeclaration("a", new ClassName("Integer")) {Parent = barInt});
 
                 var booleanLiteral = new BooleanLiteral(true);
                 var booleanLiteralFalse = new BooleanLiteral(false);
@@ -170,11 +174,17 @@ namespace Compiler
                 var body4 = new VariableDeclaration("a", varExpression2) {Parent = method};
                 method.Body.Add(body4);
 
+                var localCall = new LocalCall("Bar");
+                localCall.Parameters =
+                    new List<Expression> {new Expression(new IntegerLiteral(2)) {Parent = localCall}};
+                var barExpression = new Expression(localCall) {Parent = method};
+                method.Body.Add(barExpression);
 
-                var call = new Expression(new LocalCall("a"));
-                call.Calls.Add(new FieldCall("b") {Parent = call});
-                var assignment = new Assignment("b", call) {Parent = method};
-                method.Body.Add(assignment);
+
+//                var call = new Expression(new LocalCall("a"));
+//                call.Calls.Add(new FieldCall("b") {Parent = call});
+//                var assignment = new Assignment("b", call) {Parent = method};
+//                method.Body.Add(assignment);
 
                 return mainClass;
             }

@@ -35,9 +35,12 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                 parent = parent.Parent;
             if (parent == null)
                 throw new Exception("WTF!?");
+            var newName = $"{localCall.Identifier}$" +
+                          $"{localCall.Parameters.Aggregate("", (s, exp) => s += exp.ReturnType)}";
             var method =
-                GetMethod(((Class) parent).SelfClassName.Identifier, localCall.Identifier) as MethodDeclaration;
-            localCall.Type = method?.ResultType.Identifier;
+                GetMethod(((Class) parent).SelfClassName.Identifier, newName) as MethodDeclaration;
+            localCall.Type = method?.ResultType?.Identifier;
+            localCall.Identifier = newName;
         }
 
         public override void Visit(FieldCall field)
@@ -95,8 +98,17 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         expression.ReturnType = inputType;
                         break;
                 }
-                if (call is Call)
-                    call.Identifier = newName;
+                if (!(call is Call)) continue;
+                switch (call.InputType)
+                {
+                    case "Integer":
+                    case "Boolean":
+                    case "Real":
+                        break;
+                    default:
+                        call.Identifier = newName;
+                        break;
+                }
             }
         }
 
