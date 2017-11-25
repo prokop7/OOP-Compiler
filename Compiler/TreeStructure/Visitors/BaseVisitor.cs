@@ -123,5 +123,10 @@ namespace Compiler.TreeStructure.Visitors
 		{
 			throw new NotImplementedException();
 		}
+
+		public virtual void Visit(ConstructorCall constructorCall)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

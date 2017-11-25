@@ -7,8 +7,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
     public class ConstructorDeclaration : IMemberDeclaration
     {
         public ICommonTreeInterface Parent { get; set; }
-        public List<ParameterDeclaration> Parameters { get; set; }
-        public List<IBody> Body { get; set; }
+        public List<ParameterDeclaration> Parameters { get; set; } = new List<ParameterDeclaration>();
+        public List<IBody> Body { get; set; } = new List<IBody>();
 
         public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =
             new Dictionary<string, IVariableDeclaration>();
@@ -48,14 +48,20 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public ConstructorDeclaration(List<ParameterDeclaration> parameters, List<IBody> bodies)
         {
-            foreach (var body in bodies)
-                SetBody(Body, body);
-            foreach (var parameter in parameters)
+            if (bodies != null)
             {
-                parameter.Parent = this;
-                Parameters.Add(parameter);
-            }   
-            
+                foreach (var body in bodies)
+                    SetBody(Body, body);
+            }
+            if (parameters != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    parameter.Parent = this;
+                    Parameters.Add(parameter);
+                }
+            }
+
             void SetBody(ICollection<IBody> bodyList, IBody body)
             {
                 switch (body)

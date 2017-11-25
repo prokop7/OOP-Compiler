@@ -71,6 +71,7 @@
     <Compile Include="TreeStructure\Expressions\Base.cs" />
     <Compile Include="TreeStructure\Expressions\BooleanLiteral.cs" />
     <Compile Include="TreeStructure\Expressions\Call.cs" />
+    <Compile Include="TreeStructure\Expressions\ConstructorCall.cs" />
     <Compile Include="TreeStructure\Expressions\Expression.cs" />
     <Compile Include="TreeStructure\Expressions\FieldCall.cs" />
     <Compile Include="TreeStructure\Expressions\ICall.cs" />
