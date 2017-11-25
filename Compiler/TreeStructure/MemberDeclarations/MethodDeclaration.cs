@@ -11,11 +11,13 @@ namespace Compiler.TreeStructure.MemberDeclarations
     {
         public ICommonTreeInterface Parent { get; set; }
         public string Identifier { get; set; } // название метода
-        public string ResultType { get; set; } // result types
+        public ClassName ResultType { get; set; } // result types
         public List<IBody> Body { get; set; } = new List<IBody>(); // тело
 
         public List<ParameterDeclaration> Parameters { get; set; } =
             new List<ParameterDeclaration>(); // параметры метода
+        
+        public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
 
         public MethodDeclaration(string identifier)
         {
@@ -25,7 +27,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
         public MethodDeclaration(MethodDeclaration methodDeclaration)
         {
             Identifier = string.Copy(methodDeclaration.Identifier);
-            ResultType = string.Copy(methodDeclaration.ResultType);
+            ResultType = new ClassName(methodDeclaration.ResultType);
             foreach (var parameter in methodDeclaration.Parameters)
                 Parameters.Add(new ParameterDeclaration(parameter) {Parent = this});
             foreach (var body in methodDeclaration.Body)
@@ -49,6 +51,9 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         break;
                 }
             }
+            foreach (var keyValuePair in methodDeclaration.NameMap)
+                NameMap.Add(keyValuePair.Key, keyValuePair.Value);
+            
         }
 
         public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =

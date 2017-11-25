@@ -71,12 +71,14 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ReturnStatement returnStatement)
         {
-            returnStatement.Expression.Accept(this);
+	        returnStatement.Expression?.Accept(this);
         }
 
         public virtual void Visit(WhileLoop whileLoop)
         {
-            whileLoop.Expression.Accept(this);
+	        foreach (var body in whileLoop.Body)
+		        body.Accept(this);
+	        whileLoop.Expression.Accept(this);
         }
 
         public virtual void Visit(ConstructorDeclaration constructorDeclaration)
@@ -89,7 +91,7 @@ namespace Compiler.TreeStructure.Visitors
 
         public virtual void Visit(ParameterDeclaration parameter)
         {
-            throw new NotImplementedException();
+            parameter.Type.Accept(this);
         }
 
 	    public virtual void Visit(ClassName className)
@@ -111,10 +113,19 @@ namespace Compiler.TreeStructure.Visitors
 	        throw new NotImplementedException();
 	    }
 
-	    public virtual void Visit(MethodOrFieldCall call)
-        {
-            foreach (var argument in call.Arguments)
-                argument.Accept(this);
-        }
+		public virtual void Visit(Call call)
+		{
+			foreach (var argument in call.Arguments)
+				argument.Accept(this);
+		}
+
+		public virtual void Visit(FieldCall fieldCall)
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual void Visit(LocalCall localCall)
+		{
+		}
 	}
 }

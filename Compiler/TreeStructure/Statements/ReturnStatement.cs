@@ -20,7 +20,7 @@ namespace Compiler.TreeStructure.Statements
 
         public ReturnStatement(ReturnStatement returnStatement)
         {
-            Expression = new Expression(returnStatement.Expression) {Parent = this};
+            if (returnStatement != null) Expression = new Expression(returnStatement.Expression) {Parent = this};
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);

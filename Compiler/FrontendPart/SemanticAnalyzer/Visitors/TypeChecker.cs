@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Compiler.Exceptions;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
@@ -13,21 +15,21 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		public override void Visit(Expression expression)
 		{
 			base.Visit(expression);
+			if (!(expression.PrimaryPart is ClassName className)) return;
+			
+			if (!StaticTables.ClassTable.ContainsKey(className.Identifier))
+				throw new ClassNotFoundException(className.Identifier);
 			//TODO check sequantial calls.
-			if (expression.PrimaryPart.Equals(expression))
-			{
-				
-			}
 		}
 
 		public override void Visit(MethodDeclaration methodDeclaration)
 		{
 			base.Visit(methodDeclaration);
 			if (methodDeclaration.ResultType != null &&
-			    !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType))
-				throw new ClassNotFoundException(methodDeclaration.ResultType);
+			    !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType.Identifier))
+				throw new ClassNotFoundException(methodDeclaration.ResultType.Identifier);
 		}
-
+		
 		public override void Visit(Assignment assignment)
 		{
 			base.Visit(assignment);

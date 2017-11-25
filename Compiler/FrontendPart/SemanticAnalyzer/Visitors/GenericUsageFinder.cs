@@ -2,7 +2,6 @@
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Visitors;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 {

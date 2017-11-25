@@ -4,9 +4,15 @@ namespace Compiler.Exceptions
 {
     public class ClassMemberNotFoundException : Exception
     {
-        public ClassMemberNotFoundException(string callIdentifier)
+        public ClassMemberNotFoundException(string className, string callIdentifier)
         {
-            throw new NotImplementedException();
+            Message = $"Class member \"{callIdentifier}\" inside \"{className}\" was not found";
         }
+
+        public ClassMemberNotFoundException()
+        {
+        }
+
+        public override string Message { get; }
     }
 }

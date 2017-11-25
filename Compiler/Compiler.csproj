@@ -1,6 +1,159 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.6.0-beta3\build\Microsoft.Net.Compilers.props" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AA528156-E659-44EC-A40B-C34B8638F875}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Compiler</RootNamespace>
+    <AssemblyName>Compiler</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AntonTests.cs" />
+    <Compile Include="BackendPart\Generator.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="Exceptions\ClassMemberNotFoundException.cs" />
+    <Compile Include="Exceptions\ClassNotFoundException.cs" />
+    <Compile Include="Exceptions\DuplicatedDeclarationException.cs" />
+    <Compile Include="Exceptions\NotValidExpressionType.cs" />
+    <Compile Include="Exceptions\OverflowException.cs" />
+    <Compile Include="Exceptions\UnexpectedDigitException.cs" />
+    <Compile Include="Exceptions\UnexpectedTokenException.cs" />
+    <Compile Include="Exceptions\VariableNotFoundException.cs" />
+    <Compile Include="FrontendPart\FileScanner.cs" />
+    <Compile Include="FrontendPart\FrontEndCompiler.cs" />
+    <Compile Include="FrontendPart\LexicalAnalyzer\Lexer.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Analizer.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\StaticTables.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\GenericReplacer.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\GenericTypesCheck.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\GenericUsageFinder.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\MethodCallsChecker.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\TypeChecker.cs" />
+    <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\VariableDeclarationChecker.cs" />
+    <Compile Include="FrontendPart\SyntacticalAnalyzer\Parser.cs" />
+    <Compile Include="FrontendPart\Token.cs" />
+    <Compile Include="L.cs" />
+    <Compile Include="PreProcessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeStructure\BuiltInClasses.cs" />
+    <Compile Include="TreeStructure\Class.cs" />
+    <Compile Include="TreeStructure\ClassName.cs" />
+    <Compile Include="TreeStructure\Expressions\Base.cs" />
+    <Compile Include="TreeStructure\Expressions\BooleanLiteral.cs" />
+    <Compile Include="TreeStructure\Expressions\Call.cs" />
+    <Compile Include="TreeStructure\Expressions\Expression.cs" />
+    <Compile Include="TreeStructure\Expressions\FieldCall.cs" />
+    <Compile Include="TreeStructure\Expressions\ICall.cs" />
+    <Compile Include="TreeStructure\Expressions\IntegerLiteral.cs" />
+    <Compile Include="TreeStructure\Expressions\IPrimaryExpression.cs" />
+    <Compile Include="TreeStructure\Expressions\LocalCall.cs" />
+    <Compile Include="TreeStructure\Expressions\RealLiteral.cs" />
+    <Compile Include="TreeStructure\Expressions\This.cs" />
+    <Compile Include="TreeStructure\GenericClass.cs" />
+    <Compile Include="TreeStructure\IBody.cs" />
+    <Compile Include="TreeStructure\ICommonTreeInterface.cs" />
+    <Compile Include="TreeStructure\MemberDeclarations\ConstructorDeclaration.cs" />
+    <Compile Include="TreeStructure\MemberDeclarations\IMemberDeclaration.cs" />
+    <Compile Include="TreeStructure\MemberDeclarations\IVariableDeclaration.cs" />
+    <Compile Include="TreeStructure\MemberDeclarations\MethodDeclaration.cs" />
+    <Compile Include="TreeStructure\MemberDeclarations\VariableDeclaration.cs" />
+    <Compile Include="TreeStructure\Object.cs" />
+    <Compile Include="TreeStructure\ParameterDeclaration.cs" />
+    <Compile Include="TreeStructure\Statements\Assignment.cs" />
+    <Compile Include="TreeStructure\Statements\IfStatement.cs" />
+    <Compile Include="TreeStructure\Statements\IStatement.cs" />
+    <Compile Include="TreeStructure\Statements\ReturnStatement.cs" />
+    <Compile Include="TreeStructure\Statements\WhileLoop.cs" />
+    <Compile Include="TreeStructure\Visitors\BaseVisitor.cs" />
+    <Compile Include="TreeStructure\Visitors\IAcceptVisitor.cs" />
+    <Compile Include="TreeStructure\Visitors\IVisitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Tests\Composite\ReturnStatementTypeChecking.o" />
+    <Content Include="Tests\Not Valid\Assignment.o" />
+    <Content Include="Tests\Not Valid\Boolean.o" />
+    <Content Include="Tests\Not Valid\ClassCreation.o" />
+    <Content Include="Tests\Not Valid\ConstructorCall.o" />
+    <Content Include="Tests\Not Valid\Generic.o" />
+    <Content Include="Tests\Not Valid\GenericsWrongType.o" />
+    <Content Include="Tests\Not Valid\Inheritance.o" />
+    <Content Include="Tests\Not Valid\Integer.o" />
+    <Content Include="Tests\Not Valid\Integer2.o" />
+    <Content Include="Tests\Not Valid\MethodCall.o" />
+    <Content Include="Tests\Not Valid\MethodsWithExcessParameters.o" />
+    <Content Include="Tests\Not Valid\Real1.o" />
+    <Content Include="Tests\Not Valid\Real2.o" />
+    <Content Include="Tests\Not Valid\RepeatedDeclaration.o" />
+    <Content Include="Tests\Not Valid\ReturnStatementTypeChecking.o" />
+    <Content Include="Tests\Not Valid\SumReal&amp;Integer.o" />
+    <Content Include="Tests\Not Valid\This.o" />
+    <Content Include="Tests\Not Valid\var_access.o" />
+    <Content Include="Tests\Not Valid\var_declaration.o" />
+    <Content Include="Tests\Valid\Assignment.o" />
+    <Content Include="Tests\Valid\Boolean.o" />
+    <Content Include="Tests\Valid\change_data.o" />
+    <Content Include="Tests\Valid\ClassCreation.o" />
+    <Content Include="Tests\Valid\constructor_inside_expression.o" />
+    <Content Include="Tests\Valid\expression_type.o" />
+    <Content Include="Tests\Valid\Generic.o" />
+    <Content Include="Tests\Valid\IfStatement.o" />
+    <Content Include="Tests\Valid\Inheritance.o" />
+    <Content Include="Tests\Valid\Initialization.o" />
+    <Content Include="Tests\Valid\Integer.o" />
+    <Content Include="Tests\Valid\Methods.o" />
+    <Content Include="Tests\Valid\OperatorOverload.o" />
+    <Content Include="Tests\Valid\Polymorphism.o" />
+    <Content Include="Tests\Valid\Real.o" />
+    <Content Include="Tests\Valid\ReturnStatement.o" />
+    <Content Include="Tests\Valid\ReturnStatementTypeChecking.o" />
+    <Content Include="Tests\Valid\SumReal&amp;Integer.o" />
+    <Content Include="Tests\Valid\This.o" />
+    <Content Include="Tests\Valid\Transivity.o" />
+    <Content Include="Tests\Valid\WhileLoop.o" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>

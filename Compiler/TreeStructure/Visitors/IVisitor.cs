@@ -12,7 +12,6 @@ namespace Compiler.TreeStructure.Visitors
         void Visit(IfStatement ifStatement);
         void Visit(ReturnStatement returnStatement);
         void Visit(WhileLoop whileLoop);
-        void Visit(MethodOrFieldCall methodOrFieldCall);
         void Visit(Expression methodOrFieldCall);
 
         void Visit(ConstructorDeclaration constructorDeclaration);
@@ -29,5 +28,8 @@ namespace Compiler.TreeStructure.Visitors
         
         void Visit(Base @base);
         void Visit(This @this);
+        void Visit(Call call);
+        void Visit(FieldCall fieldCall);
+        void Visit(LocalCall localCall);
     }
 }

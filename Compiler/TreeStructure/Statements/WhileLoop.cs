@@ -15,6 +15,8 @@ namespace Compiler.TreeStructure.Statements
         public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } =
             new Dictionary<string, VariableDeclaration>();
 
+        public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
+
         public WhileLoop(Expression expression, List<IBody> body)
         {
             Expression = expression;
@@ -24,12 +26,20 @@ namespace Compiler.TreeStructure.Statements
                 el.Parent = this;
         }
 
+        public WhileLoop(Expression expression)
+        {
+            Expression = expression;
+            Expression.Parent = this;
+        }
+
         public WhileLoop(WhileLoop whileLoop)
         {
             Expression = new Expression(whileLoop.Expression) {Parent = this};
 
             foreach (var body in whileLoop.Body)
                 SetBody(Body, body);
+            foreach (var keyValuePair in whileLoop.NameMap)
+                NameMap.Add(keyValuePair.Key, keyValuePair.Value);
 
             void SetBody(ICollection<IBody> bodyList, IBody body)
             {

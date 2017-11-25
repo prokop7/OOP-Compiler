@@ -10,7 +10,7 @@ namespace Compiler
     public static class IlyuzaTests
     {
 
-        public static void FillClassSaticTables()
+        public static void FillClassStaticTables()
         {
             Console.WriteLine("\nSTART FLAG --------");
             
@@ -56,7 +56,9 @@ namespace Compiler
 
         public static void FillClassMethodTable()
         {
-            var methodDeclaration = new MethodDeclaration("Less") {ResultType = "Boolean"};
+            var methodDeclaration = new MethodDeclaration("Less");          
+            methodDeclaration.ResultType = new ClassName("Boolean");
+            
             methodDeclaration.Parameters.Add(new ParameterDeclaration("p", new ClassName("Integer")));
             
             var className = new ClassName("B");
@@ -90,11 +92,11 @@ namespace Compiler
         {
             var methodDeclaration = new MethodDeclaration("plusN");
             methodDeclaration.Parameters.Add(new ParameterDeclaration("p", new ClassName("Integer")));
-            methodDeclaration.ResultType = "INT";
+            methodDeclaration.ResultType = new ClassName("Integer");
             
             var expA = new Expression(new IntegerLiteral(10));
             
-            VariableDeclaration variableDeclaration = new VariableDeclaration("a", expA);
+            var variableDeclaration = new VariableDeclaration("a", expA);
             methodDeclaration.Body.Add(variableDeclaration);
             
             

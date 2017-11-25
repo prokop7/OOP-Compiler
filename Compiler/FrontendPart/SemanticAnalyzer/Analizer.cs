@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Statements;
+using Compiler.TreeStructure.Visitors;
 using Compiler.TreeStructure.MemberDeclarations;
 using static Compiler.L;
 
@@ -38,7 +40,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             var genericUsages = usageFinder.GenericUsages;
             foreach (var genericUsage in genericUsages)
             {
-                var genericClasses = StaticTables.GenericClassTable.GetValueOrDefault(genericUsage.Identifier);
+                List<GenericClass> genericClasses = null;
+                if (StaticTables.GenericClassTable.ContainsKey(genericUsage.Identifier))
+                    genericClasses = StaticTables.GenericClassTable[genericUsage.Identifier];
+
                 if (genericClasses == null)
                     throw new ClassNotFoundException(genericUsage.ToString());
                 var mapList = new Dictionary<string, ClassName>();
@@ -60,26 +65,53 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 }
             }
 
-            Log($"Initialization of generic classes: finish", 1);
+            Log($"Initialization of generic classes: finish", 2);
         }
 
         public List<Class> Analize()
         {
             FillStaticTable();
+//            GenericTypesCheck();
 //            InitClasses();
-            FillMethodsTable();
-//            AddInheritedMembers();
-//            VariableDeclarationCheck();
-//            CheckMethodDeclaration();
+//            FillMethodsTable();
+            AddInheritedMembers();
+            VariableDeclarationCheck();
+            CheckMethodDeclaration();
             TypeCheck();
             return _classList;
+        }
+
+        private void GenericTypesCheck()
+        {
+            Log($"Generic types check: start", 1);
+            foreach (var pair in StaticTables.GenericClassTable)
+            {
+                foreach (var gClass in pair.Value)
+                {
+                    Log($"Go into {gClass}: start", 4);
+                    var visitor = new GenericTypesCheck(gClass);
+                    visitor.Visit(gClass);
+                    Log($"Go into {gClass}: finish", 4);
+                }
+            }
+            Log($"Generic types check: finish", 2);
+        }
+
+        private void TypeCheck()
+        {
+            Log($"Type checking: start", 1);
+            var visitor = new TypeChecker();
+            foreach (var @class in _classList)
+                visitor.Visit(@class);
+            Log($"Type checking: finish", 2);
         }
 
         private void CheckMethodDeclaration()
         {
             Log($"Method declaration checking: start", 1);
             var visitor = new MethodCallsChecker();
-            Log($"Method declaration checking: finish", 1);
+            _classList.ForEach(c => c.Accept(visitor));
+            Log($"Method declaration checking: finish", 2);
         }
 
         private void FillMethodsTable()
@@ -109,7 +141,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillStaticTable()
         {
             Log($"Fill static tables: start", 1);
+            AnalyzeClass(BuiltInClasses.GenerateBoolean());
+            AnalyzeClass(BuiltInClasses.GenerateInteger());
             foreach (var i in _classList)
+                AnalyzeClass(i);
+            
+            void AnalyzeClass(Class i)
+            {
                 if (i.SelfClassName.Specification.Count != 0)
                 {
                     if (StaticTables.GenericClassTable.ContainsKey(i.SelfClassName.Identifier))
@@ -118,13 +156,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                             .Any(j => i.SelfClassName.Specification.Count == j.SelfClassName.Specification.Count))
                             throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
                     }
-                    PutToGenericClassTable(i.SelfClassName.Identifier, i);
+                    PutToGenericClassTable(i.SelfClassName.Identifier, (GenericClass) i);
                 }
                 else if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
                     throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
                 else
                     PutToClassTable(i.SelfClassName.Identifier, i);
 
+            }
 
             void PutToClassTable(string key, Class value)
             {
@@ -134,14 +173,15 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                     StaticTables.ClassTable.Add(key, new List<Class> {value});
             }
 
-            void PutToGenericClassTable(string key, Class value)
+            void PutToGenericClassTable(string key, GenericClass value)
             {
                 if (StaticTables.GenericClassTable.ContainsKey(key))
                     StaticTables.GenericClassTable[key].Add(new GenericClass(value));
                 else
                     StaticTables.GenericClassTable.Add(key, new List<GenericClass> {new GenericClass(value)});
             }
-            Log($"Fill static tables: finish", 1);
+
+            Log($"Fill static tables: finish", 2);
         }
 
         private void AddInheritedMembers()
@@ -154,12 +194,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 if (@class.Base == null)
                     return;
-
-                AddParentMethods(@class);
+                
+                // TODO something strange. Test it!!!
+                AddParentMethods(@class.Base);
                 var members = @class.Members;
-                foreach (var (key, pair) in @class.Base.Members)
-                    if (!members.ContainsKey(key))
-                        members.Add(key, pair);
+                foreach (var pair in @class.Base.Members)
+                    if (!members.ContainsKey(pair.Key))
+                        members.Add(pair.Key, pair.Value);
             }
 
             Log($"Inheritance extending: finish", 1);
@@ -171,19 +212,22 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Variable declaration check: start", 1);
             var visitor = new VariableDeclarationChecker();
             foreach (var @class in _classList)
-                visitor.Visit(@class);
-            Log($"Variable declaration check: finish", 1);
-        }
-
-        public void TypeCheck()
-        {
-            Log($"Type check: start", 1);
-            var visitor = new TypeChecker();
-            foreach (var @class in _classList)
             {
+                Log($"Go into {@class}: start", 4);
                 visitor.Visit(@class);
+                Log($"Go into {@class}: finish", 4);
+                var fillVariables = new FillVariablesVisitor();
+                fillVariables.Visit(@class);
             }
-            Log($"Type check: finish", 1);
+            Log($"Variable declaration check: finish", 2);
+        }
+    }
+
+    public class FillVariablesVisitor: BaseVisitor
+    {
+        public override void Visit(WhileLoop whileLoop)
+        {
+            base.Visit(whileLoop);
         }
     }
 }

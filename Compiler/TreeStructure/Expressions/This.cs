@@ -5,6 +5,8 @@ namespace Compiler.TreeStructure.Expressions
     public class This : IPrimaryExpression
     {
         public ICommonTreeInterface Parent { get; set; }
+        public string Type { get; set; }
+
 
         public This(This @this)
         {

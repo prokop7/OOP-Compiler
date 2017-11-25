@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Reflection;
+using Compiler.TreeStructure;
 
 namespace Compiler.Exceptions
 {
     public class ClassNotFoundException: Exception
     {
-        public ClassNotFoundException(string message) : base(message)
+        public ClassNotFoundException(string className) : base(className)
         {
-            Message = message;
+            Message = $"Class {className} not found";
         }
 
         public ClassNotFoundException()

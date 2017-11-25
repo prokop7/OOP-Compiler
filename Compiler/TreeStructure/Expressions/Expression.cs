@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
@@ -11,7 +12,7 @@ namespace Compiler.TreeStructure.Expressions
 
         public string ReturnType { get; set; }
         public IPrimaryExpression PrimaryPart { get; set; }
-        public List<MethodOrFieldCall> Calls { get; set; } = new List<MethodOrFieldCall>();
+        public List<ICall> Calls { get; set; } = new List<ICall>();
 
         public Expression(IPrimaryExpression primaryPart)
         {
@@ -25,7 +26,7 @@ namespace Compiler.TreeStructure.Expressions
                 ReturnType = "Boolean";
         }
 
-        public Expression(IPrimaryExpression primaryPart, List<MethodOrFieldCall> calls)
+        public Expression(IPrimaryExpression primaryPart, List<ICall> calls)
         {
             PrimaryPart = primaryPart;
             Calls = calls;
@@ -59,13 +60,26 @@ namespace Compiler.TreeStructure.Expressions
                     break;
             }
             foreach (var methodOrFieldCall in expression.Calls)
-                Calls.Add(new MethodOrFieldCall(methodOrFieldCall) {Parent = this});
+                switch (methodOrFieldCall)
+                {
+                    case Call call:
+                        Calls.Add(new Call(call) {Parent = this});
+                        break;
+                    case FieldCall fieldCall:
+                        Calls.Add(new FieldCall(fieldCall) {Parent = this});
+                        break;
+                }
         }
 
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
 
         //TODO Add method calls
-        public override string ToString() => PrimaryPart.ToString();
+        public override string ToString()
+        {
+            var s = "";
+            Calls.ForEach(call => s += "." + call.Identifier);
+            return PrimaryPart + s;
+        }
     }
 }

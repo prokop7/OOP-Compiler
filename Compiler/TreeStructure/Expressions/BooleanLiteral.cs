@@ -6,6 +6,7 @@ namespace Compiler.TreeStructure.Expressions
     {
         public ICommonTreeInterface Parent { get; set; }
         public bool Value { get; set; }
+        public string Type { get; set; } = "Boolean";
 
         public BooleanLiteral(bool value)
         {
