@@ -428,10 +428,6 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]); 
                     il.Emit(OpCodes.Conv_R4);                  
                     break;                                     
-                case "ToBoolean" :                             
-                    GenerateExpression(il, call.Arguments[0]); 
-                    il.Emit(OpCodes.Conv_I4);                  
-                    break;   
                 case "UnaryMinus" :                             
                     GenerateExpression(il, call.Arguments[0]); 
                     il.Emit(OpCodes.Neg);                  

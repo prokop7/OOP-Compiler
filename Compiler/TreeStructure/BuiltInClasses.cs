@@ -74,11 +74,6 @@ namespace Compiler.TreeStructure
                 ResultType = new ClassName("Real")
             };
             
-            var toBool = new MethodDeclaration("ToBoolean")
-            {
-                Parent = @class,
-                ResultType = new ClassName("Boolean")
-            };
             
             var unMinus = new MethodDeclaration("UnaryMinus")
             {
@@ -225,8 +220,6 @@ namespace Compiler.TreeStructure
 
             @class.MemberDeclarations.Add(toReal);
             @class.Members.Add("ToReal", toReal);
-            @class.MemberDeclarations.Add(toBool);
-            @class.Members.Add("ToBoolean", toBool);
             @class.MemberDeclarations.Add(unMinus);
             @class.Members.Add("UnaryMinus", unMinus);
             @class.MemberDeclarations.Add(minus);
