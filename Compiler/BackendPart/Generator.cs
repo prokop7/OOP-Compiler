@@ -381,6 +381,18 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Sub);
                     break;
+                case "Plus":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Add);
+                    break;
+                case "Mult":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Mul);
+                    break;    
+                case "Div":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Div_Un);
+                    break;   
                 case "Equals":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
@@ -388,6 +400,26 @@ namespace Compiler.BackendPart
                 case "Greater":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Cgt);
+                    break;
+                case "Less":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Clt);
+                    break;   
+                case "Rem":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Rem);
+                    break;
+                case "LessEqual":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Cgt);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
+                    break;
+                case "GreaterEqual":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Clt);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
                     break;
             }
         }
@@ -400,6 +432,18 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Sub);
                     break;
+                case "Plus":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Add);
+                    break;
+                case "Mult":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Mul);
+                    break;    
+                case "Div":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Div_Un);
+                    break;   
                 case "Equals":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
@@ -407,6 +451,26 @@ namespace Compiler.BackendPart
                 case "Greater":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Cgt);
+                    break;
+                case "Less":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Clt);
+                    break; 
+                case "Rem":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Rem);
+                    break;
+                case "LessEqual":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Cgt);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
+                    break;
+                case "GreaterEqual":
+                    GenerateExpression(il, call.Arguments[0]);
+                    il.Emit(OpCodes.Clt);
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ceq);
                     break;
             }
         }
