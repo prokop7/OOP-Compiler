@@ -17,19 +17,19 @@ namespace Compiler.BackendPart
 {
     public class Generator
     {
-        public class ClassStructure
+        private class ClassStructure
         {
-            public TypeBuilder typeBuilder;
-            public Dictionary<string, MethodBuilder> methodBuilders;
-            public Dictionary<string, List<LocalBuilder>> locals;
-            public ConstructorBuilder ctorBuilder;
-            public Dictionary<string, FieldBuilder> fieldBuilders;
+            public TypeBuilder TypeBuilder;
+            public Dictionary<string, MethodBuilder> MethodBuilders;
+            public Dictionary<string, List<LocalBuilder>> Locals;
+            public ConstructorBuilder CtorBuilder;
+            public Dictionary<string, FieldBuilder> FieldBuilders;
         }
 
         private readonly Dictionary<string, ClassStructure> classes = new Dictionary<string, ClassStructure>();
-        private List<Class> _classList;
-        private Class currentClass;
-        private MethodDeclaration currentMethod;
+        private readonly List<Class> _classList;
+        private Class _currentClass;
+        private MethodDeclaration _currentMethod;
 
         public Generator(List<Class> classList)
         {
@@ -45,14 +45,6 @@ namespace Compiler.BackendPart
 
             modb.CreateGlobalFunctions();
 
-
-            //            ILGenerator ctorIL = ctorBuilder.GetILGenerator();
-            //            ctorIL.Emit(OpCodes.Ldarg_0);
-            //
-            //            Type[] ctorArgs = new Type[0];
-            //            ConstructorInfo ctor = typeof(object).GetConstructor(ctorArgs);
-            //            ctorIL.Emit(OpCodes.Call, ctor);
-            //            ctorIL.Emit(OpCodes.Ret);
             foreach (var cls in _classList)
             {
                 Log($"Creating class {cls}", 3);
@@ -60,10 +52,10 @@ namespace Compiler.BackendPart
                 var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier, classAttrs);
                 classes[cls.SelfClassName.Identifier] = new ClassStructure
                 {
-                    typeBuilder = typeBuilder,
-                    methodBuilders = new Dictionary<string, MethodBuilder>(),
-                    fieldBuilders = new Dictionary<string, FieldBuilder>(),
-                    locals = new Dictionary<string, List<LocalBuilder>>()
+                    TypeBuilder = typeBuilder,
+                    MethodBuilders = new Dictionary<string, MethodBuilder>(),
+                    FieldBuilders = new Dictionary<string, FieldBuilder>(),
+                    Locals = new Dictionary<string, List<LocalBuilder>>()
                 };
 
                 var ctorTypes = new Type[0];
@@ -71,24 +63,20 @@ namespace Compiler.BackendPart
                     MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
                     CallingConventions.Standard,
                     ctorTypes);
-                classes[cls.SelfClassName.Identifier].ctorBuilder = ctorBuilder;
-
-                // IL_0000:  ldarg.0
-                // IL_0001:  call       instance void [mscorlib]System.Object::.ctor()
-                // IL_0006:  ret
+                classes[cls.SelfClassName.Identifier].CtorBuilder = ctorBuilder;
 
                 var ctorIl = ctorBuilder.GetILGenerator();
                 ctorIl.Emit(OpCodes.Ldarg_0);
 
                 var ctorArgs = new Type[0];
                 var ctor = typeof(object).GetConstructor(ctorArgs);
-                ctorIl.Emit(OpCodes.Call, ctor);
+                ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
                 ctorIl.Emit(OpCodes.Ret);
             }
 
             foreach (var cls in _classList)
             {
-                var typeBuilder = classes[cls.SelfClassName.Identifier].typeBuilder;
+                var typeBuilder = classes[cls.SelfClassName.Identifier].TypeBuilder;
                 foreach (var memberDeclaration in cls.MemberDeclarations)
                 {
                     switch (memberDeclaration)
@@ -122,16 +110,15 @@ namespace Compiler.BackendPart
                                 i++;
                             }
                             var mb = typeBuilder.DefineMethod(method.Identifier, methodAttrs, resType, parTypes);
-                            classes[cls.SelfClassName.Identifier].methodBuilders.Add(method.Identifier, mb);
+                            classes[cls.SelfClassName.Identifier].MethodBuilders.Add(method.Identifier, mb);
                             break;
                         case VariableDeclaration variableDeclaration:
                             Log($"Creating field {variableDeclaration}", 4);
                             var resultType = variableDeclaration.Expression.ReturnType;
-                            Type type = null;
-                            type = resultType == null ? typeof(void) : GetTypeByClassIdentifier(resultType);
-                            var attrs = FieldAttributes.Public | FieldAttributes.Static;
+                            var type = resultType == null ? typeof(void) : GetTypeByClassIdentifier(resultType);
+                            const FieldAttributes attrs = FieldAttributes.Public;
                             var fb = typeBuilder.DefineField(variableDeclaration.Identifier, type, attrs);
-                            classes[cls.SelfClassName.Identifier].fieldBuilders.Add(variableDeclaration.Identifier, fb);
+                            classes[cls.SelfClassName.Identifier].FieldBuilders.Add(variableDeclaration.Identifier, fb);
                             break;
                     }
                 }
@@ -140,8 +127,8 @@ namespace Compiler.BackendPart
 
             foreach (var cls in _classList)
             {
-                var typeBuilder = classes[cls.SelfClassName.Identifier].typeBuilder;
-                currentClass = cls;
+                var typeBuilder = classes[cls.SelfClassName.Identifier].TypeBuilder;
+                _currentClass = cls;
 
                 // Generating bodies of class methods
                 foreach (var memberDeclaration in cls.MemberDeclarations)
@@ -152,9 +139,9 @@ namespace Compiler.BackendPart
                             break;
                         case MethodDeclaration method:
                             Log($"Filling method {method}", 5);
-                            currentMethod = method;
+                            _currentMethod = method;
                             var methodBuilder =
-                                classes[cls.SelfClassName.Identifier].methodBuilders[method.Identifier];
+                                classes[cls.SelfClassName.Identifier].MethodBuilders[method.Identifier];
 
                             var il = methodBuilder.GetILGenerator();
 
@@ -199,7 +186,7 @@ namespace Compiler.BackendPart
                 case "Boolean":
                     return typeof(bool);
                 default:
-                    return classes[identifier].typeBuilder;
+                    return classes[identifier].TypeBuilder;
             }
         }
 
@@ -237,7 +224,7 @@ namespace Compiler.BackendPart
 
         private void InitLocalVariable(ILGenerator il, VariableDeclaration variableDeclaration)
         {
-            var i = currentMethod.VariableDeclarations
+            var i = _currentMethod.VariableDeclarations
                 .Where(pair => pair.Value is VariableDeclaration)
                 .TakeWhile(pair => pair.Key != variableDeclaration.Identifier)
                 .Count();
@@ -304,7 +291,7 @@ namespace Compiler.BackendPart
                 // BUG Doesn't work without static commands
                 if (declaration is VariableDeclaration vDecl)
                 {
-                    var fb = classes[currentClass.SelfClassName.Identifier].fieldBuilders[vDecl.Identifier];
+                    var fb = classes[_currentClass.SelfClassName.Identifier].FieldBuilders[vDecl.Identifier];
                     GenerateExpression(il, assignment.Expression);
                     il.Emit(OpCodes.Stsfld, fb);
                 }
@@ -343,13 +330,13 @@ namespace Compiler.BackendPart
                                 break;
                             default:
                                 var method = classes[expressionCall.InputType]
-                                    .methodBuilders[expressionCall.Identifier];
+                                    .MethodBuilders[expressionCall.Identifier];
                                 il.EmitCall(OpCodes.Callvirt, method, new Type[0]);
                                 break;
                         }
                         break;
                     case FieldCall fieldCall:
-                        var fb = classes[fieldCall.InputType].fieldBuilders[fieldCall.Identifier];
+                        var fb = classes[fieldCall.InputType].FieldBuilders[fieldCall.Identifier];
                         il.Emit(OpCodes.Ldfld, fb);
                         break;
                 }
@@ -469,7 +456,6 @@ namespace Compiler.BackendPart
 
         private void GeneratePrimaryExpression(ILGenerator il, Expression expression)
         {
-            var type = expression.PrimaryPart.Type;
             switch (expression.PrimaryPart)
             {
                 case ClassName className:
@@ -483,11 +469,10 @@ namespace Compiler.BackendPart
                             il.Emit(OpCodes.Ldc_R8, 0);
                             break;
                         default:
-                            var local = classes[className.Identifier].ctorBuilder;
+                            var local = classes[className.Identifier].CtorBuilder;
                             il.Emit(OpCodes.Newobj, local);
                             break;
                     }
-
                     break;
                 case LocalCall localCall:
                     if (localCall.Parameters == null)
@@ -495,8 +480,8 @@ namespace Compiler.BackendPart
                     else
                     {
                         localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
-                        var method = classes[currentClass.SelfClassName.Identifier]
-                            .methodBuilders[localCall.Identifier];
+                        var method = classes[_currentClass.SelfClassName.Identifier]
+                            .MethodBuilders[localCall.Identifier];
                         il.EmitCall(OpCodes.Call, method, new Type[0]);
                     }
                     break;
@@ -517,7 +502,7 @@ namespace Compiler.BackendPart
             var isParam = false;
             var parCount = 0;
             var varCount = 0;
-            foreach (var pair in currentMethod.VariableDeclarations)
+            foreach (var pair in _currentMethod.VariableDeclarations)
             {
                 switch (pair.Value)
                 {
@@ -545,8 +530,8 @@ namespace Compiler.BackendPart
 
         private void PrintAllVariables(ILGenerator il)
         {
-            var locals = classes[currentClass.SelfClassName.Identifier].locals.ContainsKey(currentMethod.Identifier)
-                ? classes[currentClass.SelfClassName.Identifier].locals[currentMethod.Identifier]
+            var locals = classes[_currentClass.SelfClassName.Identifier].Locals.ContainsKey(_currentMethod.Identifier)
+                ? classes[_currentClass.SelfClassName.Identifier].Locals[_currentMethod.Identifier]
                 : new List<LocalBuilder>();
             foreach (var local in locals)
             {
@@ -554,23 +539,7 @@ namespace Compiler.BackendPart
                     il.EmitWriteLine(local);
             }
         }
-
-        private void GenerateFactor(ILGenerator il, Expression expression)
-        {
-            switch (expression.PrimaryPart)
-            {
-                case BooleanLiteral booleanLiteral:
-                    il.Emit(OpCodes.Ldc_I4, booleanLiteral.Value ? 1 : 0);
-                    break;
-                case IntegerLiteral integerLiteral:
-                    il.Emit(OpCodes.Ldc_I4, integerLiteral.Value);
-                    break;
-                case RealLiteral realLiteral:
-                    il.Emit(OpCodes.Ldc_R8, realLiteral.Value);
-                    break;
-            }
-        }
-
+        
         private void GenerateLocal(ILGenerator il, VariableDeclaration variableDeclaration)
         {
             var t = variableDeclaration.Expression.ReturnType;
@@ -593,17 +562,17 @@ namespace Compiler.BackendPart
                     type = typeof(void);
                     break;
                 default:
-                    type = classes[t].typeBuilder;
+                    type = classes[t].TypeBuilder;
                     break;
             }
             var local = il.DeclareLocal(type);
             List<LocalBuilder> locals;
-            if (classes[currentClass.SelfClassName.Identifier].locals.ContainsKey(currentMethod.Identifier))
-                locals = classes[currentClass.SelfClassName.Identifier].locals[currentMethod.Identifier];
+            if (classes[_currentClass.SelfClassName.Identifier].Locals.ContainsKey(_currentMethod.Identifier))
+                locals = classes[_currentClass.SelfClassName.Identifier].Locals[_currentMethod.Identifier];
             else
             {
                 locals = new List<LocalBuilder>();
-                classes[currentClass.SelfClassName.Identifier].locals.Add(currentMethod.Identifier, locals);
+                classes[_currentClass.SelfClassName.Identifier].Locals.Add(_currentMethod.Identifier, locals);
             }
             locals.Add(local);
             il.Emit(t == null ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);

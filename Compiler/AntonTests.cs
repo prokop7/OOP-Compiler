@@ -139,8 +139,8 @@ namespace Compiler
             {
                 var className = new ClassName("A");
                 var mainClass = new Class(className);
-                
-                
+
+
                 var varExpression = new Expression(new ClassName("Integer"));
                 var body3 = new VariableDeclaration("b", varExpression) {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(body3);
@@ -165,17 +165,17 @@ namespace Compiler
                 var varExpression = new Expression(new ClassName("Integer"));
                 var body3 = new VariableDeclaration("b", varExpression) {Parent = method};
                 method.Body.Add(body3);
-                
+
                 var varExpression2 = new Expression(new ClassName("A"));
                 var body4 = new VariableDeclaration("a", varExpression2) {Parent = method};
                 method.Body.Add(body4);
-                
-                
+
+
                 var call = new Expression(new LocalCall("a"));
                 call.Calls.Add(new FieldCall("b") {Parent = call});
                 var assignment = new Assignment("b", call) {Parent = method};
                 method.Body.Add(assignment);
-         
+
                 return mainClass;
             }
         }
@@ -183,7 +183,7 @@ namespace Compiler
         public static void BranchTest()
         {
 //            var main = PreProcess.CreateMain();
-            
+
             var class1 = GenerateClass1();
 
             var analyzer = new Analizer(new List<Class> {class1});
@@ -192,8 +192,7 @@ namespace Compiler
             var g = new Generator(list);
             g.GenerateProgram();
 
-            
-            
+
             Class GenerateClass1()
             {
                 var bClass = new ClassName("A");
@@ -212,7 +211,7 @@ namespace Compiler
                 var localCall = new LocalCall("Foo") {Parameters = new List<Expression>()};
                 localCall.Parameters.Add(new Expression(integerLiteral) {Parent = localCall});
                 var localCallExpression = new Expression(localCall);
-                
+
                 var body3 = new VariableDeclaration("a", localCallExpression) {Parent = method};
                 method.Body.Add(body3);
 
@@ -223,7 +222,7 @@ namespace Compiler
                 };
                 foo.Parameters.Add(new ParameterDeclaration("a", new ClassName("Integer")));
                 var fooBody = new ReturnStatement(new Expression(new LocalCall("a"))) {Parent = foo};
-                
+
                 foo.Body.Add(fooBody);
 
                 mainClass.MemberDeclarations.Add(foo);
@@ -286,7 +285,7 @@ namespace Compiler
                 return mainClass;
             }
         }
-        
+
         public static void IntegerTest()
         {
             var class1 = GenerateClass1();
