@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -99,6 +100,7 @@ namespace Compiler.BackendPart
                             Log($"Creating method {method}", 4);
                             var methodAttrs = MethodAttributes.Public;
                             if (method.Identifier == "Main") methodAttrs |= MethodAttributes.Static;
+                            methodAttrs |= MethodAttributes.Static;
 
                             Type resType;
                             if (method.ResultType == null) resType = typeof(void);
@@ -108,7 +110,8 @@ namespace Compiler.BackendPart
                                 var t = method.ResultType;
                                 resType = t.ClassRef == null
                                     ? typeof(void)
-                                    : classes[method.ResultType.Identifier].typeBuilder;
+                                    : GetTypeByClassIdentifier(t.Identifier);
+//                                    classes[method.ResultType.Identifier].typeBuilder; 
                             }
                             var parTypes = new Type[method.Parameters.Count];
                             var i = 0;
@@ -116,12 +119,26 @@ namespace Compiler.BackendPart
                             {
                                 var t = par.Type;
                                 Type parType;
-                                parType = t.ClassRef == null ? typeof(int) : classes[t.Identifier].typeBuilder;
+                                parType = t.ClassRef == null ? typeof(int) : GetTypeByClassIdentifier(t.Identifier);
                                 parTypes[i] = parType;
                                 i++;
                             }
                             var mb = typeBuilder.DefineMethod(method.Identifier, methodAttrs, resType, parTypes);
                             classes[cls.SelfClassName.Identifier].methodBuilders.Add(method.Identifier, mb);
+
+                            Type GetTypeByClassIdentifier(string Identifier)
+                            {
+                                switch (Identifier)
+                                {
+                                    case "Integer":
+                                        return typeof(int);
+                                    case "Boolean":
+                                        return typeof(bool);
+                                    default:
+                                        return classes[Identifier].typeBuilder;
+                                }
+                            }
+
                             break;
                         case VariableDeclaration variableDeclaration:
                             Log($"Creating field {variableDeclaration}", 4);
@@ -395,11 +412,43 @@ namespace Compiler.BackendPart
             switch (expression.PrimaryPart)
             {
                 case LocalCall localCall:
-                    var i = currentMethod.VariableDeclarations
-                        .Where(pair => pair.Value is VariableDeclaration)
-                        .TakeWhile(pair => pair.Key != localCall.Identifier)
-                        .Count();
-                    il.Emit(OpCodes.Ldloc, i);
+                    if (localCall.Parameters == null)
+                    {
+                        var isParam = false;
+                        var parCount = 0;
+                        var varCount = 0;
+                        foreach (var pair in currentMethod.VariableDeclarations)
+                        {
+                            switch (pair.Value)
+                            {
+                                case VariableDeclaration variableDeclaration:
+                                    if (variableDeclaration.Identifier == localCall.Identifier)
+                                        goto exit;
+                                    varCount++;
+                                    break;
+                                case ParameterDeclaration parameterDeclaration:
+                                    if (parameterDeclaration.Identifier == localCall.Identifier)
+                                    {
+                                        isParam = true;
+                                        goto exit;
+                                    }
+                                    parCount++;
+                                    break;
+                            }
+                        }
+                        exit:
+                        if (isParam)
+                            il.Emit(OpCodes.Ldarg, parCount);
+                        else
+                            il.Emit(OpCodes.Ldloc, varCount);
+                    }
+                    else
+                    {
+                        localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
+                        var method = classes[currentClass.SelfClassName.Identifier]
+                            .methodBuilders[localCall.Identifier];
+                        il.EmitCall(OpCodes.Call, method, new Type[0]);
+                    }
                     break;
                 case BooleanLiteral booleanLiteral:
                     il.Emit(OpCodes.Ldc_I4, booleanLiteral.Value ? 1 : 0);

@@ -10,12 +10,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 {
     public class MethodCallsChecker : BaseVisitor
     {
-//        public override void Visit(ClassName className)
-//        {
-//            base.Visit(className);
-//            if (!StaticTables.ClassTable.ContainsKey(className.Identifier))
-//                throw new ClassNotFoundException(className.Identifier);
-//        }
+        public override void Visit(LocalCall localCall)
+        {
+            if (localCall.Parameters == null)
+                return;
+            var parent = localCall.Parent;
+            while (parent != null && !(parent is Class))
+                parent = parent.Parent;
+            if (parent == null)
+                throw new Exception("WTF!?");
+            var method = GetMethod(((Class) parent).SelfClassName.Identifier, localCall.Identifier) as MethodDeclaration;
+            localCall.Type = method?.ResultType.Identifier;
+        }
 
         public override void Visit(FieldCall field)
         {
@@ -33,10 +39,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(Expression expression)
         {
+            expression.PrimaryPart.Accept(this);
+            var inputType = expression.PrimaryPart.Type;
+            expression.ReturnType = inputType;
             if (expression.Calls.Count > 0)
             {
-                var inputType = expression.PrimaryPart.Type;
-                expression.ReturnType = inputType;
                 for (var i = 0; i < expression.Calls.Count; i++)
                 {
                     var call = expression.Calls[i];
@@ -63,9 +70,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public static IMemberDeclaration GetMethod(string className, string identifier)
         {
-//            if (StaticTables.BuiltInClasses.ContainsKey(className))
-//                if (StaticTables.BuiltInClasses[className].Contains(identifier))
-//                    return new Me;
             if (!StaticTables.ClassTable.ContainsKey(className)) throw new ClassNotFoundException(className);
             var @class = StaticTables.ClassTable[className][0];
             if (!@class.Members.ContainsKey(identifier)) throw new ClassMemberNotFoundException(className, identifier);

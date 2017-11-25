@@ -55,6 +55,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(LocalCall localCall)
         {
+            if (localCall.Parameters != null)
+                return;
             if (!HasMap(localCall.Identifier))
                 throw new VariableNotFoundException(localCall.Identifier);
             localCall.Identifier = GetValueFromMap(localCall.Identifier);

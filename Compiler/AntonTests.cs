@@ -223,18 +223,26 @@ namespace Compiler
                 var integerLiteral = new IntegerLiteral(123);
                 var integerExpression = new Expression(integerLiteral);
 
-                var body3 = new VariableDeclaration("a", integerExpression) {Parent = method};
+                var localCall = new LocalCall("Foo") {Parameters = new List<Expression>()};
+                localCall.Parameters.Add(new Expression(integerLiteral) {Parent = localCall});
+                var localCallExpression = new Expression(localCall);
+                
+                var body3 = new VariableDeclaration("a", localCallExpression) {Parent = method};
                 method.Body.Add(body3);
+                
 
-                var @if = new IfStatement(new Expression(expression), new List<IBody>()) {Parent = method};
-                method.Body.Add(@if);
+                var foo = new MethodDeclaration("Foo")
+                {
+                    Parent = mainClass,
+                    ResultType = new ClassName("Integer")
+                };
+                foo.Parameters.Add(new ParameterDeclaration("a", new ClassName("Integer")));
+                var fooBody = new ReturnStatement(new Expression(new LocalCall("a"))) {Parent = foo};
+                
+                foo.Body.Add(fooBody);
 
-                var body2 = new Assignment("a", new Expression(expression)) {Parent = @if};
-                @if.Body.Add(body2);
-                var body4 = new Assignment("a", new Expression(expressionFalse)) {Parent = @if};
-                @if.ElseBody.Add(body4);
-
-
+                mainClass.MemberDeclarations.Add(foo);
+                mainClass.Members.Add("Foo", foo);
                 return mainClass;
             }
         }
@@ -286,6 +294,53 @@ namespace Compiler
 
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = whileLoop};
                 whileLoop.Body.Add(body2);
+
+//                var returnStatement = new ReturnStatement {Parent = whileLoop};
+//                whileLoop.Body.Add(returnStatement);
+
+                return mainClass;
+            }
+        }
+        
+        public static void IntegerTest()
+        {
+            var class1 = GenerateClass1();
+
+            var analyzer = new Analizer(new List<Class> {class1});
+            var list = analyzer.Analize();
+
+            var g = new Generator(list);
+            g.GenerateProgram();
+
+            Class GenerateClass1()
+            {
+                var bClass = new ClassName("A");
+                var mainClass = new Class(bClass);
+
+                var method = new MethodDeclaration("Main") {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(method);
+
+                var booleanLiteral = new BooleanLiteral(true);
+                var booleanLiteralFalse = new BooleanLiteral(false);
+                var integerLiteral = new IntegerLiteral(123);
+                var integerTwelve = new IntegerLiteral(12);
+                var integerExpression = new Expression(integerLiteral);
+                var integerTwelveExpression = new Expression(integerTwelve);
+                var expression = new Expression(booleanLiteral);
+                var expressionFalse = new Expression(booleanLiteralFalse);
+
+                var subExpression = new Expression(new LocalCall("a"));
+                subExpression.Calls.Add(new Call("Minus")
+                {
+                    Arguments = new List<Expression> {new Expression(integerTwelveExpression) {Parent = subExpression}},
+                    Parent = subExpression
+                });
+
+                var body3 = new VariableDeclaration("a", integerExpression) {Parent = method};
+                method.Body.Add(body3);
+
+                var body2 = new Assignment("a", subExpression) {Parent = method};
+                method.Body.Add(body2);
 
 //                var returnStatement = new ReturnStatement {Parent = whileLoop};
 //                whileLoop.Body.Add(returnStatement);
