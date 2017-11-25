@@ -18,8 +18,8 @@ namespace Compiler
             {
 //                AntonTests.VariableDeclaration();
 //                AntonTests.GenericClassSetup();
-//                AntonTests.SimpleClassesTest();
-                AntonTests.BranchTest();
+                AntonTests.SimpleClassesTest();
+//                AntonTests.BranchTest();
 //                AntonTests.WhileTest();
 //                AntonTests.IntegerTest();
                 

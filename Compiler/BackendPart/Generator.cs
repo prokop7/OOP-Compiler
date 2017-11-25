@@ -389,6 +389,10 @@ namespace Compiler.BackendPart
             var type = expression.PrimaryPart.Type;
             switch (expression.PrimaryPart)
             {
+                case ClassName className:
+                    var local = classes[className.Identifier].ctorBuilder;
+                    il.Emit(OpCodes.Newobj, local);
+                    break;
                 case LocalCall localCall:
                     if (localCall.Parameters == null)
                         SetVariabelByName(il, localCall.Identifier);
@@ -450,7 +454,8 @@ namespace Compiler.BackendPart
                 : new List<LocalBuilder>();
             foreach (var local in locals)
             {
-                il.EmitWriteLine(local);
+                if (local.LocalType == typeof(int) || local.LocalType == typeof(bool))
+                    il.EmitWriteLine(local);
             }
         }
 

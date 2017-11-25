@@ -173,19 +173,19 @@ namespace Compiler
 //
 //                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
 //
-//                var varExpression = new Expression(new ClassName("C"));
+                var varExpression = new Expression(new ClassName("B"));
 //                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
 //                
-                var field = new VariableDeclaration("a", expression) {Parent = mainClass};
-                mainClass.MemberDeclarations.Add(field);
+//                var field = new VariableDeclaration("a", expression) {Parent = mainClass};
+//                mainClass.MemberDeclarations.Add(field);
                 mainClass.MemberDeclarations.Add(method);
 
-                var body3 = new VariableDeclaration("b", expression) {Parent = method};
+                var body3 = new VariableDeclaration("b", varExpression) {Parent = method};
                 method.Body.Add(body3);
-                var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
-                method.Body.Add(body2);
-                var body4 = new Assignment("b", new Expression(expressionFalse)) {Parent = method};
-                method.Body.Add(body4);
+//                var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
+//                method.Body.Add(body2);
+//                var body4 = new Assignment("b", new Expression(expressionFalse)) {Parent = method};
+//                method.Body.Add(body4);
 
 //                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
 
@@ -200,6 +200,9 @@ namespace Compiler
 
         public static void BranchTest()
         {
+            var PreProcess = new PreProcessor();
+//            var main = PreProcess.CreateMain();
+            
             var class1 = GenerateClass1();
 
             var analyzer = new Analizer(new List<Class> {class1});
@@ -208,6 +211,8 @@ namespace Compiler
             var g = new Generator(list);
             g.GenerateProgram();
 
+            
+            
             Class GenerateClass1()
             {
                 var bClass = new ClassName("A");

@@ -24,7 +24,7 @@ namespace Compiler.TreeStructure
         public ClassName(string name)
         {
             Identifier = name;
-//            Type = name;
+            Type = name;
         }
 
         public ClassName(ClassName className)

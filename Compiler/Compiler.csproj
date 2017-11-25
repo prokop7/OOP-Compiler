@@ -67,6 +67,7 @@
     <Compile Include="FrontendPart\SyntacticalAnalyzer\Parser.cs" />
     <Compile Include="FrontendPart\Token.cs" />
     <Compile Include="L.cs" />
+    <Compile Include="PreProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TreeStructure\BuiltInClasses.cs" />
     <Compile Include="TreeStructure\Class.cs" />
