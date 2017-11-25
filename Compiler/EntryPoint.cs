@@ -26,9 +26,9 @@ namespace Compiler
                 IlyuzaTests();
                 //Compiler.IlyuzaTests.FillClassMethodTable();
                 
-                IlyuzaTests().FillClassMethodTable();
-                IlyuzaTests.FillClassStaticTables();
-                IlyuzaTests.FillClassMethodTable();
+//                IlyuzaTests.FillClassMethodTable();
+                Compiler.IlyuzaTests.FillClassStaticTables();
+                Compiler.IlyuzaTests.FillClassMethodTable();
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");
