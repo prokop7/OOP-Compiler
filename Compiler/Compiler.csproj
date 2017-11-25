@@ -66,6 +66,7 @@
     <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\VariableDeclarationChecker.cs" />
     <Compile Include="FrontendPart\SyntacticalAnalyzer\Parser.cs" />
     <Compile Include="FrontendPart\Token.cs" />
+    <Compile Include="IlyuzaTests.cs" />
     <Compile Include="L.cs" />
     <Compile Include="PreProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

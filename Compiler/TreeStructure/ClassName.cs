@@ -9,8 +9,8 @@ namespace Compiler.TreeStructure
 {
     public class ClassName : IPrimaryExpression
     {
-        public string Identifier { get; set; } // класс от которого наследуется текущий класс
-        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков
+        public string Identifier { get; set; } // название класса
+        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков, названия буков дженериков
         public ICommonTreeInterface Parent { get; set; }
         public string Type { set; get; }
 

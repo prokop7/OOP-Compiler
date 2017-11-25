@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.MemberDeclarations;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
 {

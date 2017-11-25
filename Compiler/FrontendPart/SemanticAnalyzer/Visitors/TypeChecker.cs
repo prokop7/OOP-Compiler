@@ -33,9 +33,15 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		public override void Visit(Assignment assignment)
 		{
 			base.Visit(assignment);
-			// TODO get variable type by idenetifier.
+			 //TODO get variable type by idenetifier. - Done
+			// Дстать переменную по идентификатору - look at variable declaration
+			
 //            if (assignment.Expression.ReturnType != assignment.Identifier)
 //                throw new NotValidExpressionTypeException();
+			if (!(assignment.Parent.GetType().Equals(assignment.Expression.ReturnType)))
+			{
+				throw new NotValidExpressionTypeException();
+			}
 		}
 
 		public override void Visit(IfStatement ifStatement)
@@ -47,8 +53,20 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
 		public override void Visit(ReturnStatement returnStatement)
 		{
+			
 			base.Visit(returnStatement);
-			//TODO check returning type and Expression type
+			//TODO check returning type and Expression type - Done
+			if (!(returnStatement.Parent is MethodDeclaration @methodDeclaration))
+			{
+				// go to parent};
+				//@methodDeclaration = returnStatement.Parent;
+
+//				if (!(returnStatement.Expression.ReturnType.Equals(@methodDeclaration.ResultType)))
+//				{
+//					throw new InvalidReturnType(
+//						$"Expected {@methodDeclaration.ResultType}, got {returnStatement.Expression.ReturnType}");
+//				}
+			}
 		}
 
 		public override void Visit(WhileLoop whileLoop)
@@ -62,6 +80,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		{
 			base.Visit(parameter);
 			//TODO get type by identifier
+			
 			if (!StaticTables.ClassTable.ContainsKey(parameter.Type.ToString()))
 				throw new ClassNotFoundException();
 		}
