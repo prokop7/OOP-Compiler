@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Compiler.FrontendPart.SemanticAnalyzer;
+using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
+using Compiler.TreeStructure.Statements;
 
 namespace Compiler
 {
@@ -18,7 +20,7 @@ namespace Compiler
             var analizer = new Analizer(GenerateListOfClasses());
             var retList = analizer.Analize();
   
-            PrintList(retList);
+            PrintList(retList, "Analizer");
             
             List<Class> GenerateListOfClasses()
             {
@@ -63,8 +65,8 @@ namespace Compiler
             
             
 
-            PrintList(class1.MemberDeclarations);
-            PrintList(classInt.MemberDeclarations);
+            PrintList(class1.MemberDeclarations, "Class1 Member Declarations");
+            PrintList(classInt.MemberDeclarations, "ClassInt Member Declarations");
             
 //            var retList = analizer.Analize();
 //            foreach (var i in retList)
@@ -84,15 +86,39 @@ namespace Compiler
             methodDeclaration.Parameters.Add(new ParameterDeclaration("p", new ClassName("Integer")));
             methodDeclaration.ResultType = new ClassName("Integer");
             
+            // Integer expression
             var expA = new Expression(new IntegerLiteral(10));
+            string sA = expA.ReturnType;
+            Console.WriteLine(sA);
             
-            var variableDeclaration = new VariableDeclaration("a", expA);
+            // Boolean expression
+            var expB = new Expression(new BooleanLiteral(true));
+            string sB = expB.ReturnType;
+            Console.WriteLine(sB);
+            
+            var variableDeclaration = new VariableDeclaration("a", expB);
             methodDeclaration.Body.Add(variableDeclaration);
             
+            ReturnStatement returnStatement = new ReturnStatement(expA);
+            
+            methodDeclaration.Body.Add(returnStatement);
+//            methodDeclaration.Body[1];
+//            foreach (var i in methodDeclaration.Body)
+//            {
+//                Console.WriteLine(i.);
+//            }
+//            
+            PrintList(methodDeclaration.Body, "Method Declaration");
+            
+            TypeChecker typeChecker = new TypeChecker();
+            
+            methodDeclaration.Accept(typeChecker);
+            
+            
         }
-        public static void PrintList<T>(IEnumerable<T> list)
+        public static void PrintList<T>(IEnumerable<T> list, string message)
         {
-            Console.WriteLine("##### I START PRINTING ###########");
+            Console.WriteLine($"##### I START PRINTING {message}###########");
             foreach (var i in list)
             {
                 Console.WriteLine(i);

@@ -48,6 +48,9 @@
     <Compile Include="Exceptions\ClassMemberNotFoundException.cs" />
     <Compile Include="Exceptions\ClassNotFoundException.cs" />
     <Compile Include="Exceptions\DuplicatedDeclarationException.cs" />
+    <Compile Include="Exceptions\InvalidReturnParentException.cs" />
+    <Compile Include="Exceptions\InvalidReturnTypeException.cs" />
+    <Compile Include="Exceptions\MissingReturnStatementException.cs" />
     <Compile Include="Exceptions\NotValidExpressionType.cs" />
     <Compile Include="Exceptions\OverflowException.cs" />
     <Compile Include="Exceptions\UnexpectedDigitException.cs" />

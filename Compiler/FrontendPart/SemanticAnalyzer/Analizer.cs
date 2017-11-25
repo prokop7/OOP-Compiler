@@ -73,7 +73,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             FillStaticTable();
 //            GenericTypesCheck();
 //            InitClasses();
-//            FillMethodsTable();
+            FillMethodsTable();
             AddInheritedMembers();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
@@ -117,19 +117,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillMethodsTable()
         {
             Log($"Fill class method tables: start", 1);
-            foreach (var i in _classList)
+            foreach (var @class in _classList)
             {
-                foreach (var j in i.MemberDeclarations)
+                foreach (var j in @class.MemberDeclarations)
                 {
                     if (!(j is MethodDeclaration methodDeclaration)) continue;
-                    if (StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Count == 0)
+                    if (@class.ClassMethods.Count == 0)
                     {
-                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Add(i.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
+                        @class.ClassMethods.Add(@class.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
                             
                     }
                     else
                     {
-                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods[i.SelfClassName.Identifier].Add(methodDeclaration);
+                        @class.ClassMethods[@class.SelfClassName.Identifier].Add(methodDeclaration);
                     }
                 }
                 
@@ -228,6 +228,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Variable declaration check: finish", 2);
         }
     }
+    
 
     public class FillVariablesVisitor: BaseVisitor
     {

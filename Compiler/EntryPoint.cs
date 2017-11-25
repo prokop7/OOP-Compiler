@@ -28,6 +28,7 @@ namespace Compiler
 //                IlyuzaTests.FillClassMethodTable();
                 Compiler.IlyuzaTests.FillClassStaticTables();
                 Compiler.IlyuzaTests.FillClassMethodTable();
+                Compiler.IlyuzaTests.CheckReturnTypeVisitor();
 //                CheckTests("Valid");
 //                CheckTests("Not Valid");
 //                CheckTests("Composite");

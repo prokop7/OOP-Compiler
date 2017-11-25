@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using Compiler.Exceptions;
 using Compiler.TreeStructure;
@@ -25,9 +27,54 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 		public override void Visit(MethodDeclaration methodDeclaration)
 		{
 			base.Visit(methodDeclaration);
+			
 			if (methodDeclaration.ResultType != null &&
 			    !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType.Identifier))
 				throw new ClassNotFoundException(methodDeclaration.ResultType.Identifier);
+
+			bool res = false;
+	
+
+			foreach (var i in methodDeclaration.Body)
+			{
+					res |= CheckBranchForReturn(i);	
+			}
+
+//			if (res == false)
+//			{
+//				throw new MissingReturnStatementException();
+//			}
+			
+			bool CheckBranchForReturn(IBody iBody)
+			{
+				switch (iBody)
+				{
+					case IfStatement ifStatement:
+						foreach (var i in ifStatement.Body)
+						{
+							CheckBranchForReturn(i);
+						}
+						foreach (var i in ifStatement.ElseBody)
+						{
+							CheckBranchForReturn(i);
+						}
+						break;
+					case WhileLoop whileLoop:
+						foreach (var i in whileLoop.Body)
+						{
+							CheckBranchForReturn(i);
+						}
+						break;
+					case ReturnStatement _:
+						return true;
+						
+//					default:
+//						return false;
+				}
+				return false;
+			}
+
+
 		}
 		
 		public override void Visit(Assignment assignment)
@@ -56,17 +103,67 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 			
 			base.Visit(returnStatement);
 			//TODO check returning type and Expression type - Done
-			if (!(returnStatement.Parent is MethodDeclaration @methodDeclaration))
-			{
-				// go to parent};
-				//@methodDeclaration = returnStatement.Parent;
 
-//				if (!(returnStatement.Expression.ReturnType.Equals(@methodDeclaration.ResultType)))
-//				{
-//					throw new InvalidReturnType(
-//						$"Expected {@methodDeclaration.ResultType}, got {returnStatement.Expression.ReturnType}");
-//				}
+			
+			bool res = checkParent(returnStatement.Parent);
+			Console.WriteLine($"HHHHHHHHHHHHHHHHHHHHH    {res}");
+
+			Console.WriteLine(returnStatement.Expression.ReturnType + "JJJJJJJJJJJJJJJJ");
+
+			if (!res)
+			{
+				throw new InvalidReturnTypeException(
+                							$"Expected one type, got {returnStatement.Expression.ReturnType}");
 			}
+
+			bool checkParent(ICommonTreeInterface memberDeclaration)
+			{
+				if (memberDeclaration is MethodDeclaration methodDeclaration)
+				{
+
+					if (returnStatement.Expression.ReturnType.Equals(methodDeclaration.ResultType.Identifier))
+					{
+						return true;
+					}
+
+					return false;
+				}
+				else
+				{
+					if (memberDeclaration is IStatement)
+					{
+						switch (memberDeclaration)
+						{
+							case IfStatement ifStatement:
+								checkParent(ifStatement.Parent);
+								break;
+							case WhileLoop whileLoop:
+								checkParent(whileLoop.Parent);
+								break;
+						}
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+//					return checkParent(memberDeclaration.Parent);
+//					if (returnStatement.Parent is IfStatement ifStatement)
+//					{	
+//					
+//						bool checkIfBody = ifStatement.Body.Any(i => i.GetType() == typeof(ReturnStatement));
+//						bool checkElseBody = ifStatement.ElseBody.Any(i => i.GetType() == typeof(ReturnStatement));
+//					
+//						if (checkIfBody & checkElseBody == false)
+//						{
+//							throw new InvalidReturnParentException();
+//						}
+//					
+//					}					
+//				
+				}
+			}
+
 		}
 
 		public override void Visit(WhileLoop whileLoop)
