@@ -62,8 +62,9 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
 
-        public override string ToString() =>
-            $"Method: {Identifier} ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})";
+        public override string ToString() => (Parameters.Count > 1 ?
+            $"Method: {Identifier} ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})" : 
+            $"Method: {Identifier} ({Parameters.Aggregate("", (current, p) => current + (p))}): {ResultType}");
 
     }
 }

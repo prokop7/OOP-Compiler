@@ -23,37 +23,24 @@ namespace Compiler
             List<Class> GenerateListOfClasses()
             {
                 var className1 = new ClassName("A");
-                className1.Specification.Add(new ClassName("T") {Parent = className1});
+                //className1.Specification.Add(new ClassName("T") {Parent = className1});
             
                 var class1 = new Class(className1);
             
-                var className2 = new ClassName("A");
-                className2.Specification.Add(new ClassName("T") {Parent = className2});
-                className2.Specification.Add(new ClassName("F") {Parent = className2});
-            
+                var className2 = new ClassName("C");
+//                className2.Specification.Add(new ClassName("T") {Parent = className2});
+//                className2.Specification.Add(new ClassName("F") {Parent = className2});
+//            
                 var class2 = new Class(className2);
             
-                var className3 = new ClassName("B");
-                className3.Specification.Add(new ClassName("G") {Parent = className3});
-                className3.Specification.Add(new ClassName("H") {Parent = className3});
             
-                var class3 = new Class(className3);
-            
-                var classList = new List<Class> {class1, class2, class3};
+                var classList = new List<Class> {class1, class2};
                 return classList;
             }
             
         }
 
-        public static void PrintList<T>(IEnumerable<T> list)
-        {
-            foreach (var i in list)
-            {
-                Console.WriteLine(i);
-            }
-            
-        }
-
+       
         public static void FillClassMethodTable()
         {
             var methodDeclaration = new MethodDeclaration("Less");          
@@ -61,20 +48,23 @@ namespace Compiler
             
             methodDeclaration.Parameters.Add(new ParameterDeclaration("p", new ClassName("Integer")));
             
-            var className = new ClassName("B");
-            className.Specification.Add(new ClassName("G") {Parent = className});          
+            var className = new ClassName("B"); 
             var class1 = new Class(className);
             
+            class1.MemberDeclarations.Add(methodDeclaration);
             
-            Console.WriteLine(methodDeclaration);
             var classList = new List<Class> {class1};
 
             var analizer = new Analizer(classList);
             
-         
-            class1.MemberDeclarations.Add(methodDeclaration);
+            var classIntName = new ClassName("n");
+            
+            var classInt = BuiltInClasses.GenerateInteger();
+            
+            
 
             PrintList(class1.MemberDeclarations);
+            PrintList(classInt.MemberDeclarations);
             
 //            var retList = analizer.Analize();
 //            foreach (var i in retList)
@@ -99,8 +89,17 @@ namespace Compiler
             var variableDeclaration = new VariableDeclaration("a", expA);
             methodDeclaration.Body.Add(variableDeclaration);
             
-            
+        }
+        public static void PrintList<T>(IEnumerable<T> list)
+        {
+            Console.WriteLine("##### I START PRINTING ###########");
+            foreach (var i in list)
+            {
+                Console.WriteLine(i);
+            }
+            Console.WriteLine("################");
             
         }
+
     }
 }

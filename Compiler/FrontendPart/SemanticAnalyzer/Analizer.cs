@@ -14,7 +14,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 {
     /// TODO Stages of analizer
     /// [95%] Fill class table    <see cref="FillStaticTable"/>
-    /// [ 0%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
+    /// [50%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
     /// [90%] Simple inheritance    <see cref="AddInheritedMembers"/>
     /// [80%] Fill variable table for methods and check initialization of variables    <see cref="VariableDeclarationCheck"/>
     /// [70%] Replace Generic classes with existing    <see cref="InitClasses"/>
@@ -141,8 +141,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillStaticTable()
         {
             Log($"Fill static tables: start", 1);
+            
             AnalyzeClass(BuiltInClasses.GenerateBoolean());
             AnalyzeClass(BuiltInClasses.GenerateInteger());
+            
             foreach (var i in _classList)
                 AnalyzeClass(i);
             
@@ -158,10 +160,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                     }
                     PutToGenericClassTable(i.SelfClassName.Identifier, (GenericClass) i);
                 }
-                else if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
-                    throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
                 else
+                {
+                    if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
+                        throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
+                    
                     PutToClassTable(i.SelfClassName.Identifier, i);
+                }
+                    
 
             }
 
