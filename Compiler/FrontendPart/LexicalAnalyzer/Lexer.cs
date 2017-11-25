@@ -101,6 +101,12 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
                         case "]":
                             Tokens.Add(new Token(Type.SqrtRparen, currentLine, currentPosition));
                             break;
+                        case "<":
+                            Tokens.Add(new Token(Type.TrglLparen, currentLine, currentPosition));
+                            break;
+                        case ">":
+                            Tokens.Add(new Token(Type.TrglRparen, currentLine, currentPosition));
+                            break;
                         case "is":
                             Tokens.Add(new Token(Type.IsKey, currentLine, currentPosition));
                             break;

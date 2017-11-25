@@ -56,7 +56,9 @@ namespace Compiler.TreeStructure
 
         public override string ToString()
         {
-            return SelfClassName.ToString();
+            var members = "";
+            MemberDeclarations.ForEach(m => members += m + "\n");
+            return "class " + SelfClassName + ":\n" + members + "\n";
         }
     }
 }

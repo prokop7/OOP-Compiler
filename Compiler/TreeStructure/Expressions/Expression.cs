@@ -29,17 +29,12 @@ namespace Compiler.TreeStructure.Expressions
         public Expression(IPrimaryExpression primaryPart, List<ICall> calls)
         {
             PrimaryPart = primaryPart;
-            Calls = calls;
             PrimaryPart.Parent = this;
-            foreach (var methodOrFieldCall in Calls)
-                methodOrFieldCall.Parent = this;
-        }
-        
-        public Expression(List<ICall> calls)
-        {
-            Calls = calls;
-            foreach (var methodOrFieldCall in Calls)
-                methodOrFieldCall.Parent = this;
+            foreach (var call in calls)
+            {
+                call.Parent = this;
+                Calls.Add(call);
+            }
         }
 
         public Expression(Expression expression)
@@ -85,7 +80,7 @@ namespace Compiler.TreeStructure.Expressions
         public override string ToString()
         {
             var s = "";
-            Calls.ForEach(call => s += "." + call.Identifier);
+            Calls.ForEach(call => s += "." + call);
             return PrimaryPart + s;
         }
     }

@@ -17,9 +17,8 @@ namespace Compiler.TreeStructure.Expressions
             Identifier = identifier;
         }
 
-        public Call(string identifier, List<Expression> arguments)
+        public Call(string identifier, List<Expression> arguments) : this(identifier)
         {
-            Identifier = identifier;
             Arguments = arguments;
             foreach (var expression in arguments)
                 expression.Parent = this;
@@ -46,5 +45,14 @@ namespace Compiler.TreeStructure.Expressions
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+
+        public override string ToString()
+        {
+            var args = "";
+            Arguments.ForEach(arg => args += $"{arg}, ");
+            if(Arguments.Count > 0)
+                args = args.Remove(args.Length - 2);
+            return Identifier + $"({args})";
+        }
     }
 }

@@ -4,8 +4,8 @@ class Program is
         var b is 100
         a := b // assign Integer value to Real without casting
         
-        var с is List[Integer]
-        var d is List[Boolean]
+        var с is List<Integer>()
+        var d : List<Boolean>
         c.append(2)
     
         d := c // // assign List of ints to List of booleans

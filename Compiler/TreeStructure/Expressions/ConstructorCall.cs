@@ -4,10 +4,11 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class ConstructorCall: IPrimaryExpression
+    public class ConstructorCall: IPrimaryExpression, ICommonCall
     {
         public ICommonTreeInterface Parent { get; set; }
         public string InputType { get; set; }
+        public IMemberDeclaration MemberDeclaration { get; set; }
         public ClassName ClassName { get; set; }
         public List<Expression> Arguments { get; set; } = new List<Expression>();
         public string Type { get; set; }
@@ -17,9 +18,8 @@ namespace Compiler.TreeStructure.Expressions
             ClassName = className;
         }
 
-        public ConstructorCall(ClassName className, List<Expression> arguments)
+        public ConstructorCall(ClassName className, List<Expression> arguments) : this(className)
         {
-            ClassName = className;
             Arguments = arguments;
             foreach (var expression in arguments)
                 expression.Parent = this;
@@ -29,10 +29,31 @@ namespace Compiler.TreeStructure.Expressions
         {
             ClassName = new ClassName(call.ClassName);
             if (call.InputType != null) InputType = string.Copy(call.InputType);
+            switch (call.MemberDeclaration)
+            {
+                case ConstructorDeclaration constructorDeclaration:
+                    MemberDeclaration = new ConstructorDeclaration(constructorDeclaration);
+                    break;
+                case MethodDeclaration methodDeclaration:
+                    MemberDeclaration = new MethodDeclaration(methodDeclaration);
+                    break;
+                case VariableDeclaration variableDeclaration:
+                    MemberDeclaration = new VariableDeclaration(variableDeclaration);
+                    break;
+            }
             foreach (var expression in call.Arguments)
                 Arguments.Add(new Expression(expression) {Parent = this});
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+
+        public override string ToString()
+        {
+            var args = "";
+            Arguments.ForEach(arg => args += $"{arg}, ");
+            if(Arguments.Count > 0)
+                args = args.Remove(args.Length - 2);
+            return ClassName + $"({args})";
+        }
     }
 }

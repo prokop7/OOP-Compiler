@@ -31,7 +31,9 @@ namespace Compiler.FrontendPart
             parser = new Parser(lexer);
             
             var tree = parser.Analyze();
-            Console.WriteLine("The end!");
+            var treeString = "";
+            tree.ForEach(t => treeString += t);
+            Console.WriteLine(treeString);
         }
     }
 }

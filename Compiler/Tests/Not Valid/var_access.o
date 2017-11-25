@@ -3,7 +3,7 @@ class Program is          //invalid case
 end
 
 class Access is
-  var x: Program()
+  var x: Program
   this is 
     x.y := 5         // here we try to change x, but only reading is available
   end

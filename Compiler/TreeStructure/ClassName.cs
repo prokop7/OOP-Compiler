@@ -42,7 +42,9 @@ namespace Compiler.TreeStructure
             var generics = Specification.Aggregate("", (s1, name) => s1 += $"{name}, ");
             if (generics.EndsWith(", "))
                 generics = generics.Remove(generics.Length - 2);
-            return !generics.Equals("") ? $"{Identifier}<{generics}>" : Identifier;
+            var str = !generics.Equals("") ? $"{Identifier}<{generics}>" : Identifier;
+            str += ArrSize != null ? $"[{ArrSize}]" : "";
+            return str;
         }
 
         public override bool Equals(object obj)

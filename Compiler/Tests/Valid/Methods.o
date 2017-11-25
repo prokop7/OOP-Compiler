@@ -29,7 +29,7 @@ class A is
 
 end
 
-Class B is 
+class B is 
 	var b is A(2)
 
   this is 

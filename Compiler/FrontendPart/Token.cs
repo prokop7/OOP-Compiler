@@ -15,6 +15,8 @@ namespace Compiler.FrontendPart
         [Description("\')\'")] Rparen,
         [Description("\'[\'")] SqrtLparen,
         [Description("\']\'")] SqrtRparen,
+        [Description("\'<\'")] TrglLparen,
+        [Description("\'>\'")] TrglRparen,
         [Description("\':=\'")] Assignment,
         [Description("\'is\'")] IsKey,
         [Description("\'if\'")] IfKey,

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 
@@ -96,5 +97,12 @@ namespace Compiler.TreeStructure.MemberDeclarations
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+        
+        public override string ToString()
+        {
+            var body = $"Constructor: ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})" 
+                       + $"[{Body.Aggregate("\n", (current, p) => current + (p + "\n"))}]";
+            return body;
+        }
     }
 }

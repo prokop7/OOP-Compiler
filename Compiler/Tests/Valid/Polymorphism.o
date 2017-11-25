@@ -30,7 +30,7 @@ end
 
 class D is
     this is
-        var arr is Array[A](2)
+        var arr is Array[3](2)
         var b is B()
         var c is C()
         arr.set(0, b)

@@ -37,7 +37,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public override string ToString()
         {
-            return $"var {Identifier}: {Expression}";
+            return $"var {Identifier} is {Classname}: {Expression}";
         }
 
     }
