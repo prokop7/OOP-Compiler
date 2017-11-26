@@ -118,8 +118,9 @@ namespace Compiler
 
         public static void TestParser(List<Class> classList, string filename)
         {
-            var foo =
-                ((MethodDeclaration) classList[0]
+            var foo = classList[0].MemberDeclarations.Any(member => member is ConstructorDeclaration)
+                ? null
+                : ((MethodDeclaration) classList[0]
                     .MemberDeclarations.FirstOrDefault(member => member is MethodDeclaration))?.Identifier;
             var startClass = PreProcessor.SetupCompiler(classList[0].SelfClassName.Identifier, foo);
             classList.Insert(0, startClass);

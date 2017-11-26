@@ -275,6 +275,8 @@ namespace Compiler.BackendPart
                     return typeof(int);
                 case "Boolean":
                     return typeof(bool);
+                case "Real":
+                    return typeof(double);
                 default:
                     return classes[identifier].TypeBuilder;
             }
@@ -648,18 +650,15 @@ namespace Compiler.BackendPart
                     break;
                 case ConstructorCall constructorCall:
                     var id = constructorCall.ClassName.Identifier;
+                    foreach (var arg in constructorCall.Arguments)
+                        GenerateExpression(il, arg);
                     switch (id)
                     {
                         case "Integer":
                         case "Boolean":
-                            il.Emit(OpCodes.Ldc_I4, 0);
-                            break;
                         case "Real":
-                            il.Emit(OpCodes.Ldc_R8, 0);
                             break;
                         default:
-                            foreach (var arg in constructorCall.Arguments)
-                                GenerateExpression(il, arg);
                             var ctor = classes[id].CtorBuilder;
                             il.Emit(OpCodes.Newobj, ctor);
                             break;

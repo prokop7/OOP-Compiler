@@ -57,11 +57,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         {
             if (localCall.Arguments != null)
             {
-                if (!HasMap(localCall.Identifier))
-                    throw new VariableNotFoundException(localCall.Identifier);
-//                var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
-                localCall.Identifier = GetValueFromMap(localCall.Identifier);
-                GetTypeVariable(localCall, localCall.Identifier);
+//                if (!HasMap(localCall.Identifier))
+//                    throw new VariableNotFoundException(localCall.Identifier);
+////                var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
+//                localCall.Identifier = GetValueFromMap(localCall.Identifier);
+//                GetTypeVariable(localCall, localCall.Identifier);
                 return;
             }
             if (!HasMap(localCall.Identifier))
