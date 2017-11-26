@@ -190,6 +190,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                     throw new UnexpectedTokenException(PeekCurrentToken(), "class name");
                 className.Parent = varDeclaration;
                 varDeclaration.Classname = className;
+                varDeclaration.Expression = new Expression(new ClassName(className));
                 typeOrValueDefined = true;
             }
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.IsKey))
@@ -334,6 +335,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                         var expr = ParseExpression();
                         if(expr == null)
                             throw new UnexpectedTokenException(PeekCurrentToken());
+                        body.Add(new Expression(expr));
                         break;
                     case Type.WhileKey:
                         body.Add(ParseWhileLoop());

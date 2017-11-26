@@ -13,7 +13,7 @@ namespace Compiler
     {
         static void Main(string[] args)
         {
-            L.LogLevel = 100;
+            L.LogLevel = 0;
             try
             {
 //                AntonTests.VariableDeclaration();
@@ -80,19 +80,26 @@ namespace Compiler
             var files = Directory.GetFiles($"./../../Tests/{folderName}/");
 //            var files = new List<string>(){"./../../Tests/Valid/Boolean.o"};
             foreach(var file in files){
-                Console.WriteLine("\n\n" + file + "\n");
+                if (file != "./../../Tests/Valid/ClassCreation.o")
+                    continue;
+                Console.WriteLine("\n\n" + file);
                 var main = new FrontEndCompiler(file);
                 try
                 {
-                    AntonTests.TestParser(main.GetClasses());
-                    break;
+                    AntonTests.TestParser(main.GetClasses(), file);
+//                    break;
 //                    main.Process();
                 }
                 catch (Exception e)
                 {
+//                    L.LogError(e);
                     Console.WriteLine(e);
-                    Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
-                    break;
+//                    Console.WriteLine("\n\n\n\n");
+//                    break;
+                }
+                finally
+                {
+                    StaticTables.ClassTable = new Dictionary<string, List<Class>>();
                 }
             }
         }

@@ -1,5 +1,5 @@
 class Program is
-    this is
+    method Foo is
         var a: Integer
         var b is 100.Plus(1)
         a := b
@@ -9,11 +9,11 @@ class Program is
     
         b1 := b2
     
-        var arr1 is Array[5](10)
-        var arr2 is Array[10](15)
+//        var arr1 is Array[5](10)
+//        var arr2 is Array[10](15)
     
-        arr1.set(0, 12)
+    //    arr1.set(0, 12)
     
-        arr2 := arr1
+    //    arr2 := arr1
     end
 end

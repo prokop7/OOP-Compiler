@@ -15,8 +15,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         {
             if (localCall.Arguments == null)
             {
-                var variable =
-                    (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
+                var variable = (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
                 switch (variable)
                 {
                     case VariableDeclaration variableDeclaration:

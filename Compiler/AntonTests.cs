@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Compiler.BackendPart;
 using Compiler.FrontendPart.SemanticAnalyzer;
@@ -115,20 +116,20 @@ namespace Compiler
             }
         }
 
-        public static void TestParser(List<Class> classList)
+        public static void TestParser(List<Class> classList, string filename)
         {
-            var startClass = PreProcessor.SetupCompiler("Program", "Foo");
+            var foo =
+                ((MethodDeclaration) classList[0]
+                    .MemberDeclarations.FirstOrDefault(member => member is MethodDeclaration))?.Identifier;
+            var startClass = PreProcessor.SetupCompiler(classList[0].SelfClassName.Identifier, foo);
             classList.Insert(0, startClass);
             var analyzer = new Analizer(classList);
             classList = analyzer.Analize();
-            var g = new Generator(classList);
+            var g = new Generator(classList, filename);
             g.GenerateProgram();
-
         }
-        
-        
-        
-        
+
+
         public static void SimpleClassesTest()
         {
             var class1 = GenerateClass1();
@@ -139,7 +140,7 @@ namespace Compiler
             var analyzer = new Analizer(new List<Class> {startClass, class1, class2, class3});
             var list = analyzer.Analize();
 
-            var g = new Generator(list);
+            var g = new Generator(list, "SimpleClassesTest");
             g.GenerateProgram();
 
             Class GenerateClass1()
@@ -213,7 +214,7 @@ namespace Compiler
             var analyzer = new Analizer(new List<Class> {class1});
             var list = analyzer.Analize();
 
-            var g = new Generator(list);
+            var g = new Generator(list, "BranchTest");
             g.GenerateProgram();
 
 
@@ -262,7 +263,7 @@ namespace Compiler
             var analyzer = new Analizer(new List<Class> {class1});
             var list = analyzer.Analize();
 
-            var g = new Generator(list);
+            var g = new Generator(list, "WhileTest");
             g.GenerateProgram();
 
             Class GenerateClass1()
@@ -317,7 +318,7 @@ namespace Compiler
             var analyzer = new Analizer(new List<Class> {class1});
             var list = analyzer.Analize();
 
-            var g = new Generator(list);
+            var g = new Generator(list, "IntegerTest");
             g.GenerateProgram();
 
             Class GenerateClass1()

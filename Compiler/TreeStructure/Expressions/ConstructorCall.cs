@@ -16,6 +16,19 @@ namespace Compiler.TreeStructure.Expressions
         public ConstructorCall(ClassName className)
         {
             ClassName = className;
+            Type = ClassName.Identifier;
+        }
+        
+        public ConstructorCall(LocalCall localCall)
+        {
+            ClassName = new ClassName(localCall.Identifier) {Parent = this};
+            if (localCall.Arguments != null)
+                foreach (var argument in localCall.Arguments)
+                {
+                    Arguments.Add(new Expression(argument) {Parent = this});
+                }
+            Parent = localCall.Parent;
+            Type = ClassName.Identifier;
         }
 
         public ConstructorCall(ClassName className, List<Expression> arguments) : this(className)

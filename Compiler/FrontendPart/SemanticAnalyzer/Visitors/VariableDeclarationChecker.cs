@@ -56,7 +56,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(LocalCall localCall)
         {
             if (localCall.Arguments != null)
+            {
+                if (!HasMap(localCall.Identifier))
+                    throw new VariableNotFoundException(localCall.Identifier);
+//                var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
+                localCall.Identifier = GetValueFromMap(localCall.Identifier);
+                GetTypeVariable(localCall, localCall.Identifier);
                 return;
+            }
             if (!HasMap(localCall.Identifier))
                 throw new VariableNotFoundException(localCall.Identifier);
             localCall.Identifier = GetValueFromMap(localCall.Identifier);
@@ -126,6 +133,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(VariableDeclaration variable)
         {
+            base.Visit(variable);
             if (HasMap(variable.Identifier))
                 throw new DuplicatedDeclarationException(variable.Identifier);
             var newName = GetContextIdentifier(variable.Identifier);

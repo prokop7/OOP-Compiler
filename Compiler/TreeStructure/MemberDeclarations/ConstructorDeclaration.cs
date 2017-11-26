@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 
@@ -13,7 +14,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
 
         public Dictionary<string, IVariableDeclaration> VariableDeclarations { get; set; } =
             new Dictionary<string, IVariableDeclaration>();
-        
+
         public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
 
         public ConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
@@ -47,7 +48,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         break;
                 }
             }
-            
+
             foreach (var keyValuePair in constructorDeclaration.NameMap)
                 NameMap.Add(keyValuePair.Key, keyValuePair.Value);
         }
@@ -72,6 +73,10 @@ namespace Compiler.TreeStructure.MemberDeclarations
             {
                 switch (body)
                 {
+                    case Expression expression:
+                        expression.Parent = this;
+                        bodyList.Add(expression);
+                        break;
                     case VariableDeclaration variableDeclaration:
                         variableDeclaration.Parent = this;
                         bodyList.Add(variableDeclaration);
@@ -92,15 +97,17 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         whileLoop.Parent = this;
                         bodyList.Add(whileLoop);
                         break;
+                        
                 }
             }
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
-        
+
         public override string ToString()
         {
-            var body = $"Constructor: ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})";
+            var body =
+                $"{((Class) Parent).SelfClassName.Identifier}({Parameters.Aggregate("", (current, p) => current + (p + ", "))})";
             return body;
         }
     }

@@ -35,6 +35,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             FillStaticTable();
 //            GenericTypesCheck();
 //            InitClasses();
+            
+            ReplaceLocalCall();
             FillMethodsTable();
             AddInheritedMembers();
             VariableDeclarationCheck();
@@ -46,6 +48,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             }
             TypeCheck();
             return _classList;
+        }
+
+        private void ReplaceLocalCall()
+        {
+            var visitor = new LocalCallReplacer();
+            foreach (var @class in _classList)
+                visitor.Visit(@class);
         }
 
         public void InitClasses()
@@ -229,6 +238,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 fillVariables.Visit(@class);
             }
             Log($"Variable declaration check: finish", 2);
+        }
+    }
+
+    public class LocalCallReplacer : BaseVisitor
+    {
+        public override void Visit(Expression expression)
+        {
+            if (!(expression.PrimaryPart is LocalCall localCall)) return;
+            if (StaticTables.ClassTable.ContainsKey(localCall.Identifier))
+            {
+                expression.PrimaryPart = new ConstructorCall(localCall);
+            }
         }
     }
 
