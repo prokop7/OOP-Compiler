@@ -12,7 +12,7 @@ namespace Compiler.TreeStructure.Statements
     {
         public ICommonTreeInterface Parent { get; set; }
         public Expression Expression { get; set; }
-        public List<IBody> Body { get; set; }
+        public List<IBody> Body { get; set; } = new List<IBody>();
         public List<IBody> ElseBody { get; set; } = new List<IBody>();
 
         public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } =
@@ -77,5 +77,11 @@ namespace Compiler.TreeStructure.Statements
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+
+        public override string ToString()
+        {
+            return $"if ({Expression}) \nthen \n{Body.Aggregate("", (current, p) => current + (p + "\n"))}" 
+                + (ElseBody.Count == 0 ? "" : $"else\n{ElseBody.Aggregate("", (current, p) => current + (p + "\n"))}") + "end";
+        }
     }
 }

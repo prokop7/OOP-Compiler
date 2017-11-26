@@ -60,7 +60,7 @@ namespace Compiler.TreeStructure
         {
             var members = "";
             MemberDeclarations.ForEach(m => members += m + "\n");
-            return "class " + SelfClassName + ":\n" + members + "\n";
+            return "class " + SelfClassName + (BaseClassName != null ? $" extends {BaseClassName}" : "") + " is\n" + members + "end\n";
         }
     }
 }

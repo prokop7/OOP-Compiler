@@ -33,7 +33,7 @@ namespace Compiler.TreeStructure
 
         public override string ToString()
         {
-            return $"{Type}: {Identifier}";
+            return $"{Identifier}: {Type}";
         }
     }
 }

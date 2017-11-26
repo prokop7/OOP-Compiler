@@ -287,6 +287,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                     parameter = ParseParameterDeclaration();
                     if (parameter == null) // if no parameter after comma
                         throw new UnexpectedTokenException(PeekCurrentToken());
+                    parameters.Add(parameter);
                 }
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.Rparen);
@@ -332,8 +333,9 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                         }
                         ReturnTokensToProcess(new List<Token>(){firstToken});
                         var expr = ParseExpression();
-                        if(expr == null)
+                         if(expr == null)
                             throw new UnexpectedTokenException(PeekCurrentToken());
+                        body.Add(expr);
                         break;
                     case Type.WhileKey:
                         body.Add(ParseWhileLoop());
@@ -408,6 +410,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                     expression = ParseExpression();
                     if (expression == null) // if no parameter after comma
                         throw new UnexpectedTokenException(PeekCurrentToken());
+                    expressions.Add(expression);
                 }
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.Rparen);

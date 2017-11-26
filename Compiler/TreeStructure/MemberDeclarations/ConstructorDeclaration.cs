@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 
@@ -44,6 +45,10 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         break;
                     case WhileLoop whileLoop:
                         bodyList.Add(new WhileLoop(whileLoop) {Parent = this});
+                        break;
+                    case Expression expression:
+                        expression.Parent = this;
+                        bodyList.Add(new Expression(expression){Parent = this});
                         break;
                 }
             }
@@ -92,6 +97,10 @@ namespace Compiler.TreeStructure.MemberDeclarations
                         whileLoop.Parent = this;
                         bodyList.Add(whileLoop);
                         break;
+                    case Expression expression:
+                        expression.Parent = this;
+                        bodyList.Add(expression);
+                        break;
                 }
             }
         }
@@ -100,8 +109,8 @@ namespace Compiler.TreeStructure.MemberDeclarations
         
         public override string ToString()
         {
-            var body = $"Constructor: ({Parameters.Aggregate("", (current, p) => current + (p + ", "))})" 
-                       + $"[{Body.Aggregate("\n", (current, p) => current + (p + "\n"))}]";
+            var body = $"this ({Parameters.Aggregate("", (current, p) => current + (p + ", "))}) is" 
+                       + $"{Body.Aggregate("\n", (current, p) => current + (p + "\n"))}end";
             return body;
         }
     }

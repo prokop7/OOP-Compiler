@@ -27,5 +27,10 @@ namespace Compiler.TreeStructure.Statements
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+
+        public override string ToString()
+        {
+            return $"return {Expression}";
+        }
     }
 }

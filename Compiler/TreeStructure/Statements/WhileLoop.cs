@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
@@ -65,5 +66,10 @@ namespace Compiler.TreeStructure.Statements
         }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+
+        public override string ToString()
+        {
+            return $"while ({Expression}) \nthen\n{Body.Aggregate("", (current, p) => current + (p + "\n"))}end";
+        }
     }
 }

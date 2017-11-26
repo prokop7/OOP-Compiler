@@ -18,10 +18,10 @@ namespace Compiler.TreeStructure.Expressions
             Identifier = identifier;
         }
         
-        public LocalCall(string identifier, List<Expression> arguments) : this(identifier)
+        public LocalCall(string identifier, List<Expression> patameters) : this(identifier)
         {
-            Arguments = arguments;
-            foreach (var expression in arguments)
+            Parameters = patameters;
+            foreach (var expression in patameters)
                 expression.Parent = this;
         }
         
@@ -32,7 +32,7 @@ namespace Compiler.TreeStructure.Expressions
         
         public override string ToString()
         {
-            return Identifier + $"({Parameters?.Aggregate("", (current, p) => current + (p + ", "))})";
+            return Identifier + (Parameters == null ? "" : $"({Parameters.Aggregate("", (current, p) => current + (p + ", "))})");
         }
     }
 }
