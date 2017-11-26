@@ -1,5 +1,14 @@
 // valid
+class B is 
+  var b is A(2)
 
+  this is 
+    b.plusFive()
+    var c is b.RetMultiplyFive()
+    b.plusN(10)
+    c := b.RetMultiplyN(10)
+  end
+end
 class A is 
   var a is 0
 
@@ -27,17 +36,6 @@ class A is
     return a.Mult(N)
   end
 
-end
-
-class B is 
-	var b is A(2)
-
-  this is 
-    b.plusFive()
-    var c is b.RetMultiplyFive()
-    b.plusN(10)
-    c := b.RetMultiplyN(10)
-  end
 end
 
 

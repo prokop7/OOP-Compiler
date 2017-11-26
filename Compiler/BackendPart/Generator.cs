@@ -127,6 +127,7 @@ namespace Compiler.BackendPart
 
                     foreach (var el in cls.MemberDeclarations.Where(m => m is VariableDeclaration).ToList())
                     {
+                        ctorIl.Emit(OpCodes.Ldarg_0);
                         var varDeclaration = (VariableDeclaration) el;
                         var fb = classes[cls.SelfClassName.Identifier].FieldBuilders[varDeclaration.Identifier];
                         GenerateExpression(ctorIl, varDeclaration.Expression);
@@ -203,6 +204,7 @@ namespace Compiler.BackendPart
 
                             foreach (var el in cls.MemberDeclarations.Where(m => m is VariableDeclaration).ToList())
                             {
+                                ctorIl.Emit(OpCodes.Ldarg_0);
                                 var varDeclaration = (VariableDeclaration) el;
                                 var fb = classes[cls.SelfClassName.Identifier].FieldBuilders[varDeclaration.Identifier];
                                 GenerateExpression(ctorIl, varDeclaration.Expression);
@@ -384,9 +386,10 @@ namespace Compiler.BackendPart
                 // BUG Doesn't work without static commands
                 if (declaration is VariableDeclaration vDecl)
                 {
+                    il.Emit(OpCodes.Ldarg_0);
                     var fb = classes[_currentClass.SelfClassName.Identifier].FieldBuilders[vDecl.Identifier];
                     GenerateExpression(il, assignment.Expression);
-                    il.Emit(OpCodes.Stsfld, fb);
+                    il.Emit(OpCodes.Stfld, fb);
                 }
             }
             else
