@@ -453,7 +453,7 @@ namespace Compiler.BackendPart
         {
             switch (call.Identifier)
             {
-                case "Equals":
+                case "Equal":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
                     break;
@@ -476,6 +476,8 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Conv_I4);
                     break;
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -499,7 +501,7 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Div_Un);
                     break;
-                case "Equals":
+                case "Equal":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
                     break;
@@ -562,7 +564,7 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Div_Un);
                     break;
-                case "Equals":
+                case "Equal":
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Ceq);
                     break;
@@ -595,7 +597,6 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Conv_I4);
                     break;
                 case "UnaryMinus":
-                    GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Neg);
                     break;
                 default:

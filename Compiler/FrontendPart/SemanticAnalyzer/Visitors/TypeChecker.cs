@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Compiler.Exceptions;
@@ -12,6 +13,30 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 {
     public class TypeChecker : BaseVisitor
     {
+        public override void Visit(ConstructorCall constructorCall)
+        {
+            base.Visit(constructorCall);
+            switch (constructorCall.Type)
+            {
+                case "Real" when constructorCall.Arguments[0].ReturnType == "Integer" ||
+                                 constructorCall.Arguments[0].ReturnType == "Boolean":
+                    constructorCall.Arguments[0].Calls.Add(new Call("ToReal")
+                    {
+                        Parent = constructorCall.Arguments[0],
+                        InputType = constructorCall.Arguments[0].ReturnType
+                    });
+                    break;
+                case "Integer" when constructorCall.Arguments[0].ReturnType == "Real" ||
+                                    constructorCall.Arguments[0].ReturnType == "Boolean":
+                    constructorCall.Arguments[0].Calls.Add(new Call("ToInteger")
+                    {
+                        Parent = constructorCall.Arguments[0],
+                        InputType = constructorCall.Arguments[0].ReturnType
+                    });
+                    break;
+            }
+        }
+
         public override void Visit(Expression expression)
         {
             base.Visit(expression);

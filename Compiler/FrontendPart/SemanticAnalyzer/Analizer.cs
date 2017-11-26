@@ -35,7 +35,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             FillStaticTable();
 //            GenericTypesCheck();
 //            InitClasses();
-            
+
             ReplaceLocalCall();
             FillMethodsTable();
             AddInheritedMembers();
@@ -150,8 +150,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                             break;
                     }
                 }
+
                 string GetNewName(MethodDeclaration methodDeclaration) => $"{methodDeclaration.Identifier}$" +
-                                                                          $"{methodDeclaration.Parameters.Aggregate("", (s, declaration) => s += declaration.Type.Identifier)}";
+                                                                          $"{methodDeclaration.Parameters.Aggregate("", (s, declaration) => s += declaration.Type.Identifier)}"
+                ;
             }
             Log($"Fill class method tables: finish", 1);
         }
@@ -249,6 +251,21 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             if (StaticTables.ClassTable.ContainsKey(localCall.Identifier))
             {
                 expression.PrimaryPart = new ConstructorCall(localCall);
+            }
+        }
+
+        public override void Visit(VariableDeclaration variableDeclaration)
+        {
+            base.Visit(variableDeclaration);
+            if (variableDeclaration.Classname != null &&
+                variableDeclaration.Classname.Identifier != variableDeclaration.Expression.ReturnType)
+            {
+                variableDeclaration.Expression.Calls.Add(new Call("To" + variableDeclaration.Classname.Identifier)
+                {
+                    Parent =  variableDeclaration.Expression,
+                    InputType =  variableDeclaration.Expression.ReturnType
+                });
+                variableDeclaration.Expression.ReturnType = variableDeclaration.Classname.Identifier;
             }
         }
     }
