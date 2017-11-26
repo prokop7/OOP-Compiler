@@ -465,5 +465,38 @@ namespace Compiler.TreeStructure
 //            @class.Members.Add("GreaterEqual", greaterEqualInt);
             return @class;
         }
+
+//        public static Class GenerateArray()
+//        {
+//            var className = new ClassName("Array");
+//            var @class = new Class(className);
+//            
+//            var length = new MethodDeclaration("Length");
+//            {
+//                Parent = @class,
+//                ResultType = new ClassName("Array");
+//            }
+//            var get = new MethodDeclaration("Get");
+//            {
+//                Parent = @class,
+//                ResultType = new ClassName("Array");
+//            }
+//            
+//            var set = new MethodDeclaration("Set");
+//            {
+//                Parent = @class,
+//                ResultType = new ClassName("array");
+//            }
+//            
+//            
+//
+//            @class.MemberDeclarations.Add(length);
+//            @class.Members.Add("Length", length);
+//            @class.MemberDeclarations.Add(get);
+//            @class.Members.Add("Get", get);
+//            @class.MemberDeclarations.Add(set);
+//            @class.Members.Add("Set", set);
+//            return @class;
+//        }
     }
 }

@@ -82,7 +82,24 @@ namespace Compiler.BackendPart
                     switch (memberDeclaration)
                     {
                         case ConstructorDeclaration constructorDeclaration:
+//                            Log($"Constucting class with parameters {constructorDeclaration}", 4);
+//                            var parTypess = new Type[constructorDeclaration.Parameters.Count];
+//                            var b = 0;
+//                            foreach (var par in constructorDeclaration.Parameters)
+//                            {
+//                                var t = par.Type;
+//                                var parType = t.ClassRef == null
+//                                    ? typeof(void)
+//                                    : GetTypeByClassIdentifier(t.Identifier);
+//                                parTypess[b] = parType;
+//                                b++;
+//                            }
+//                            var cb = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard,
+//                                parTypess);
+//                            classes[cls.SelfClassName.Identifier].CtorBuilder.(constructorDeclaration., cb);
+//
                             break;
+                            
                         case MethodDeclaration method:
                             Log($"Creating method {method}", 4);
                             var methodAttrs = MethodAttributes.Public;
@@ -136,6 +153,36 @@ namespace Compiler.BackendPart
                     switch (memberDeclaration)
                     {
                         case ConstructorDeclaration constructorDeclaration:
+                            var ctorTypes = new Type[0];
+                            var ctorBuilder = typeBuilder.DefineConstructor(
+                                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                CallingConventions.Standard,
+                                ctorTypes);
+                            classes[cls.SelfClassName.Identifier].CtorBuilder = ctorBuilder;
+
+                            var ctorIl = ctorBuilder.GetILGenerator();
+                            
+                            ctorIl.Emit(OpCodes.Ldarg_0);
+                            
+                            var ctorArgs = new Type[0];
+                            var ctor = typeof(object).GetConstructor(ctorArgs);
+                            ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
+                            
+                            ctorIl.Emit(OpCodes.Nop);
+                            ctorIl.Emit(OpCodes.Nop);
+
+                            foreach (var parameter in constructorDeclaration.Parameters)
+                            {
+                                Type type = parameter.GetType();
+                                
+                                                                 
+                                
+                                ctorIl.Emit(OpCodes.Ldarg_0);
+                                ctorIl.Emit(OpCodes.Ldarg);
+                                ctorIl.Emit(OpCodes.Stfld);
+                            }
+                            
+                            
                             break;
                         case MethodDeclaration method:
                             Log($"Filling method {method}", 5);
@@ -185,6 +232,8 @@ namespace Compiler.BackendPart
                     return typeof(int);
                 case "Boolean":
                     return typeof(bool);
+                case "Real":
+                    return typeof(double);
                 default:
                     return classes[identifier].TypeBuilder;
             }
@@ -599,6 +648,26 @@ namespace Compiler.BackendPart
                     //TODO Поддержка array
 //                if (t.isArray) type = typeof(int[]);
 //                else 
+//                    TYPE t = field.type;
+//                    Type type = null;
+//                    if ( t.classRef == null ) 
+//                    {
+//                        if ( t.isArray ) type = typeof(int[]); else type = typeof(int);
+//                    }
+//                    else
+//                    {
+//                        type = classes[t.className].typeBuilder;
+//                        if ( t.isArray ) type = type.MakeArrayType();
+//                    }
+//                    LocalBuilder local = il.DeclareLocal(type);
+//                    if ( t.classRef == null )
+//                    {
+//                        if ( t.isArray ) il.Emit(OpCodes.Ldnull);
+//                        else             il.Emit(OpCodes.Ldc_I4_0);
+//                    }
+//                    else
+//                        il.Emit(OpCodes.Ldnull);
+//                    il.Emit(OpCodes.Stloc,local);
                     type = typeof(void);
                     break;
                 default:
