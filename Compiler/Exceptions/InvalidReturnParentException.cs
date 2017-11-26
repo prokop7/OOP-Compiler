@@ -2,13 +2,13 @@
 
 namespace Compiler.Exceptions
 {
-    public class InvalidReturnType : Exception
+    public class InvalidReturnParentException : Exception
     {
-        public InvalidReturnType()
+        public InvalidReturnParentException()
         {
         }
 
-        public InvalidReturnType(string message) : base(message)
+        public InvalidReturnParentException(string message) : base(message)
         {
             Message = message;
         }

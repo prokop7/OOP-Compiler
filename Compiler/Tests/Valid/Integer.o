@@ -5,6 +5,7 @@ class Program is
 	var int4 is Integer(235)
 	var int5 is Integer(7.98)
 	var int6 is 0
+	var int7: Integer
 	var int8: Integer is 1
 	
 	var sum is int1.Plus(int5)

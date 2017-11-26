@@ -15,7 +15,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 {
     /// TODO Stages of analizer
     /// [95%] Fill class table    <see cref="FillStaticTable"/>
-    /// [ 0%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
+    /// [50%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
     /// [90%] Simple inheritance    <see cref="AddInheritedMembers"/>
     /// [80%] Fill variable table for methods and check initialization of variables    <see cref="VariableDeclarationCheck"/>
     /// [70%] Replace Generic classes with existing    <see cref="InitClasses"/>
@@ -87,6 +87,22 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Initialization of generic classes: finish", 2);
         }
 
+<<<<<<< HEAD
+=======
+        public List<Class> Analize()
+        {
+            FillStaticTable();
+//            GenericTypesCheck();
+//            InitClasses();
+            FillMethodsTable();
+            AddInheritedMembers();
+            VariableDeclarationCheck();
+            CheckMethodDeclaration();
+            TypeCheck();
+            return _classList;
+        }
+
+>>>>>>> 0d1fc736cafb7c5f92322637b20f2ff810803e03
         private void GenericTypesCheck()
         {
             Log($"Generic types check: start", 1);
@@ -126,6 +142,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Fill class method tables: start", 1);
             foreach (var @class in _classList)
             {
+<<<<<<< HEAD
                 foreach (var member in @class.MemberDeclarations)
                 {
                     switch (member)
@@ -139,6 +156,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                             methodDeclaration.Identifier = newName;
                             @class.Members.Add(newName, methodDeclaration);
                             break;
+=======
+                foreach (var j in @class.MemberDeclarations)
+                {
+                    if (!(j is MethodDeclaration methodDeclaration)) continue;
+                    if (@class.ClassMethods.Count == 0)
+                    {
+                        @class.ClassMethods.Add(@class.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
+                            
+                    }
+                    else
+                    {
+                        @class.ClassMethods[@class.SelfClassName.Identifier].Add(methodDeclaration);
+>>>>>>> 0d1fc736cafb7c5f92322637b20f2ff810803e03
                     }
                 }
                 string GetNewName(MethodDeclaration methodDeclaration) => $"{methodDeclaration.Identifier}$" +
@@ -150,9 +180,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         private void FillStaticTable()
         {
             Log($"Fill static tables: start", 1);
+            
             AnalyzeClass(BuiltInClasses.GenerateBoolean());
             AnalyzeClass(BuiltInClasses.GenerateInteger());
+<<<<<<< HEAD
             AnalyzeClass(BuiltInClasses.GenerateReal());
+=======
+            
+>>>>>>> 0d1fc736cafb7c5f92322637b20f2ff810803e03
             foreach (var i in _classList)
                 AnalyzeClass(i);
 
@@ -168,10 +203,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                     }
                     PutToGenericClassTable(i.SelfClassName.Identifier, (GenericClass) i);
                 }
-                else if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
-                    throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
                 else
+                {
+                    if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
+                        throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
+                    
                     PutToClassTable(i.SelfClassName.Identifier, i);
+<<<<<<< HEAD
+=======
+                }
+                    
+
+>>>>>>> 0d1fc736cafb7c5f92322637b20f2ff810803e03
             }
 
             void PutToClassTable(string key, Class value)
@@ -231,6 +274,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Variable declaration check: finish", 2);
         }
     }
+    
 
     public class FieldChangeVisitor : BaseVisitor
     {

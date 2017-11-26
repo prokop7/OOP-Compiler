@@ -13,7 +13,6 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
     public class Parser
     {
         private Lexer lexer;
-//        private Token currentToken = null;
         private Token prevToken = null;
         private List<Token> tokensToProcess = new List<Token>();
         
@@ -44,7 +43,6 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         private Token PeekCurrentToken()
         {
             return tokensToProcess.First();
-//            return currentToken;
         }
 
         private void ReturnTokensToProcess(List<Token> tokens)
@@ -179,32 +177,29 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         {
             CheckTokenTypeStrong(PeekCurrentToken(), Type.Id, " of variable name");
             var varName = (string)PeekCurrentToken().value;
-            var varDeclaration = new VariableDeclaration(varName);
             ClassName className = null;
-            var typeOrValueDefined = false;
             if (CheckTokenTypeWeak(GetNextToken(), Type.Colon))
             {
                 GetNextToken();
                 className = ParseClassName();
                 if (className == null)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "class name");
-                className.Parent = varDeclaration;
-                varDeclaration.Classname = className;
-                typeOrValueDefined = true;
             }
+            Expression expression;
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.IsKey))
             {
                 GetNextToken();
-                var expression = ParseExpression();
+                expression = ParseExpression();
                 if (expression == null)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "expression");
-                expression.Parent = varDeclaration;
-                varDeclaration.Expression = expression;
-                typeOrValueDefined = true;
+                if(className != null)
+                    return new VariableDeclaration(varName, className, expression);
+                return new VariableDeclaration(varName, expression);
             }
-            if(!typeOrValueDefined)
+            // if no expression
+            if (className == null) // defined only name of variable
                 throw new UnexpectedTokenException(PeekCurrentToken(), $"explisit type or value of variable '{varName}'");
-            return varDeclaration;
+            return new VariableDeclaration(varName, className, new Expression(new ConstructorCall(className))); // with default class constructor
         }
 
         private MethodDeclaration ParseMethodDeclaration()

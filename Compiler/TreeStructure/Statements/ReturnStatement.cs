@@ -30,7 +30,11 @@ namespace Compiler.TreeStructure.Statements
 
         public override string ToString()
         {
+<<<<<<< HEAD
             return $"return {Expression}";
+=======
+            return Expression.ToString();
+>>>>>>> 0d1fc736cafb7c5f92322637b20f2ff810803e03
         }
     }
 }

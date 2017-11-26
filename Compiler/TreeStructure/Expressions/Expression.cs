@@ -19,12 +19,19 @@ namespace Compiler.TreeStructure.Expressions
         {
             PrimaryPart = primaryPart;
             primaryPart.Parent = this;
-            if (primaryPart.GetType() == typeof(IntegerLiteral))
-                ReturnType = "Integer";
-            else if (primaryPart.GetType() == typeof(RealLiteral))
-                ReturnType = "Real";
-            else if (primaryPart.GetType() == typeof(BooleanLiteral))
-                ReturnType = "Boolean";
+            switch (primaryPart)
+            {
+                case IntegerLiteral _:
+                    ReturnType = "Integer";
+                    break;
+                case RealLiteral _:
+                    ReturnType = "Real";
+                    break;
+                case BooleanLiteral _:
+                    ReturnType = "Boolean";
+                    break;
+            }
+            
         }
 
         public Expression(IPrimaryExpression primaryPart, List<ICall> calls)

@@ -24,6 +24,7 @@ namespace Compiler
 //                AntonTests.SimpleClassesTest();
 //                AntonTests.IntegerTest();
                 
+<<<<<<< HEAD
 //                IlyuzaTests();
                 //Compiler.IlyuzaTests.FillClassMethodTable();
                 
@@ -33,6 +34,17 @@ namespace Compiler
                 CheckTests("Valid");
                 CheckTests("Not Valid");
                 CheckTests("Composite");
+=======
+                //Compiler.IlyuzaTests.FillClassMethodTable();
+                
+//                IlyuzaTests.FillClassMethodTable();
+                Compiler.IlyuzaTests.FillClassStaticTables();
+                Compiler.IlyuzaTests.FillClassMethodTable();
+                Compiler.IlyuzaTests.CheckReturnTypeVisitor();
+//                CheckTests("Valid");
+//                CheckTests("Not Valid");
+//                CheckTests("Composite");
+>>>>>>> 0d1fc736cafb7c5f92322637b20f2ff810803e03
                 
             }
             catch (Exception e)

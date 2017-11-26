@@ -17,11 +17,16 @@ namespace Compiler.TreeStructure.MemberDeclarations
             Identifier = identifier;
         }
         
-        public VariableDeclaration(string identifier, Expression expression)
+        public VariableDeclaration(string identifier, Expression expression) : this(identifier)
         {
-            Identifier = identifier;
             Expression = expression;
             Expression.Parent = this;
+        }
+        
+        public VariableDeclaration(string identifier, ClassName className, Expression expression) : this(identifier, expression)
+        {
+            Classname = className;
+            className.Parent = this;
         }
 
         public VariableDeclaration(VariableDeclaration variableDeclaration)
