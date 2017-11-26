@@ -49,17 +49,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         }
 
         //TODO check method call
-        public override void Visit(Call call)
-        {
-//            var method = GetMethod(call.InputType, call.Identifier);
-//            var newName = $"{call.Identifier}$" +
-//                          $"{call.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
-//            Console.WriteLine(newName);
-        }
+//        public override void Visit(Call call)
+//        {
+////            var method = GetMethod(call.InputType, call.Identifier);
+////            var newName = $"{call.Identifier}$" +
+////                          $"{call.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
+////            Console.WriteLine(newName);
+//        }
 
         public override void Visit(Expression expression)
         {
-            expression.PrimaryPart.Accept(this);
+            base.Visit(expression);
+//            expression.PrimaryPart.Accept(this);
             var inputType = expression.PrimaryPart.Type;
             expression.ReturnType = inputType;
             for (var i = 0; i < expression.Calls.Count; i++)

@@ -257,7 +257,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public override void Visit(VariableDeclaration variableDeclaration)
         {
             base.Visit(variableDeclaration);
-            if (variableDeclaration.Classname != null &&
+            if (variableDeclaration.Classname != null && variableDeclaration.Expression.ReturnType != null &&
                 variableDeclaration.Classname.Identifier != variableDeclaration.Expression.ReturnType)
             {
                 variableDeclaration.Expression.Calls.Add(new Call("To" + variableDeclaration.Classname.Identifier)
