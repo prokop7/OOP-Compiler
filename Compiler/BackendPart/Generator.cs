@@ -528,8 +528,7 @@ namespace Compiler.BackendPart
                     il.Emit(OpCodes.Ceq);
                     break;
                 case "ToReal":
-                    GenerateExpression(il, call.Arguments[0]);
-                    il.Emit(OpCodes.Conv_R4);
+                    il.Emit(OpCodes.Conv_R8);
                     break;
                 case "ToBoolean":
                     GenerateExpression(il, call.Arguments[0]);
@@ -538,6 +537,8 @@ namespace Compiler.BackendPart
                 case "UnaryMinus":
                     il.Emit(OpCodes.Neg);
                     break;
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -597,6 +598,8 @@ namespace Compiler.BackendPart
                     GenerateExpression(il, call.Arguments[0]);
                     il.Emit(OpCodes.Neg);
                     break;
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -739,7 +742,7 @@ namespace Compiler.BackendPart
                 ;
             foreach (var local in locals)
             {
-                if (local.LocalType == typeof(int) || local.LocalType == typeof(bool))
+                if (local.LocalType == typeof(int) || local.LocalType == typeof(bool) || local.LocalType == typeof(double))
                     il.EmitWriteLine(local);
             }
         }
