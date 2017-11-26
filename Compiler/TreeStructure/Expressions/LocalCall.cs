@@ -11,17 +11,17 @@ namespace Compiler.TreeStructure.Expressions
         public ICommonTreeInterface Parent { get; set; }
         public string Identifier { get; set; }
         public string Type { get; set; }
-        public List<Expression> Parameters { get; set; } = null;
+        public List<Expression> Arguments { get; set; } = null;
 
         public LocalCall(string identifier)
         {
             Identifier = identifier;
         }
         
-        public LocalCall(string identifier, List<Expression> patameters) : this(identifier)
+        public LocalCall(string identifier, List<Expression> arguments) : this(identifier)
         {
-            Parameters = patameters;
-            foreach (var expression in patameters)
+            Arguments = arguments;
+            foreach (var expression in arguments)
                 expression.Parent = this;
         }
         
@@ -29,10 +29,12 @@ namespace Compiler.TreeStructure.Expressions
 
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
-        
+
         public override string ToString()
         {
-            return Identifier + (Parameters == null ? "" : $"({Parameters.Aggregate("", (current, p) => current + (p + ", "))})");
+            return Identifier + (Arguments == null
+                       ? ""
+                       : $"({Arguments.Aggregate("", (current, p) => current + (p + ", "))})");
         }
     }
 }

@@ -46,19 +46,5 @@ namespace Compiler.TreeStructure
             str += ArrSize != null ? $"[{ArrSize}]" : "";
             return str;
         }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ClassName)
-            {
-                var o = obj as ClassName;
-                if (this.Specification.Count == o.Specification.Count)
-                {
-                    return base.Equals(obj);
-                }
-            }
-            //That's useless if you return base.Equals :D
-            return base.Equals(obj);
-        }
     }
 }

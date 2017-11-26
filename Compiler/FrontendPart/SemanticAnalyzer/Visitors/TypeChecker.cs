@@ -38,11 +38,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 			
 //            if (assignment.Expression.ReturnType != assignment.Identifier)
 //                throw new NotValidExpressionTypeException();
-			if (!(assignment.Parent.GetType().Equals(assignment.Expression.ReturnType)))
-			{
-				throw new NotValidExpressionTypeException();
-			}
-		}
+            var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
+            switch (declaration)
+            {
+                case VariableDeclaration variableDeclaration:
+                    if (variableDeclaration.Expression.ReturnType != assignment.Expression.ReturnType)
+                        throw new NotValidExpressionTypeException();
+                    break;
+                case ParameterDeclaration parameterDeclaration:
+                    if (parameterDeclaration.Type.Identifier != assignment.Expression.ReturnType)
+                        throw new NotValidExpressionTypeException();
+                    break;
+            }
+        }
 
 		public override void Visit(IfStatement ifStatement)
 		{
@@ -53,7 +61,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
 		public override void Visit(ReturnStatement returnStatement)
 		{
-			
 			base.Visit(returnStatement);
 			//TODO check returning type and Expression type - Done
 			if (!(returnStatement.Parent is MethodDeclaration @methodDeclaration))

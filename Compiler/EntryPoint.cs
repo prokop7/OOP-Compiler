@@ -21,6 +21,7 @@ namespace Compiler
 //                AntonTests.SimpleClassesTest();
 //                AntonTests.BranchTest();
 //                AntonTests.WhileTest();
+//                AntonTests.SimpleClassesTest();
 //                AntonTests.IntegerTest();
                 
 //                IlyuzaTests();
@@ -88,6 +89,7 @@ namespace Compiler
                 catch (Exception e)
                 {
                     Console.WriteLine("!!!!!\n" + e.Message + "\n!!!!!");
+                    break;
                 }
             }
         }

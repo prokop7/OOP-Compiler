@@ -17,7 +17,6 @@ namespace Compiler.TreeStructure
         public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
         public List<IMemberDeclaration> MemberDeclarations { get; set; } =
             new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции
-        public Dictionary<string, List<MethodDeclaration>> ClassMethods = new Dictionary<string, List<MethodDeclaration>>();
         
 
 

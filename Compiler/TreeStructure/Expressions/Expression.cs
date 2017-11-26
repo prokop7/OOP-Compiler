@@ -79,7 +79,7 @@ namespace Compiler.TreeStructure.Expressions
         public override string ToString()
         {
             var s = "";
-            Calls.ForEach(call => s += "." + call);
+            Calls.ForEach(call => s += "." + call.ToString());
             return PrimaryPart + s;
         }
     }

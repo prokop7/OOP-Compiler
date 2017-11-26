@@ -32,14 +32,8 @@ namespace Compiler.TreeStructure.Expressions
                     break;
             }
         }
-        
-        
-
-        public override string ToString()
-        {
-            return Identifier;
-        }
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+        public override string ToString() => Identifier;
     }
 }

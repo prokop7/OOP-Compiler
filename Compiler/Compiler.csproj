@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.6.0-beta3\build\Microsoft.Net.Compilers.props" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -41,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AntonTests.cs" />
     <Compile Include="BackendPart\Generator.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Exceptions\ClassMemberNotFoundException.cs" />
@@ -124,6 +126,7 @@
     <Content Include="Tests\Not Valid\This.o" />
     <Content Include="Tests\Not Valid\var_access.o" />
     <Content Include="Tests\Not Valid\var_declaration.o" />
+    <Content Include="Tests\Valid\AAsimpleTest.o" />
     <Content Include="Tests\Valid\Assignment.o" />
     <Content Include="Tests\Valid\Boolean.o" />
     <Content Include="Tests\Valid\change_data.o" />

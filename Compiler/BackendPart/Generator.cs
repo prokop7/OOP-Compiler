@@ -158,7 +158,11 @@ namespace Compiler.BackendPart
                                 last = body;
                             }
                             PrintAllVariables(il);
-                            if (!(last is ReturnStatement) && method.ResultType == null) il.Emit(OpCodes.Ret);
+                            if (!(last is ReturnStatement) && method.ResultType == null)
+                            {
+//                                il.Emit(OpCodes.Nop);
+                                il.Emit(OpCodes.Ret);
+                            }
 
                             // Defining the program entry point
                             if (method.Identifier == "Main")
@@ -519,11 +523,12 @@ namespace Compiler.BackendPart
                     }
                     break;
                 case LocalCall localCall:
-                    if (localCall.Parameters == null)
+                    if (localCall.Arguments == null)
                         VariabelByName(il, localCall.Identifier);
                     else
                     {
-                        localCall.Parameters.ForEach(exp => GenerateExpression(il, exp));
+                        il.Emit(OpCodes.Ldarg_0);
+                        localCall.Arguments.ForEach(exp => GenerateExpression(il, exp));
                         var method = classes[_currentClass.SelfClassName.Identifier]
                             .MethodBuilders[localCall.Identifier];
                         il.EmitCall(OpCodes.Call, method, new Type[0]);

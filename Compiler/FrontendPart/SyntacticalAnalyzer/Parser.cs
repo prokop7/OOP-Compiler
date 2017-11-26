@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Compiler.Exceptions;
@@ -382,6 +382,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             {
                 GetNextToken();
                 ifStat.ElseBody = ParseBody();
+                ifStat.ElseBody.ForEach(el => el.Parent = ifStat);
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.EndKey);
             return ifStat;
@@ -454,7 +455,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             if (primary)
             {
                 className = ParseClassName();
-                if (className.ArrSize == null && className.Specification.Count() == 0)
+                if (className.ArrSize == null && !className.Specification.Any())
                     id = className.Identifier;
                 else // if constructor of array of objects
                     CheckTokenTypeStrong(PeekCurrentToken(), Type.Lparen);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
