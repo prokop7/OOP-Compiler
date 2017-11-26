@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer;
@@ -9,8 +9,8 @@ namespace Compiler.TreeStructure
 {
     public class ClassName : IPrimaryExpression
     {
-        public string Identifier { get; set; } // класс от которого наследуется текущий класс
-        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков
+        public string Identifier { get; set; } // название класса
+        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков, названия буков дженериков
         public ICommonTreeInterface Parent { get; set; }
         public string Type { set; get; }
 
@@ -24,7 +24,7 @@ namespace Compiler.TreeStructure
         public ClassName(string name)
         {
             Identifier = name;
-//            Type = name;
+            Type = name;
         }
 
         public ClassName(ClassName className)

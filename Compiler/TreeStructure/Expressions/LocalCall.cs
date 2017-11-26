@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
@@ -6,12 +7,11 @@ namespace Compiler.TreeStructure.Expressions
 {
     public class LocalCall: IPrimaryExpression, ICommonCall
     {
+        //BUG might happen when you copy. 
         public ICommonTreeInterface Parent { get; set; }
         public string Identifier { get; set; }
-        public List<Expression> Arguments { get; set; }
         public string Type { get; set; }
-        public string InputType { get; set; }
-        public IMemberDeclaration MemberDeclaration { get; set; }
+        public List<Expression> Parameters { get; set; } = null;
 
         public LocalCall(string identifier)
         {
@@ -27,21 +27,12 @@ namespace Compiler.TreeStructure.Expressions
         
         
 
-        public override string ToString()
-        {
-            var args = "";
-            if (Arguments != null)
-            {
-                args += "(";
-                Arguments.ForEach(arg => args += $"{arg}, ");
-                    args += ")";
-                if(Arguments.Count > 0)
-                    args = args.Remove(args.Length - 2);
-            }
-            return Identifier + $"{args}";
-        }
-
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
+        
+        public override string ToString()
+        {
+            return Identifier + $"({Parameters?.Aggregate("", (current, p) => current + (p + ", "))})";
+        }
     }
 }

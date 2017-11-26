@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class Expression : ICommonTreeInterface, IBody
+    public class Expression : IBody
     {
         // 5.Plus(4) - 5 is a primary part, всё остальное - calls либо fields
         public ICommonTreeInterface Parent { get; set; }
@@ -29,12 +30,10 @@ namespace Compiler.TreeStructure.Expressions
         public Expression(IPrimaryExpression primaryPart, List<ICall> calls)
         {
             PrimaryPart = primaryPart;
+            Calls = calls;
             PrimaryPart.Parent = this;
-            foreach (var call in calls)
-            {
-                call.Parent = this;
-                Calls.Add(call);
-            }
+            foreach (var methodOrFieldCall in Calls)
+                methodOrFieldCall.Parent = this;
         }
 
         public Expression(Expression expression)

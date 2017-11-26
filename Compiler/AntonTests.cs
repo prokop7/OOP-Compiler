@@ -121,8 +121,8 @@ namespace Compiler
             var class2 = GenerateClass2();
             var class3 = GenerateClass3();
 
-
-            var analyzer = new Analizer(new List<Class> {class1, class2, class3});
+            var startClass = PreProcessor.SetupCompiler("C", "Foo");
+            var analyzer = new Analizer(new List<Class> {startClass, class1, class2, class3});
             var list = analyzer.Analize();
 
             var g = new Generator(list);
@@ -132,13 +132,6 @@ namespace Compiler
             {
                 var bClass = new ClassName("B");
                 var mainClass = new Class(bClass);
-
-//                var aClassName = new ClassName("A");
-//                var expB2 = new Expression(aClassName);
-//                aClassName.Parent = expB2;
-
-//                var varB2 = new VariableDeclaration("c", expB2) {Parent = mainClass};
-//                mainClass.MemberDeclarations.Add(varB2);
                 return mainClass;
             }
 
@@ -147,6 +140,11 @@ namespace Compiler
                 var className = new ClassName("A");
                 var mainClass = new Class(className);
 
+
+                var varExpression = new Expression(new ClassName("Integer"));
+                var body3 = new VariableDeclaration("b", varExpression) {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(body3);
+                mainClass.Members.Add("b", body3);
                 return mainClass;
             }
 
@@ -155,44 +153,28 @@ namespace Compiler
                 var className = new ClassName("C");
                 var mainClass = new Class(className);
 
-                var method = new MethodDeclaration("Main") {Parent = mainClass};
-
-
-//                method.Parameters.Add(new ParameterDeclaration("variable", new ClassName("B")) {Parent = method});
-//                method.Parameters.Add(new ParameterDeclaration("variable2", new ClassName("A")) {Parent = method});
-//                mainClass.MemberDeclarations.Add(method);
-
-//                var method2 = new MethodDeclaration("Foo") {Parent = mainClass};
+                var method = new MethodDeclaration("Foo") {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(method);
+                mainClass.Members.Add("Foo", method);
 
                 var booleanLiteral = new BooleanLiteral(true);
                 var booleanLiteralFalse = new BooleanLiteral(false);
                 var expression = new Expression(booleanLiteral);
                 var expressionFalse = new Expression(booleanLiteralFalse);
 
-//                booleanLiteral.Parent = whileExpression;
-//
-//                var whileLoop = new WhileLoop(whileExpression) {Parent = method};
-//
-//                var varExpression = new Expression(new ClassName("C"));
-//                varExpression.Calls.Add(new MethodOrFieldCall("Foo2") {Parent = varExpression});
-//                
-                var field = new VariableDeclaration("a", expression) {Parent = mainClass};
-                mainClass.MemberDeclarations.Add(field);
-                mainClass.MemberDeclarations.Add(method);
-
-                var body3 = new VariableDeclaration("b", expression) {Parent = method};
+                var varExpression = new Expression(new ClassName("Integer"));
+                var body3 = new VariableDeclaration("b", varExpression) {Parent = method};
                 method.Body.Add(body3);
-                var body2 = new Assignment("a", new Expression(expression)) {Parent = method};
-                method.Body.Add(body2);
-                var body4 = new Assignment("b", new Expression(expressionFalse)) {Parent = method};
+
+                var varExpression2 = new Expression(new ClassName("A"));
+                var body4 = new VariableDeclaration("a", varExpression2) {Parent = method};
                 method.Body.Add(body4);
 
-//                whileLoop.Body.AddRange(new List<IBody> {body1, body2});
 
-////                var body3 = new Assignment("a", new Expression(varExpression)) {Parent = method};
-
-//                method.Body.Add(whileLoop);
-////                method.Body.Add(body3);
+                var call = new Expression(new LocalCall("a"));
+                call.Calls.Add(new FieldCall("b") {Parent = call});
+                var assignment = new Assignment("b", call) {Parent = method};
+                method.Body.Add(assignment);
 
                 return mainClass;
             }
@@ -200,6 +182,8 @@ namespace Compiler
 
         public static void BranchTest()
         {
+//            var main = PreProcess.CreateMain();
+
             var class1 = GenerateClass1();
 
             var analyzer = new Analizer(new List<Class> {class1});
@@ -207,6 +191,7 @@ namespace Compiler
 
             var g = new Generator(list);
             g.GenerateProgram();
+
 
             Class GenerateClass1()
             {
@@ -223,18 +208,25 @@ namespace Compiler
                 var integerLiteral = new IntegerLiteral(123);
                 var integerExpression = new Expression(integerLiteral);
 
-                var body3 = new VariableDeclaration("a", integerExpression) {Parent = method};
+                var localCall = new LocalCall("Foo") {Parameters = new List<Expression>()};
+                localCall.Parameters.Add(new Expression(integerLiteral) {Parent = localCall});
+                var localCallExpression = new Expression(localCall);
+
+                var body3 = new VariableDeclaration("a", localCallExpression) {Parent = method};
                 method.Body.Add(body3);
 
-                var @if = new IfStatement(new Expression(expression), new List<IBody>()) {Parent = method};
-                method.Body.Add(@if);
+                var foo = new MethodDeclaration("Foo")
+                {
+                    Parent = mainClass,
+                    ResultType = new ClassName("Integer")
+                };
+                foo.Parameters.Add(new ParameterDeclaration("a", new ClassName("Integer")));
+                var fooBody = new ReturnStatement(new Expression(new LocalCall("a"))) {Parent = foo};
 
-                var body2 = new Assignment("a", new Expression(expression)) {Parent = @if};
-                @if.Body.Add(body2);
-                var body4 = new Assignment("a", new Expression(expressionFalse)) {Parent = @if};
-                @if.ElseBody.Add(body4);
+                foo.Body.Add(fooBody);
 
-
+                mainClass.MemberDeclarations.Add(foo);
+                mainClass.Members.Add("Foo", foo);
                 return mainClass;
             }
         }
@@ -286,6 +278,53 @@ namespace Compiler
 
                 var body2 = new Assignment("a", new Expression(expression)) {Parent = whileLoop};
                 whileLoop.Body.Add(body2);
+
+//                var returnStatement = new ReturnStatement {Parent = whileLoop};
+//                whileLoop.Body.Add(returnStatement);
+
+                return mainClass;
+            }
+        }
+
+        public static void IntegerTest()
+        {
+            var class1 = GenerateClass1();
+
+            var analyzer = new Analizer(new List<Class> {class1});
+            var list = analyzer.Analize();
+
+            var g = new Generator(list);
+            g.GenerateProgram();
+
+            Class GenerateClass1()
+            {
+                var bClass = new ClassName("A");
+                var mainClass = new Class(bClass);
+
+                var method = new MethodDeclaration("Main") {Parent = mainClass};
+                mainClass.MemberDeclarations.Add(method);
+
+                var booleanLiteral = new BooleanLiteral(true);
+                var booleanLiteralFalse = new BooleanLiteral(false);
+                var integerLiteral = new IntegerLiteral(123);
+                var integerTwelve = new IntegerLiteral(12);
+                var integerExpression = new Expression(integerLiteral);
+                var integerTwelveExpression = new Expression(integerTwelve);
+                var expression = new Expression(booleanLiteral);
+                var expressionFalse = new Expression(booleanLiteralFalse);
+
+                var subExpression = new Expression(new LocalCall("a"));
+                subExpression.Calls.Add(new Call("Minus")
+                {
+                    Arguments = new List<Expression> {new Expression(integerTwelveExpression) {Parent = subExpression}},
+                    Parent = subExpression
+                });
+
+                var body3 = new VariableDeclaration("a", integerExpression) {Parent = method};
+                method.Body.Add(body3);
+
+                var body2 = new Assignment("a", subExpression) {Parent = method};
+                method.Body.Add(body2);
 
 //                var returnStatement = new ReturnStatement {Parent = whileLoop};
 //                whileLoop.Body.Add(returnStatement);

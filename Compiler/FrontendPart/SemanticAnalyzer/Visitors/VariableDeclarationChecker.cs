@@ -18,9 +18,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public string GetContextIdentifier(string identifier)
         {
-            var newIdentifier = string.Copy(identifier) + VariableNum;
+            var newIdentifier = string.Copy(identifier) + "$" + VariableNum;
             VariableNum++;
-            return $"${newIdentifier}";
+            return newIdentifier;
         }
 
         public void SetMap(string identifier, string newIdentifier)
@@ -55,19 +55,12 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(LocalCall localCall)
         {
+            if (localCall.Parameters != null)
+                return;
             if (!HasMap(localCall.Identifier))
                 throw new VariableNotFoundException(localCall.Identifier);
             localCall.Identifier = GetValueFromMap(localCall.Identifier);
-            var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
-            switch (variable)
-            {
-                case VariableDeclaration variableDeclaration:
-                    localCall.Type = variableDeclaration.Expression.ReturnType;
-                    break;
-                case ParameterDeclaration parameterDeclaration:
-                    localCall.Type = parameterDeclaration.Type.Identifier;
-                    break;
-            }
+            GetTypeVariable(localCall, localCall.Identifier);
         }
 
         public override void Visit(Class @class)

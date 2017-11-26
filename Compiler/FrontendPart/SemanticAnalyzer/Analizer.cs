@@ -5,8 +5,10 @@ using System.Data;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
+using Compiler.TreeStructure.MemberDeclarations;
 using static Compiler.L;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
@@ -76,6 +78,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             AddInheritedMembers();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
+            foreach (var @class in _classList)
+            {
+                var fieldVisitor = new FieldChangeVisitor();
+                fieldVisitor.Visit(@class);
+            }
             TypeCheck();
             return _classList;
         }
@@ -115,7 +122,26 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 
         private void FillMethodsTable()
         {
-            throw new System.NotImplementedException();
+            Log($"Fill class method tables: start", 1);
+            foreach (var i in _classList)
+            {
+                foreach (var j in i.MemberDeclarations)
+                {
+                    if (!(j is MethodDeclaration methodDeclaration)) continue;
+                    if (StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Count == 0)
+                    {
+                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods.Add(i.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
+                            
+                    }
+                    else
+                    {
+                        StaticTables.ClassTable[i.SelfClassName.Identifier].ElementAt(0).ClassMethods[i.SelfClassName.Identifier].Add(methodDeclaration);
+                    }
+                }
+                
+            }
+            Log($"Fill class method tables: finish", 1);
+            
         }
 
         private void FillStaticTable()
@@ -123,6 +149,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Fill static tables: start", 1);
             AnalyzeClass(BuiltInClasses.GenerateBoolean());
             AnalyzeClass(BuiltInClasses.GenerateInteger());
+            AnalyzeClass(BuiltInClasses.GenerateReal());
             foreach (var i in _classList)
                 AnalyzeClass(i);
             
@@ -174,7 +201,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 if (@class.Base == null)
                     return;
-
+                
                 // TODO something strange. Test it!!!
                 AddParentMethods(@class.Base);
                 var members = @class.Members;
@@ -183,8 +210,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                         members.Add(pair.Key, pair.Value);
             }
 
-            Log($"Inheritance extending: finish", 2);
+            Log($"Inheritance extending: finish", 1);
         }
+
 
         public void VariableDeclarationCheck()
         {
@@ -199,6 +227,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 fillVariables.Visit(@class);
             }
             Log($"Variable declaration check: finish", 2);
+        }
+    }
+
+    public class FieldChangeVisitor: BaseVisitor
+    {
+        public override void Visit(FieldCall fieldCall)
+        {
+            var inputType = fieldCall.InputType;
+            var inputClass = StaticTables.ClassTable[inputType][0];
+            if (inputClass.NameMap.ContainsKey(fieldCall.Identifier))
+                fieldCall.Identifier = inputClass.NameMap[fieldCall.Identifier];
+            else
+                throw new ClassMemberNotFoundException(inputType, fieldCall.Identifier);
         }
     }
 
