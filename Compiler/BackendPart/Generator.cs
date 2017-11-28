@@ -53,7 +53,7 @@ namespace Compiler.BackendPart
             {
                 Log($"Creating class {cls}", 3);
                 var classAttrs = TypeAttributes.Public;
-                var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier, 
+                var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier,
                     classAttrs,
                     GetTypeByClassIdentifier(cls.BaseClassName?.Identifier));
                 classes[cls.SelfClassName.Identifier] = new ClassStructure
@@ -139,7 +139,8 @@ namespace Compiler.BackendPart
                     ctorIl.Emit(OpCodes.Ldarg_0);
                     var ctorArgs = new Type[0];
                     //TODO add base instead of object
-                    var ctor = typeof(object).GetConstructor(ctorArgs);
+                    var ctor = GetTypeByClassIdentifier(cls.BaseClassName?.Identifier).GetConstructor(ctorArgs);
+//                    var ctor = typeof(object).GetConstructor(ctorArgs);
                     ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
                     ctorIl.Emit(OpCodes.Ret);
                 }
@@ -216,7 +217,8 @@ namespace Compiler.BackendPart
 
                             ctorIl.Emit(OpCodes.Ldarg_0);
                             var ctorArgs = new Type[0];
-                            var ctor = typeof(object).GetConstructor(ctorArgs);
+//                            var ctor = typeof(object).GetConstructor(ctorArgs);
+                            var ctor = GetTypeByClassIdentifier(cls.BaseClassName?.Identifier).GetConstructor(ctorArgs);
                             ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
 //                            ctorIl.Emit(OpCodes.Ldarg_0);
 
@@ -384,17 +386,24 @@ namespace Compiler.BackendPart
         /// <param name="assignment"></param>
         private void GenerateAssignment(ILGenerator il, Assignment assignment)
         {
-            var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
+
+            var cls = _currentClass;
+            check:
+            if (!cls.Members.ContainsKey(assignment.Identifier))
+            {
+                cls = cls.Base;
+                goto check;
+            }
+//            var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
+            var declaration = cls.Members[assignment.Identifier];
 
             if (declaration.Parent is Class)
             {
                 // Set values for field
-                // TODO change type to Field
-                // BUG Doesn't work without static commands
                 if (declaration is VariableDeclaration vDecl)
                 {
                     il.Emit(OpCodes.Ldarg_0);
-                    var fb = classes[_currentClass.SelfClassName.Identifier].FieldBuilders[vDecl.Identifier];
+                    var fb = classes[cls.SelfClassName.Identifier].FieldBuilders[vDecl.Identifier];
                     GenerateExpression(il, assignment.Expression);
                     il.Emit(OpCodes.Stfld, fb);
                 }
@@ -441,7 +450,6 @@ namespace Compiler.BackendPart
                                 }
                                 var method = classes[cls.SelfClassName.Identifier]
                                     .MethodBuilders[expressionCall.Identifier];
-                                //TODO LOAD ARGS!!!
                                 var paramsTypes = new Type[call.Arguments.Count];
                                 for (var i = 0; i < call.Arguments.Count; i++)
                                 {
@@ -456,6 +464,7 @@ namespace Compiler.BackendPart
                         }
                         break;
                     case FieldCall fieldCall:
+                        //TODO choose class
                         var fb = classes[fieldCall.InputType].FieldBuilders[fieldCall.Identifier];
                         il.Emit(OpCodes.Ldfld, fb);
                         break;
@@ -641,13 +650,27 @@ namespace Compiler.BackendPart
                 case LocalCall localCall:
                     if (localCall.Arguments == null)
                     {
-                        var parent = localCall.Parent;
-                        while (!(parent is Class))
-                            parent = parent.Parent;
-                        var @class = (Class) parent;
+                        var @class = _currentClass;
+                        var pClass = @class;
+                        rec:
+                        if (pClass.Base != null && !@class.Members.ContainsKey(localCall.Identifier))
+                        {
+                            pClass = pClass.Base;
+                            goto rec;
+                        }
+                        if (pClass.Members.ContainsKey(localCall.Identifier))
+                            @class = pClass;
                         if (@class.Members.ContainsKey(localCall.Identifier))
                         {
                             il.Emit(OpCodes.Ldarg_0);
+                            //TODO choose class
+//                            var cls = StaticTables.ClassTable[@class.SelfClassName.Identifier][0];
+//                            check:
+//                            if (!cls.Members.ContainsKey(localCall.Identifier))
+//                            {
+//                                cls = cls.Base;
+//                                goto check;
+//                            }
                             var fb = classes[@class.SelfClassName.Identifier].FieldBuilders[localCall.Identifier];
                             il.Emit(OpCodes.Ldfld, fb);
                         }
@@ -656,9 +679,20 @@ namespace Compiler.BackendPart
                     }
                     else
                     {
+                        var @class = _currentClass;
+                        var pClass = @class;
+                        rec:
+                        if (pClass.Base != null && !@class.Members.ContainsKey(localCall.Identifier))
+                        {
+                            pClass = pClass.Base;
+                            goto rec;
+                        }
+                        if (pClass.Members.ContainsKey(localCall.Identifier))
+                            @class = pClass;
+                        
                         il.Emit(OpCodes.Ldarg_0);
                         localCall.Arguments.ForEach(exp => GenerateExpression(il, exp));
-                        var method = classes[_currentClass.SelfClassName.Identifier]
+                        var method = classes[@class.SelfClassName.Identifier]
                             .MethodBuilders[localCall.Identifier];
                         il.EmitCall(OpCodes.Call, method, new Type[0]);
                     }

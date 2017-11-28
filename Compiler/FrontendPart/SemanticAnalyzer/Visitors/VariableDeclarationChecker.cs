@@ -48,6 +48,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(Assignment assignment)
         {
             base.Visit(assignment);
+            var cls = (Class) Stack[0];
+            check:
+            if (cls.Base != null && !cls.NameMap.ContainsKey(assignment.Identifier))
+            {
+                cls = cls.Base;
+                goto check;
+            }
+            if (cls.NameMap.ContainsKey(assignment.Identifier))
+            {
+                assignment.Identifier = cls.NameMap[assignment.Identifier];
+                return;
+            }
             if (!HasMap(assignment.Identifier))
                 throw new VariableNotFoundException(assignment.Identifier);
             assignment.Identifier = GetValueFromMap(assignment.Identifier);
@@ -64,10 +76,25 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 //                GetTypeVariable(localCall, localCall.Identifier);
                 return;
             }
+            
+            var cls = (Class) Stack[0];
+            check:
+            if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier))
+            {
+                cls = cls.Base;
+                goto check;
+            }
+            if (cls.NameMap.ContainsKey(localCall.Identifier))
+            {
+                localCall.Identifier = cls.NameMap[localCall.Identifier];
+                return;
+            }
             if (!HasMap(localCall.Identifier))
+            {
                 throw new VariableNotFoundException(localCall.Identifier);
+            }
             localCall.Identifier = GetValueFromMap(localCall.Identifier);
-            GetTypeVariable(localCall, localCall.Identifier);
+//            GetTypeVariable(localCall, localCall.Identifier);
         }
 
         public override void Visit(Class @class)

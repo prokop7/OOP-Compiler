@@ -16,6 +16,24 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             if (localCall.Arguments == null)
             {
                 var variable = (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
+                if (variable == null)
+                {
+                    var p = localCall.Parent;
+                    while (p != null && !(p is Class))
+                        p = p.Parent;
+                    if (p == null)
+                        throw new Exception("WTF!?");
+                    var cls = (Class) p;
+                    check:
+                    if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier))
+                    {
+                        cls = cls.Base;
+                        goto check;
+                    }
+                    if (!cls.Members.ContainsKey(localCall.Identifier))
+                        throw new VariableNotFoundException(localCall.Identifier);
+                    localCall.Type = ((VariableDeclaration) cls.Members[localCall.Identifier]).Expression.ReturnType;
+                } else
                 switch (variable)
                 {
                     case VariableDeclaration variableDeclaration:
