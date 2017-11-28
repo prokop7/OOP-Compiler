@@ -17,13 +17,14 @@ class A is
 end
 
 class B extends A is
+	var c is 13
     this is
         b := 12
     end
 end
 class D extends B is
 	this is
-		var i is b
+		var i is c
 		var j is Foo()
 	end
 end

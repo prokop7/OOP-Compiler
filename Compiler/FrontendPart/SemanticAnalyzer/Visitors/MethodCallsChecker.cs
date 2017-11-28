@@ -15,7 +15,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         {
             if (localCall.Arguments == null)
             {
-                var variable = (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
+                var variable =
+                    (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
                 if (variable == null)
                 {
                     var p = localCall.Parent;
@@ -25,7 +26,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         throw new Exception("WTF!?");
                     var cls = (Class) p;
                     check:
-                    if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier))
+                    if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier) &&
+                        !cls.Members.ContainsKey(localCall.Identifier))
                     {
                         cls = cls.Base;
                         goto check;
@@ -33,18 +35,19 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                     if (!cls.Members.ContainsKey(localCall.Identifier))
                         throw new VariableNotFoundException(localCall.Identifier);
                     localCall.Type = ((VariableDeclaration) cls.Members[localCall.Identifier]).Expression.ReturnType;
-                } else
-                switch (variable)
-                {
-                    case VariableDeclaration variableDeclaration:
-                        localCall.Type = variableDeclaration.Expression.ReturnType;
-                        break;
-                    case ParameterDeclaration parameterDeclaration:
-                        localCall.Type = parameterDeclaration.Type.Identifier;
-                        break;
-                    default:
-                        throw new VariableNotFoundException(localCall.ToString());
                 }
+                else
+                    switch (variable)
+                    {
+                        case VariableDeclaration variableDeclaration:
+                            localCall.Type = variableDeclaration.Expression.ReturnType;
+                            break;
+                        case ParameterDeclaration parameterDeclaration:
+                            localCall.Type = parameterDeclaration.Type.Identifier;
+                            break;
+                        default:
+                            throw new VariableNotFoundException(localCall.ToString());
+                    }
                 return;
             }
             var parent = localCall.Parent;
@@ -132,7 +135,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public static IMemberDeclaration GetMethod(string className, string identifier)
         {
-            if (!StaticTables.ClassTable.ContainsKey(className)) 
+            if (!StaticTables.ClassTable.ContainsKey(className))
                 throw new ClassNotFoundException(className);
             var @class = StaticTables.ClassTable[className][0];
             check:

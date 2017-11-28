@@ -653,7 +653,7 @@ namespace Compiler.BackendPart
                         var @class = _currentClass;
                         var pClass = @class;
                         rec:
-                        if (pClass.Base != null && !@class.Members.ContainsKey(localCall.Identifier))
+                        if (pClass.Base != null && !pClass.Members.ContainsKey(localCall.Identifier))
                         {
                             pClass = pClass.Base;
                             goto rec;
@@ -682,7 +682,7 @@ namespace Compiler.BackendPart
                         var @class = _currentClass;
                         var pClass = @class;
                         rec:
-                        if (pClass.Base != null && !@class.Members.ContainsKey(localCall.Identifier))
+                        if (pClass.Base != null && !pClass.Members.ContainsKey(localCall.Identifier))
                         {
                             pClass = pClass.Base;
                             goto rec;
