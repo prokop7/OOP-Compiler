@@ -1,5 +1,12 @@
+class C is
+    this is
+        var b is B(5)
+        b.Foo()
+    end
+end
+
 class A is
-    method Foo is
+    method Foo: Integer is
         return 5
     end
 
@@ -11,12 +18,6 @@ end
 class B extends A is
     this(i: Integer) is
         var b is i
-    end
-end
-
-class C is
-    this is
-        var b is B(5)
-        b.Foo()
+        b := b.Plus(1)
     end
 end

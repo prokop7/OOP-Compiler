@@ -38,7 +38,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 
             ReplaceLocalCall();
             FillMethodsTable();
-            AddInheritedMembers();
+//            AddInheritedMembers();
+            AddInheritance();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
             foreach (var @class in _classList)
@@ -48,6 +49,16 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             }
             TypeCheck();
             return _classList;
+        }
+
+        private void AddInheritance()
+        {
+            foreach (var @class in _classList)
+                if (@class.BaseClassName != null)
+                    if (!StaticTables.ClassTable.ContainsKey(@class.BaseClassName.Identifier))
+                        throw new ClassNotFoundException(@class.BaseClassName.Identifier);
+                    else
+                        @class.Base = StaticTables.ClassTable[@class.BaseClassName.Identifier][0];
         }
 
         private void ReplaceLocalCall()

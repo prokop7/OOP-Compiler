@@ -80,8 +80,8 @@ namespace Compiler
             var files = Directory.GetFiles($"./../../Tests/{folderName}/");
 //            var files = new List<string>(){"./../../Tests/Valid/Boolean.o"};
             foreach(var file in files){
-//                if (file != "./../../Tests/Valid/SumReal&Integer.o")
-//                    continue;
+                if (file != "./../../Tests/Valid/Inheritance.o")
+                    continue;
                 Console.WriteLine("\n\n" + file);
                 var main = new FrontEndCompiler(file);
                 try
@@ -92,8 +92,8 @@ namespace Compiler
                 }
                 catch (Exception e)
                 {
-                    L.LogError(e);
-//                    Console.WriteLine(e);
+//                    L.LogError(e);
+                    Console.WriteLine(e);
 //                    Console.WriteLine("\n\n\n\n");
 //                    break;
                 }

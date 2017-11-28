@@ -62,6 +62,14 @@ namespace Compiler.TreeStructure
             return @class;
         }
 
+        public static Class GenerateObject()
+        {
+            var className = new ClassName("Object");
+            var @class = new Class(className);
+            
+            return @class;
+        }
+
         public static Class GenerateInteger()
         {
             var className = new ClassName("Integer");

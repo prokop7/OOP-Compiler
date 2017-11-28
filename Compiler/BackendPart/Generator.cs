@@ -53,7 +53,9 @@ namespace Compiler.BackendPart
             {
                 Log($"Creating class {cls}", 3);
                 var classAttrs = TypeAttributes.Public;
-                var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier, classAttrs);
+                var typeBuilder = modb.DefineType(cls.SelfClassName.Identifier, 
+                    classAttrs,
+                    GetTypeByClassIdentifier(cls.BaseClassName?.Identifier));
                 classes[cls.SelfClassName.Identifier] = new ClassStructure
                 {
                     TypeBuilder = typeBuilder,
@@ -136,6 +138,7 @@ namespace Compiler.BackendPart
 
                     ctorIl.Emit(OpCodes.Ldarg_0);
                     var ctorArgs = new Type[0];
+                    //TODO add base instead of object
                     var ctor = typeof(object).GetConstructor(ctorArgs);
                     ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
                     ctorIl.Emit(OpCodes.Ret);
@@ -210,7 +213,7 @@ namespace Compiler.BackendPart
                                 GenerateExpression(ctorIl, varDeclaration.Expression);
                                 ctorIl.Emit(OpCodes.Stfld, fb);
                             }
-                            
+
                             ctorIl.Emit(OpCodes.Ldarg_0);
                             var ctorArgs = new Type[0];
                             var ctor = typeof(object).GetConstructor(ctorArgs);
@@ -277,6 +280,8 @@ namespace Compiler.BackendPart
                     return typeof(bool);
                 case "Real":
                     return typeof(double);
+                case null:
+                    return typeof(object);
                 default:
                     return classes[identifier].TypeBuilder;
             }
@@ -427,7 +432,14 @@ namespace Compiler.BackendPart
                                 ExpressReal(il, call);
                                 break;
                             default:
-                                var method = classes[expressionCall.InputType]
+                                var cls = StaticTables.ClassTable[expressionCall.InputType][0];
+                                check:
+                                if (!cls.Members.ContainsKey(expressionCall.Identifier))
+                                {
+                                    cls = cls.Base;
+                                    goto check;
+                                }
+                                var method = classes[cls.SelfClassName.Identifier]
                                     .MethodBuilders[expressionCall.Identifier];
                                 //TODO LOAD ARGS!!!
                                 var paramsTypes = new Type[call.Arguments.Count];
@@ -438,6 +450,8 @@ namespace Compiler.BackendPart
                                     GenerateExpression(il, arg);
                                 }
                                 il.EmitCall(OpCodes.Callvirt, method, paramsTypes);
+                                if (method.ReturnType != typeof(void))
+                                    il.Emit(OpCodes.Pop);
                                 break;
                         }
                         break;
@@ -743,7 +757,8 @@ namespace Compiler.BackendPart
                 ;
             foreach (var local in locals)
             {
-                if (local.LocalType == typeof(int) || local.LocalType == typeof(bool) || local.LocalType == typeof(double))
+                if (local.LocalType == typeof(int) || local.LocalType == typeof(bool) ||
+                    local.LocalType == typeof(double))
                     il.EmitWriteLine(local);
             }
         }

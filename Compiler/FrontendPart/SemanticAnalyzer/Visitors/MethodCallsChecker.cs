@@ -114,9 +114,15 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public static IMemberDeclaration GetMethod(string className, string identifier)
         {
-            if (!StaticTables.ClassTable.ContainsKey(className)) throw new ClassNotFoundException(className);
+            if (!StaticTables.ClassTable.ContainsKey(className)) 
+                throw new ClassNotFoundException(className);
             var @class = StaticTables.ClassTable[className][0];
-            if (!@class.Members.ContainsKey(identifier)) throw new ClassMemberNotFoundException(className, identifier);
+            check:
+            if (!@class.Members.ContainsKey(identifier))
+            {
+                @class = @class.Base ?? throw new ClassMemberNotFoundException(className, identifier);
+                goto check;
+            }
             return @class.Members[identifier];
         }
     }
