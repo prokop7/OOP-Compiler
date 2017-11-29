@@ -5,19 +5,24 @@ class Program is
 
         var car is carCreator.Create()
         var bike is bikeCreator.Create()
-        var i is car.a
+        var i is car.Foo()
+        var j is bike.Foo()
     end
 
 end
 
 class AbstractProduct is
-    var a is 5
+    method Foo(): Integer is
+        return 5
+    end
     this is
     end
 end
 
 class Car extends AbstractProduct is
-    var a is 6
+    method Foo(): Integer is
+        return 56
+    end
     this is
     end
 end

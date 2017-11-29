@@ -159,6 +159,8 @@ namespace Compiler.BackendPart
                             Log($"Creating method {method}", 4);
                             var methodAttrs = MethodAttributes.Public;
                             if (method.Identifier == "Main") methodAttrs |= MethodAttributes.Static;
+                            else
+                                methodAttrs |= MethodAttributes.Virtual;
 
                             Type resType;
                             if (method.ResultType == null) resType = typeof(void);
@@ -690,7 +692,7 @@ namespace Compiler.BackendPart
                         }
                         if (pClass.Members.ContainsKey(localCall.Identifier))
                             @class = pClass;
-                        
+
                         il.Emit(OpCodes.Ldarg_0);
                         localCall.Arguments.ForEach(exp => GenerateExpression(il, exp));
                         var method = classes[@class.SelfClassName.Identifier]
