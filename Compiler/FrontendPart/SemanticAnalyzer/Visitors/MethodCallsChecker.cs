@@ -71,8 +71,11 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(FieldCall field)
         {
-            if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
-                throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
+//            var nName = VariableDeclarationChecker.GetValueFromMap(field, field.Identifier);
+//            if (nName != null)
+//                field.Identifier = nName;
+//            if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
+//                throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
         }
 
         //TODO check method call

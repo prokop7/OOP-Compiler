@@ -287,6 +287,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         {
             var inputType = fieldCall.InputType;
             var inputClass = StaticTables.ClassTable[inputType][0];
+            if (inputClass.Members.ContainsKey(fieldCall.Identifier))
+                return;
             if (inputClass.NameMap.ContainsKey(fieldCall.Identifier))
                 fieldCall.Identifier = inputClass.NameMap[fieldCall.Identifier];
             else

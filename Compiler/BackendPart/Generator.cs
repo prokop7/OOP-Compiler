@@ -459,8 +459,8 @@ namespace Compiler.BackendPart
                                     GenerateExpression(il, arg);
                                 }
                                 il.EmitCall(OpCodes.Callvirt, method, paramsTypes);
-                                if (method.ReturnType != typeof(void))
-                                    il.Emit(OpCodes.Pop);
+//                                if (method.ReturnType != typeof(void))
+//                                    il.Emit(OpCodes.Pop);
                                 break;
                         }
                         break;

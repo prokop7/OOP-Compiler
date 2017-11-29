@@ -1,20 +1,23 @@
 class Program is
-    method main is
+    this is
         var carCreator: CarCreator
         var bikeCreator: BikeCreator
 
         var car is carCreator.Create()
         var bike is bikeCreator.Create()
+        var i is car.a
     end
 
 end
 
 class AbstractProduct is
+    var a is 5
     this is
     end
 end
 
 class Car extends AbstractProduct is
+    var a is 6
     this is
     end
 end

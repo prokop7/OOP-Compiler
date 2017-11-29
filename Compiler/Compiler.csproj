@@ -106,6 +106,8 @@
     <Compile Include="TreeStructure\Visitors\IVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Tests\Composite\AbstractFactory.o" />
+    <Content Include="Tests\Composite\factoryMethod.o" />
     <Content Include="Tests\Composite\ReturnStatementTypeChecking.o" />
     <Content Include="Tests\Not Valid\Assignment.o" />
     <Content Include="Tests\Not Valid\Boolean.o" />
