@@ -190,7 +190,8 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                     throw new UnexpectedTokenException(PeekCurrentToken(), "class name");
                 className.Parent = varDeclaration;
                 varDeclaration.Classname = className;
-                varDeclaration.Expression = new Expression(new ClassName(className));
+                varDeclaration.Expression = new Expression(new ClassName(className) {Parent = varDeclaration});
+                varDeclaration.IsDeclared = false;
                 typeOrValueDefined = true;
             }
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.IsKey))
@@ -201,6 +202,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                     throw new UnexpectedTokenException(PeekCurrentToken(), "expression");
                 expression.Parent = varDeclaration;
                 varDeclaration.Expression = expression;
+                varDeclaration.IsDeclared = true;
                 typeOrValueDefined = true;
             }
             if(!typeOrValueDefined)

@@ -29,7 +29,7 @@ namespace Compiler
 //                IlyuzaTests.FillClassMethodTable();
 //                Compiler.IlyuzaTests.FillClassStaticTables();
 //                Compiler.IlyuzaTests.FillClassMethodTable();
-//                CheckTests("Valid");
+                CheckTests("Valid");
                 
 //                CheckTests("Not Valid");
                 CheckTests("Composite");
@@ -80,7 +80,7 @@ namespace Compiler
             var files = Directory.GetFiles($"./../../Tests/{folderName}/");
 //            var files = new List<string>(){"./../../Tests/Valid/Boolean.o"};
             foreach(var file in files){
-                if (!file.EndsWith("Silitti.o"))
+                if (!file.EndsWith("list.o"))
                     continue;
                 Console.WriteLine("\n\n" + file);
                 var main = new FrontEndCompiler(file);

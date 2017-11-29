@@ -1,10 +1,10 @@
 class Program is
     method main is 
-        var AmdFactory: AMD_PCFactory
-        var IntelFactory: Intel_PCFactory
+        // var AmdFactory: AMD_PCFactory
+        // var IntelFactory: Intel_PCFactory
 
-        var client1: Client is AmdFactory
-        var client2: Client is IntelFactory
+        var client1: Client is AMD_PCFactory
+        var client2: Client is Intel_PCFactory
     end
 end
 
@@ -95,18 +95,16 @@ class AMD_PCFactory extends PCFactory is
 end
 
 class Intel_PCFactory extends PCFactory is
-    this(i: Integer) is 
+    this is 
     end
 
     method createProcessor: AbstractProcessor is
-        var a is 3
-        var new is IntelProcessor(a)
+        var new is IntelProcessor(3)
         return new
     end
 
     method createGPU: AbstractGPU is
-        var a is 3
-        var new is IntelGPU(a)
+        var new is NvidiaGPU(3)
         return new
     end
 

@@ -69,14 +69,14 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             localCall.Identifier = newName;
         }
 
-        public override void Visit(FieldCall field)
-        {
+//        public override void Visit(FieldCall field)
+//        {
 //            var nName = VariableDeclarationChecker.GetValueFromMap(field, field.Identifier);
 //            if (nName != null)
 //                field.Identifier = nName;
 //            if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
 //                throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
-        }
+//        }
 
         //TODO check method call
 //        public override void Visit(Call call)
@@ -134,11 +134,13 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                             throw new Exception("Cannot call method from void");
                         break;
                     case VariableDeclaration variableDeclaration:
+                        if (variableDeclaration.Expression.ReturnType == null)
+                            Visit(variableDeclaration);
                         inputType = variableDeclaration.Expression.ReturnType;
                         expression.ReturnType = inputType;
                         break;
                 }
-                if (!(call is Call)) continue;
+//                if (!(call is Call)) continue;
             }
         }
 

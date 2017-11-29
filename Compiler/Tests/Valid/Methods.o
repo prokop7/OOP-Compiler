@@ -18,7 +18,7 @@ class A is
 
   //метод без параметров и аутпута
   method plusFive is
-    a.Plus(5)
+    var t is a.Plus(5)
   end
 
   //метод с параметром, но без аутпута

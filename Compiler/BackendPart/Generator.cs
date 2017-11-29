@@ -213,7 +213,10 @@ namespace Compiler.BackendPart
                                 ctorIl.Emit(OpCodes.Ldarg_0);
                                 var varDeclaration = (VariableDeclaration) el;
                                 var fb = classes[cls.SelfClassName.Identifier].FieldBuilders[varDeclaration.Identifier];
-                                GenerateExpression(ctorIl, varDeclaration.Expression);
+                                if (varDeclaration.IsDeclared)
+                                    GenerateExpression(ctorIl, varDeclaration.Expression);
+                                else
+                                    GenerateDefaultExpression(ctorIl, varDeclaration.Expression);
                                 ctorIl.Emit(OpCodes.Stfld, fb);
                             }
 
@@ -272,6 +275,28 @@ namespace Compiler.BackendPart
             Log("Code generating: finish", 1);
 
             Log($"Output file = {Path.GetFullPath(an.Name + ".exe")}", 0);
+        }
+
+        private void GenerateDefaultExpression(ILGenerator il, Expression expression)
+        {
+            switch (expression.PrimaryPart)
+            {
+                case ClassName className:
+                    switch (className.Identifier)
+                    {
+                        case "Integer":
+                        case "Boolean":
+                            il.Emit(OpCodes.Ldc_I4, 0);
+                            break;
+                        case "Real":
+                            il.Emit(OpCodes.Ldc_R8, 0);
+                            break;
+                        default:
+                            il.Emit(OpCodes.Ldnull);
+                            break;
+                    }
+                    break;
+            }
         }
 
         private Type GetTypeByClassIdentifier(string identifier)
@@ -334,8 +359,7 @@ namespace Compiler.BackendPart
                         .TakeWhile(pair => pair.Key != variableDeclaration.Identifier)
                         .Count();
             GenerateExpression(il, variableDeclaration.Expression);
-            il.Emit(OpCodes.Stloc, i)
-                ;
+            il.Emit(OpCodes.Stloc, i);
         }
 
         private void GenerateWhile(ILGenerator il, WhileLoop whileLoop)
@@ -366,7 +390,7 @@ namespace Compiler.BackendPart
             if (ifStmt.ElseBody != null)
             {
                 var branchExit = il.DefineLabel();
-                
+
                 if (!(lastBody is ReturnStatement))
                     il.Emit(OpCodes.Br, branchExit);
 
@@ -374,7 +398,7 @@ namespace Compiler.BackendPart
 
                 foreach (var e in ifStmt.ElseBody)
                     GenerateStatement(il, e);
-                
+
                 il.MarkLabel(branchExit);
             }
             else
@@ -808,7 +832,9 @@ namespace Compiler.BackendPart
 
         private void GenerateLocal(ILGenerator il, VariableDeclaration variableDeclaration)
         {
-            var t = variableDeclaration.Expression.ReturnType;
+            var t = variableDeclaration.Classname == null
+                ? variableDeclaration.Expression.ReturnType
+                : variableDeclaration.Classname.Identifier;
             Type type = null;
             switch (t)
             {
