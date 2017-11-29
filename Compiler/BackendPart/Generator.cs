@@ -356,19 +356,25 @@ namespace Compiler.BackendPart
 
             GenerateRelation(il, ifStmt.Expression, branchFalse);
 
+            IBody lastBody = null;
             foreach (var e in ifStmt.Body)
+            {
                 GenerateStatement(il, e);
+                lastBody = e;
+            }
 
             if (ifStmt.ElseBody != null)
             {
                 var branchExit = il.DefineLabel();
-                il.Emit(OpCodes.Br, branchExit);
+                
+                if (!(lastBody is ReturnStatement))
+                    il.Emit(OpCodes.Br, branchExit);
 
                 il.MarkLabel(branchFalse);
 
                 foreach (var e in ifStmt.ElseBody)
                     GenerateStatement(il, e);
-
+                
                 il.MarkLabel(branchExit);
             }
             else

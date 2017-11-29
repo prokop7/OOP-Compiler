@@ -80,7 +80,7 @@ namespace Compiler
             var files = Directory.GetFiles($"./../../Tests/{folderName}/");
 //            var files = new List<string>(){"./../../Tests/Valid/Boolean.o"};
             foreach(var file in files){
-                if (!file.EndsWith("factoryMethod.o"))
+                if (!file.EndsWith("Silitti.o"))
                     continue;
                 Console.WriteLine("\n\n" + file);
                 var main = new FrontEndCompiler(file);

@@ -1,0 +1,43 @@
+//Simulates Silitti's homework grading system
+
+class Program is
+	method main is
+		var g1 is Grade(55)
+		var g2 is Grade(77)
+		var g3 is Grade(98)
+
+		var hwGrade1: Integer
+		var hwGrade2: Integer
+		var hwGrade3: Integer
+		hwGrade1 := g1.getHWGrade()
+		hwGrade2 := g2.getHWGrade()
+		hwGrade3 := g3.getHWGrade()
+
+	end
+
+end
+
+class Grade is
+	var points: Integer
+
+	this (p: Integer) is
+		points := p
+	end
+
+	method getHWGrade: Integer is
+		if points.Less(60) then
+			return 0
+		else 
+			if points.Less(75) then
+				return 60
+			else
+				if points.Less(90) then
+					return 80
+				else
+					return 100
+				end
+			end
+		end
+	end
+
+end

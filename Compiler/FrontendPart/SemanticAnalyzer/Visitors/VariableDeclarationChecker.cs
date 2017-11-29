@@ -220,7 +220,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                     case null:
                         return null;
                     case Class @class:
-                        return @class.Members.ContainsKey(identifier) ? @class.NameMap[identifier] : null;
+                        return @class.NameMap.ContainsKey(identifier) ? @class.NameMap[identifier] : null;
                     case MethodDeclaration method:
                         return method.NameMap.ContainsKey(identifier)
                             ? method.NameMap[identifier]
