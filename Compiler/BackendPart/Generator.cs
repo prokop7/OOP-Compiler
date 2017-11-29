@@ -248,9 +248,9 @@ namespace Compiler.BackendPart
                                 GenerateStatement(il, body);
                                 last = body;
                             }
-                            PrintAllVariables(il);
                             if (!(last is ReturnStatement) && method.ResultType == null)
                             {
+                                PrintAllVariables(il);
                                 il.Emit(OpCodes.Ret);
                             }
 
@@ -386,17 +386,18 @@ namespace Compiler.BackendPart
         /// <param name="assignment"></param>
         private void GenerateAssignment(ILGenerator il, Assignment assignment)
         {
-
             var cls = _currentClass;
-            check:
-            if (!cls.Members.ContainsKey(assignment.Identifier))
+            var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
+            if (declaration == null)
             {
-                cls = cls.Base;
-                goto check;
+                check:
+                if (cls.Base != null && !cls.Members.ContainsKey(assignment.Identifier))
+                {
+                    cls = cls.Base;
+                    goto check;
+                }
+                declaration = cls.Members[assignment.Identifier];
             }
-//            var declaration = VariableDeclarationChecker.GetTypeVariable(assignment, assignment.Identifier);
-            var declaration = cls.Members[assignment.Identifier];
-
             if (declaration.Parent is Class)
             {
                 // Set values for field

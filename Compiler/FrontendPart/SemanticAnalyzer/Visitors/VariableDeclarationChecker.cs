@@ -76,7 +76,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 //                GetTypeVariable(localCall, localCall.Identifier);
                 return;
             }
-            
+
             var cls = (Class) Stack[0];
             check:
             if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier))
@@ -211,6 +211,40 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public bool HasMap(string identifier) => !(GetValueFromMap(identifier) is null);
 
+        public static string GetValueFromMap(ICommonTreeInterface node, string identifier)
+        {
+            while (true)
+            {
+                switch (node)
+                {
+                    case null:
+                        return null;
+                    case Class @class:
+                        return @class.Members.ContainsKey(identifier) ? @class.NameMap[identifier] : null;
+                    case MethodDeclaration method:
+                        return method.NameMap.ContainsKey(identifier)
+                            ? method.NameMap[identifier]
+                            : GetValueFromMap(method.Parent, identifier);
+                    case IfStatement ifStatement:
+                        return ifStatement.NameMap.ContainsKey(identifier)
+                            ? ifStatement.NameMap[identifier]
+                            : GetValueFromMap(ifStatement.Parent, identifier);
+                    case WhileLoop whileLoop:
+                        return whileLoop.NameMap.ContainsKey(identifier)
+                            ? whileLoop.NameMap[identifier]
+                            : GetValueFromMap(whileLoop.Parent, identifier);
+                    case ConstructorDeclaration constructorDeclaration:
+                        return constructorDeclaration.NameMap.ContainsKey(identifier)
+                            ? constructorDeclaration.NameMap[identifier]
+                            : GetValueFromMap(constructorDeclaration.Parent, identifier);
+                }
+                node = node.Parent;
+            }
+        }
+        
+        public static bool HasMap(ICommonTreeInterface node, string identifier) => !(GetValueFromMap(node, identifier) is null);
+        
+        
         public static ICommonTreeInterface GetTypeVariable(ICommonTreeInterface node, string identifier)
         {
             while (true)
@@ -222,21 +256,21 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                     case Class @class:
                         return @class.Members.ContainsKey(identifier) ? @class.Members[identifier] : null;
                     case MethodDeclaration method:
-                        if (method.VariableDeclarations.ContainsKey(identifier))
-                            return method.VariableDeclarations[identifier];
-                        break;
+                        return method.VariableDeclarations.ContainsKey(identifier)
+                            ? method.VariableDeclarations[identifier]
+                            : GetTypeVariable(method.Parent, identifier);
                     case IfStatement ifStatement:
-                        if (ifStatement.VariableDeclarations.ContainsKey(identifier))
-                            return ifStatement.VariableDeclarations[identifier];
-                        break;
+                        return ifStatement.VariableDeclarations.ContainsKey(identifier)
+                            ? ifStatement.VariableDeclarations[identifier]
+                            : GetTypeVariable(ifStatement.Parent, identifier);
                     case WhileLoop whileLoop:
-                        if (whileLoop.VariableDeclarations.ContainsKey(identifier))
-                            return whileLoop.VariableDeclarations[identifier];
-                        break;
+                        return whileLoop.VariableDeclarations.ContainsKey(identifier)
+                            ? whileLoop.VariableDeclarations[identifier]
+                            : GetTypeVariable(whileLoop.Parent, identifier);
                     case ConstructorDeclaration constructorDeclaration:
-                        if (constructorDeclaration.VariableDeclarations.ContainsKey(identifier))
-                            return constructorDeclaration.VariableDeclarations[identifier];
-                        break;
+                        return constructorDeclaration.VariableDeclarations.ContainsKey(identifier)
+                            ? constructorDeclaration.VariableDeclarations[identifier]
+                            : GetTypeVariable(constructorDeclaration.Parent, identifier);
                 }
                 node = node.Parent;
             }

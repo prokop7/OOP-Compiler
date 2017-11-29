@@ -13,8 +13,12 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
     {
         public override void Visit(LocalCall localCall)
         {
+            base.Visit(localCall);
             if (localCall.Arguments == null)
             {
+                var nName = VariableDeclarationChecker.GetValueFromMap(localCall, localCall.Identifier);
+                if (nName != null)
+                    localCall.Identifier = nName;
                 var variable =
                     (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
                 if (variable == null)
@@ -32,6 +36,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         cls = cls.Base;
                         goto check;
                     }
+                    if (cls.NameMap.ContainsKey(localCall.Identifier))
+                        localCall.Identifier = cls.NameMap[localCall.Identifier];
                     if (!cls.Members.ContainsKey(localCall.Identifier))
                         throw new VariableNotFoundException(localCall.Identifier);
                     localCall.Type = ((VariableDeclaration) cls.Members[localCall.Identifier]).Expression.ReturnType;

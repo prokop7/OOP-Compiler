@@ -29,10 +29,10 @@ namespace Compiler
 //                IlyuzaTests.FillClassMethodTable();
 //                Compiler.IlyuzaTests.FillClassStaticTables();
 //                Compiler.IlyuzaTests.FillClassMethodTable();
-                CheckTests("Valid");
+//                CheckTests("Valid");
                 
 //                CheckTests("Not Valid");
-//                CheckTests("Composite");
+                CheckTests("Composite");
                 
             }
             catch (Exception e)
@@ -80,8 +80,8 @@ namespace Compiler
             var files = Directory.GetFiles($"./../../Tests/{folderName}/");
 //            var files = new List<string>(){"./../../Tests/Valid/Boolean.o"};
             foreach(var file in files){
-                if (file != "./../../Tests/Valid/Inheritance.o")
-                    continue;
+//                if (file != "./../../Tests/Valid/Transivity.o")
+//                    continue;
                 Console.WriteLine("\n\n" + file);
                 var main = new FrontEndCompiler(file);
                 try

@@ -125,6 +125,9 @@ namespace Compiler.TreeStructure.Visitors
 
 		public virtual void Visit(LocalCall localCall)
 		{
+			if (localCall.Arguments == null) return;
+			foreach (var localCallArgument in localCall.Arguments)
+				localCallArgument.Accept(this);
 		}
 
 		public virtual void Visit(ConstructorCall constructorCall)
