@@ -13,9 +13,8 @@ using static Compiler.L;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
 {
-    /// TODO Stages of analizer
     /// [95%] Fill class table    <see cref="FillStaticTable"/>
-    /// [ 0%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
+    /// [90%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
     /// [90%] Simple inheritance    <see cref="AddInheritedMembers"/>
     /// [80%] Fill variable table for methods and check initialization of variables    <see cref="VariableDeclarationCheck"/>
     /// [70%] Replace Generic classes with existing    <see cref="InitClasses"/>
@@ -38,7 +37,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
 
             ReplaceLocalCall();
             FillMethodsTable();
-//            AddInheritedMembers();
             AddInheritance();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
@@ -247,8 +245,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 Log($"Go into {@class}: start", 4);
                 visitor.Visit(@class);
                 Log($"Go into {@class}: finish", 4);
-                var fillVariables = new FillVariablesVisitor();
-                fillVariables.Visit(@class);
             }
             Log($"Variable declaration check: finish", 2);
         }
@@ -273,8 +269,8 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 variableDeclaration.Expression.Calls.Add(new Call("To" + variableDeclaration.Classname.Identifier)
                 {
-                    Parent =  variableDeclaration.Expression,
-                    InputType =  variableDeclaration.Expression.ReturnType
+                    Parent = variableDeclaration.Expression,
+                    InputType = variableDeclaration.Expression.ReturnType
                 });
                 variableDeclaration.Expression.ReturnType = variableDeclaration.Classname.Identifier;
             }
@@ -293,14 +289,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 fieldCall.Identifier = inputClass.NameMap[fieldCall.Identifier];
             else
                 throw new ClassMemberNotFoundException(inputType, fieldCall.Identifier);
-        }
-    }
-
-    public class FillVariablesVisitor : BaseVisitor
-    {
-        public override void Visit(WhileLoop whileLoop)
-        {
-            base.Visit(whileLoop);
         }
     }
 }

@@ -29,13 +29,15 @@ namespace Compiler.BackendPart
         private string Filename { get; }
         private readonly Dictionary<string, ClassStructure> classes = new Dictionary<string, ClassStructure>();
         private readonly List<Class> _classList;
+        private readonly string _outputFilename;
         private Class _currentClass;
         private MethodDeclaration _currentMethod;
         private ConstructorDeclaration _currentCtor;
 
-        public Generator(List<Class> classList, string filename)
+        public Generator(List<Class> classList, string filename, string outputFilename)
         {
             _classList = classList;
+            _outputFilename = outputFilename;
             Filename = filename;
         }
 
@@ -44,7 +46,7 @@ namespace Compiler.BackendPart
             Log("Code generating: start", 1);
             var an = new AssemblyName {Name = Path.GetFileNameWithoutExtension(Filename)};
             var ab = AssemblyBuilder.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndSave);
-            var modb = ab.DefineDynamicModule(an.Name, an.Name + ".exe", true);
+            var modb = ab.DefineDynamicModule(an.Name, _outputFilename, true);
 
             modb.CreateGlobalFunctions();
 
@@ -93,7 +95,6 @@ namespace Compiler.BackendPart
                             classes[cls.SelfClassName.Identifier].CtorBuilder = ctorBuilder;
 
                             var ctorIl = ctorBuilder.GetILGenerator();
-//                            ctorIl.Emit(OpCodes.Ldarg_0);
                             // Generating constructor locals
                             foreach (var pair in constructorDeclaration.VariableDeclarations)
                                 if (pair.Value is VariableDeclaration value)
@@ -138,9 +139,7 @@ namespace Compiler.BackendPart
 
                     ctorIl.Emit(OpCodes.Ldarg_0);
                     var ctorArgs = new Type[0];
-                    //TODO add base instead of object
                     var ctor = GetTypeByClassIdentifier(cls.BaseClassName?.Identifier).GetConstructor(ctorArgs);
-//                    var ctor = typeof(object).GetConstructor(ctorArgs);
                     ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
                     ctorIl.Emit(OpCodes.Ret);
                 }
@@ -222,10 +221,8 @@ namespace Compiler.BackendPart
 
                             ctorIl.Emit(OpCodes.Ldarg_0);
                             var ctorArgs = new Type[0];
-//                            var ctor = typeof(object).GetConstructor(ctorArgs);
                             var ctor = GetTypeByClassIdentifier(cls.BaseClassName?.Identifier).GetConstructor(ctorArgs);
                             ctorIl.Emit(OpCodes.Call, ctor ?? throw new NullReferenceException());
-//                            ctorIl.Emit(OpCodes.Ldarg_0);
 
                             foreach (var body in constructorDeclaration.Body)
                                 GenerateStatement(ctorIl, body);
@@ -271,10 +268,10 @@ namespace Compiler.BackendPart
             }
 
             // Saving the assembly
-            ab.Save(Path.GetFileName(an.Name + ".exe"));
+            ab.Save(Path.GetFileName(_outputFilename));
             Log("Code generating: finish", 1);
 
-            Log($"Output file = {Path.GetFullPath(an.Name + ".exe")}", 0);
+            Log($"Output file = {Path.GetFullPath(_outputFilename)}", 0);
         }
 
         private void GenerateDefaultExpression(ILGenerator il, Expression expression)
@@ -411,11 +408,6 @@ namespace Compiler.BackendPart
             il.Emit(OpCodes.Brfalse, branchFalse);
         }
 
-        /// <summary>
-        /// Not tested with fields.
-        /// </summary>
-        /// <param name="il"></param>
-        /// <param name="assignment"></param>
         private void GenerateAssignment(ILGenerator il, Assignment assignment)
         {
             var cls = _currentClass;
@@ -497,7 +489,6 @@ namespace Compiler.BackendPart
                         }
                         break;
                     case FieldCall fieldCall:
-                        //TODO choose class
                         var fb = classes[fieldCall.InputType].FieldBuilders[fieldCall.Identifier];
                         il.Emit(OpCodes.Ldfld, fb);
                         break;
@@ -696,14 +687,6 @@ namespace Compiler.BackendPart
                         if (@class.Members.ContainsKey(localCall.Identifier))
                         {
                             il.Emit(OpCodes.Ldarg_0);
-                            //TODO choose class
-//                            var cls = StaticTables.ClassTable[@class.SelfClassName.Identifier][0];
-//                            check:
-//                            if (!cls.Members.ContainsKey(localCall.Identifier))
-//                            {
-//                                cls = cls.Base;
-//                                goto check;
-//                            }
                             var fb = classes[@class.SelfClassName.Identifier].FieldBuilders[localCall.Identifier];
                             il.Emit(OpCodes.Ldfld, fb);
                         }
@@ -869,8 +852,6 @@ namespace Compiler.BackendPart
                 classes[_currentClass.SelfClassName.Identifier].Locals.Add(name, locals);
             }
             locals.Add(local);
-//            il.Emit(t == null ? OpCodes.Ldc_I4_0 : OpCodes.Ldnull);
-//            il.Emit(OpCodes.Stloc, local);
         }
     }
 }

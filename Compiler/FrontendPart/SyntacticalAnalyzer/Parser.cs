@@ -16,11 +16,15 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
 //        private Token currentToken = null;
         private Token prevToken = null;
         private List<Token> tokensToProcess = new List<Token>();
-        
 
         public Parser(Lexer lexer)
         {
             this.lexer = lexer;
+        }
+
+        public void Close()
+        {
+            lexer.Close();
         }
 
         private Token GetNextToken()

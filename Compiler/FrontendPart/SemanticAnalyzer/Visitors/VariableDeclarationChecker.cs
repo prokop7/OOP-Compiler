@@ -68,14 +68,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(LocalCall localCall)
         {
             if (localCall.Arguments != null)
-            {
-//                if (!HasMap(localCall.Identifier))
-//                    throw new VariableNotFoundException(localCall.Identifier);
-////                var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
-//                localCall.Identifier = GetValueFromMap(localCall.Identifier);
-//                GetTypeVariable(localCall, localCall.Identifier);
                 return;
-            }
 
             var cls = (Class) Stack[0];
             check:

@@ -69,28 +69,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             localCall.Identifier = newName;
         }
 
-//        public override void Visit(FieldCall field)
-//        {
-//            var nName = VariableDeclarationChecker.GetValueFromMap(field, field.Identifier);
-//            if (nName != null)
-//                field.Identifier = nName;
-//            if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
-//                throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
-//        }
-
-        //TODO check method call
-//        public override void Visit(Call call)
-//        {
-////            var method = GetMethod(call.InputType, call.Identifier);
-////            var newName = $"{call.Identifier}$" +
-////                          $"{call.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
-////            Console.WriteLine(newName);
-//        }
-
         public override void Visit(Expression expression)
         {
             base.Visit(expression);
-//            expression.PrimaryPart.Accept(this);
             var inputType = expression.PrimaryPart.Type;
             expression.ReturnType = inputType;
             for (var i = 0; i < expression.Calls.Count; i++)
@@ -140,7 +121,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                         expression.ReturnType = inputType;
                         break;
                 }
-//                if (!(call is Call)) continue;
             }
         }
 
