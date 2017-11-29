@@ -14,9 +14,9 @@ namespace Compiler
         static void Main(string[] args)
         {
             L.LogLevel = 0;
-            if (args.Length > 1)
+            if (args.Length > 0)
             {
-                var outputName = (args.Length == 2 ? args[1] : args[0].Split('.')[0]) + ".exe";
+                var outputName = (args.Length == 2 ? args[1] : Path.GetFileNameWithoutExtension(args[0])) + ".exe";
                 CompileFile(args[0], outputName);
             }
             else
