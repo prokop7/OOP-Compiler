@@ -11,6 +11,7 @@ namespace Compiler
         public static Class SetupCompiler(string startClass, string startMethod)
         {
             return GenerateClass3();
+
             Class GenerateClass3()
             {
                 var className = new ClassName("Main");
@@ -19,14 +20,18 @@ namespace Compiler
                 var method = new MethodDeclaration("Main") {Parent = mainClass};
                 mainClass.MemberDeclarations.Add(method);
                 var varExpression = new Expression(new ClassName(startClass));
-                
+
+
                 var body3 = new VariableDeclaration("entry", varExpression) {Parent = method};
                 method.Body.Add(body3);
 
-                var localCall = new LocalCall("entry");
-                var methodCallExpression = new Expression(localCall) {Parent = method};
-                methodCallExpression.Calls.Add(new Call(startMethod) {Parent = methodCallExpression});
-                method.Body.Add(methodCallExpression);
+                if (startMethod != null)
+                {
+                    var localCall = new LocalCall("entry");
+                    var methodCallExpression = new Expression(localCall) {Parent = method};
+                    methodCallExpression.Calls.Add(new Call(startMethod) {Parent = methodCallExpression});
+                    method.Body.Add(methodCallExpression);
+                }
 
                 return mainClass;
             }

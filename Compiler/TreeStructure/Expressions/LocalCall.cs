@@ -24,8 +24,15 @@ namespace Compiler.TreeStructure.Expressions
             foreach (var expression in arguments)
                 expression.Parent = this;
         }
-        
-        
+
+        public LocalCall(LocalCall localCall)
+        {
+            Identifier = string.Copy(localCall.Identifier);
+            if (localCall.Arguments != null)
+                Arguments = new List<Expression>();
+            localCall.Arguments?.ForEach(arg => Arguments.Add(new Expression(arg) {Parent = this}));
+            
+        }
 
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);

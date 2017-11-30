@@ -43,6 +43,7 @@ namespace Compiler.FrontendPart
             parser = new Parser(lexer);
             
             var tree = parser.Analyze();
+            parser.Close();
             return tree;
         }
     }

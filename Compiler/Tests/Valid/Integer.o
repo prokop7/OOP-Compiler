@@ -1,17 +1,20 @@
 class Program is
     var int1 is 10
-	var int2 is Integer(1)
-	var int3: Integer is 4
-	var int4 is Integer(235)
-	var int5 is Integer(7.98)
-	var int6 is 0
-	var int8: Integer is 1
+//	var int2 is Integer(1)
+//	var int3: Integer is 4
+//	var int4 is Integer(235)
+//	var int5 is Integer(7.98)
+//	var int6 is 0
+//	var int8: Integer is 1
+//	
+//	var sum is int1.Plus(int5)
+//	var sub is int3.Minus(int4)
+//	var mult is int4.Mult(int6)
+//	var div is int1.Div(int3)
+//	var reminder is int4.Rem(10)
+//	var neg is int5.UnaryMinus()
 	
-	var sum is int1.Plus(int5)
-	var sub is int3.Minus(int4)
-	var mult is int4.Mult(int6)
-	var div is int1.Div(int3)
-	var reminder is int4.Rem(10)
-	var neg is int5.UnaryMinus()
-	
+	method Foo is
+		var i is int1
+	end
 end

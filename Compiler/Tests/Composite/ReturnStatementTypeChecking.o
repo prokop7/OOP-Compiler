@@ -1,9 +1,12 @@
 class Program is
  
  	var a is 7 // Integer
- 	var res is 0.14 // Real
- 
+ 	var res is 0 // Real
 
+    method getFactorial is
+        var i is findFactorial(a) // wrong - returned Integer expression is assigned to a variable of Real type (no casting error)
+    end
+    
     method findFactorial(n: Integer): Integer is
         var fact is 0
 
@@ -13,11 +16,4 @@ class Program is
         fact := findFactorial(n.Minus(1)).Mult(n)
         return fact
     end
-    
-    method getFactorial: Integer is
-        res := findFactorial(a) // wrong - returned Integer expression is assigned to a variable of Real type (no casting error)
-    end
-
-    
-
 end

@@ -1,0 +1,111 @@
+class Program is
+    method main is 
+        // var AmdFactory: AMD_PCFactory
+        // var IntelFactory: Intel_PCFactory
+
+        var client1: Client is AMD_PCFactory
+        var client2: Client is Intel_PCFactory
+    end
+end
+
+class Client is
+    var p: AbstractProcessor
+    var g: AbstractGPU
+
+    this (factory: PCFactory) is
+        p := factory.createProcessor()
+        g := factory.createGPU()
+    end
+end
+
+class AbstractProcessor is 
+    this is
+    end
+end
+
+class IntelProcessor extends AbstractProcessor is
+    var frequency: Integer
+
+    this (fr: Integer) is
+        frequency := fr
+    end
+
+end
+
+class AMDProcessor extends AbstractProcessor is
+    var frequency: Integer
+
+    this (fr: Integer) is
+        frequency := fr
+    end
+
+end
+
+class AbstractGPU is 
+    this is
+    end
+end
+
+class NvidiaGPU extends AbstractGPU is
+    var memory: Integer
+
+    this (mem: Integer) is
+        memory := mem
+    end
+
+end
+
+class AMDGPU extends AbstractGPU is
+    var memory: Integer
+
+    this (mem: Integer) is
+        memory := mem
+    end
+
+end
+
+class PCFactory is
+    this is
+    end
+
+    method createProcessor: AbstractProcessor is
+        return
+    end
+
+    method createGPU: AbstractGPU is
+        return
+    end
+
+end
+
+class AMD_PCFactory extends PCFactory is
+    this is
+    end
+
+    method createProcessor: AbstractProcessor is
+        var new is AMDProcessor(2)
+        return new
+    end
+
+    method createGPU: AbstractGPU is
+        var new is AMDGPU(2)
+        return new
+    end
+
+end
+
+class Intel_PCFactory extends PCFactory is
+    this is 
+    end
+
+    method createProcessor: AbstractProcessor is
+        var new is IntelProcessor(3)
+        return new
+    end
+
+    method createGPU: AbstractGPU is
+        var new is NvidiaGPU(3)
+        return new
+    end
+
+end

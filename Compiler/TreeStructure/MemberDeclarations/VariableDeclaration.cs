@@ -11,6 +11,7 @@ namespace Compiler.TreeStructure.MemberDeclarations
         public Expression Expression { get; set; } // var i = expresion. Это и есть expression
         public ClassName Classname { get; set; } // инициализируется парсером при явном указании типа переменной
         public ICommonTreeInterface Parent { get; set; }
+        public bool IsDeclared { get; set; } = true;
         
         public VariableDeclaration(string identifier)
         {

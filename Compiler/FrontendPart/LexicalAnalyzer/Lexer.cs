@@ -24,6 +24,11 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
             currentPosition = 0;
         }
 
+        public void Close()
+        {
+            fileScanner.ReadStream.Close();
+        }
+
         public Token GetNextToken()
         {
             if (Tokens.Count > 0)
@@ -239,6 +244,5 @@ namespace Compiler.FrontendPart.LexicalAnalyzer
 
             return result;
         }
-
     }
 }

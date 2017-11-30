@@ -50,8 +50,14 @@ namespace Compiler.TreeStructure.Expressions
                 case BooleanLiteral booleanLiteral:
                     PrimaryPart = new BooleanLiteral(booleanLiteral) {Parent = this};
                     break;
+                case ConstructorCall constructorCall:
+                    PrimaryPart = new ConstructorCall(constructorCall) {Parent = this};
+                    break;
                 case IntegerLiteral integerLiteral:
                     PrimaryPart = new IntegerLiteral(integerLiteral) {Parent = this};
+                    break;
+                case LocalCall localCall:
+                    PrimaryPart = new LocalCall(localCall) {Parent = this};
                     break;
                 case RealLiteral realLiteral:
                     PrimaryPart = new RealLiteral(realLiteral) {Parent = this};

@@ -13,21 +13,47 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
     {
         public override void Visit(LocalCall localCall)
         {
+            base.Visit(localCall);
             if (localCall.Arguments == null)
             {
+                var nName = VariableDeclarationChecker.GetValueFromMap(localCall, localCall.Identifier);
+                if (nName != null)
+                    localCall.Identifier = nName;
                 var variable =
                     (IVariableDeclaration) VariableDeclarationChecker.GetTypeVariable(localCall, localCall.Identifier);
-                switch (variable)
+                if (variable == null)
                 {
-                    case VariableDeclaration variableDeclaration:
-                        localCall.Type = variableDeclaration.Expression.ReturnType;
-                        break;
-                    case ParameterDeclaration parameterDeclaration:
-                        localCall.Type = parameterDeclaration.Type.Identifier;
-                        break;
-                    default:
-                        throw new VariableNotFoundException(localCall.ToString());
+                    var p = localCall.Parent;
+                    while (p != null && !(p is Class))
+                        p = p.Parent;
+                    if (p == null)
+                        throw new Exception("WTF!?");
+                    var cls = (Class) p;
+                    check:
+                    if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier) &&
+                        !cls.Members.ContainsKey(localCall.Identifier))
+                    {
+                        cls = cls.Base;
+                        goto check;
+                    }
+                    if (cls.NameMap.ContainsKey(localCall.Identifier))
+                        localCall.Identifier = cls.NameMap[localCall.Identifier];
+                    if (!cls.Members.ContainsKey(localCall.Identifier))
+                        throw new VariableNotFoundException(localCall.Identifier);
+                    localCall.Type = ((VariableDeclaration) cls.Members[localCall.Identifier]).Expression.ReturnType;
                 }
+                else
+                    switch (variable)
+                    {
+                        case VariableDeclaration variableDeclaration:
+                            localCall.Type = variableDeclaration.Expression.ReturnType;
+                            break;
+                        case ParameterDeclaration parameterDeclaration:
+                            localCall.Type = parameterDeclaration.Type.Identifier;
+                            break;
+                        default:
+                            throw new VariableNotFoundException(localCall.ToString());
+                    }
                 return;
             }
             var parent = localCall.Parent;
@@ -43,24 +69,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
             localCall.Identifier = newName;
         }
 
-        public override void Visit(FieldCall field)
-        {
-            if (!VariableDeclarationChecker.IsDeclared(field, field.Identifier))
-                throw new ClassMemberNotFoundException(field.InputType, field.Identifier);
-        }
-
-        //TODO check method call
-        public override void Visit(Call call)
-        {
-//            var method = GetMethod(call.InputType, call.Identifier);
-//            var newName = $"{call.Identifier}$" +
-//                          $"{call.Arguments.Aggregate("", (s, exp) => s += exp.ReturnType)}";
-//            Console.WriteLine(newName);
-        }
-
         public override void Visit(Expression expression)
         {
-            expression.PrimaryPart.Accept(this);
+            base.Visit(expression);
             var inputType = expression.PrimaryPart.Type;
             expression.ReturnType = inputType;
             for (var i = 0; i < expression.Calls.Count; i++)
@@ -104,19 +115,26 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                             throw new Exception("Cannot call method from void");
                         break;
                     case VariableDeclaration variableDeclaration:
+                        if (variableDeclaration.Expression.ReturnType == null)
+                            Visit(variableDeclaration);
                         inputType = variableDeclaration.Expression.ReturnType;
                         expression.ReturnType = inputType;
                         break;
                 }
-                if (!(call is Call)) continue;
             }
         }
 
         public static IMemberDeclaration GetMethod(string className, string identifier)
         {
-            if (!StaticTables.ClassTable.ContainsKey(className)) throw new ClassNotFoundException(className);
+            if (!StaticTables.ClassTable.ContainsKey(className))
+                throw new ClassNotFoundException(className);
             var @class = StaticTables.ClassTable[className][0];
-            if (!@class.Members.ContainsKey(identifier)) throw new ClassMemberNotFoundException(className, identifier);
+            check:
+            if (!@class.Members.ContainsKey(identifier))
+            {
+                @class = @class.Base ?? throw new ClassMemberNotFoundException(className, identifier);
+                goto check;
+            }
             return @class.Members[identifier];
         }
     }

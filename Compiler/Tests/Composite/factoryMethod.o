@@ -1,0 +1,60 @@
+class Program is
+    this is
+        var carCreator: CarCreator
+        var bikeCreator: BikeCreator
+
+        var car is carCreator.Create()
+        var bike is bikeCreator.Create()
+        var i is car.Foo()
+        var j is bike.Foo()
+    end
+
+end
+
+class AbstractProduct is
+    method Foo(): Integer is
+        return 5
+    end
+    this is
+    end
+end
+
+class Car extends AbstractProduct is
+    method Foo(): Integer is
+        return 56
+    end
+    this is
+    end
+end
+
+class Bike extends AbstractProduct is
+    this is
+    end
+end
+
+class AbstractCreator is 
+    this is
+    end
+end
+
+class CarCreator extends AbstractCreator is
+    this is
+    end
+
+    method Create: AbstractProduct is
+        var new: Car
+        return new
+    end
+end
+
+class BikeCreator extends AbstractCreator is
+    this is
+    end 
+
+    method Create: AbstractProduct is
+        var new: Bike
+        return new
+    end
+end
+
+

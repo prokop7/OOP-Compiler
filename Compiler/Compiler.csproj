@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AntonTests.cs" />
+    <Compile Include="Compiler.cs" />
     <Compile Include="BackendPart\Generator.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Exceptions\ClassMemberNotFoundException.cs" />
@@ -66,7 +66,6 @@
     <Compile Include="FrontendPart\SemanticAnalyzer\Visitors\VariableDeclarationChecker.cs" />
     <Compile Include="FrontendPart\SyntacticalAnalyzer\Parser.cs" />
     <Compile Include="FrontendPart\Token.cs" />
-    <Compile Include="IlyuzaTests.cs" />
     <Compile Include="L.cs" />
     <Compile Include="PreProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,6 +105,8 @@
     <Compile Include="TreeStructure\Visitors\IVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Tests\Composite\AbstractFactory.o" />
+    <Content Include="Tests\Composite\factoryMethod.o" />
     <Content Include="Tests\Composite\ReturnStatementTypeChecking.o" />
     <Content Include="Tests\Not Valid\Assignment.o" />
     <Content Include="Tests\Not Valid\Boolean.o" />
@@ -126,6 +127,7 @@
     <Content Include="Tests\Not Valid\This.o" />
     <Content Include="Tests\Not Valid\var_access.o" />
     <Content Include="Tests\Not Valid\var_declaration.o" />
+    <Content Include="Tests\Obsolete\Generic.o" />
     <Content Include="Tests\Valid\AAsimpleTest.o" />
     <Content Include="Tests\Valid\Assignment.o" />
     <Content Include="Tests\Valid\Boolean.o" />
@@ -133,7 +135,6 @@
     <Content Include="Tests\Valid\ClassCreation.o" />
     <Content Include="Tests\Valid\constructor_inside_expression.o" />
     <Content Include="Tests\Valid\expression_type.o" />
-    <Content Include="Tests\Valid\Generic.o" />
     <Content Include="Tests\Valid\IfStatement.o" />
     <Content Include="Tests\Valid\Inheritance.o" />
     <Content Include="Tests\Valid\Initialization.o" />

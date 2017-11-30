@@ -1,0 +1,33 @@
+class List is
+	var root is Node
+	var last: Node is Node
+
+	this is
+		add(1)
+		add(2)
+		var i is last.value
+	end
+
+	method add(i: Integer) is
+		last.setNext(i)
+		last := last.next
+	end
+
+end
+
+class Node is
+	var value is 0
+	var next: Node
+
+	this is
+	end
+
+	method setNext(i: Integer) is
+		next := Node()
+		next.setValue(i)
+	end
+	method setValue(i: Integer) is
+		value := i
+	end
+ 
+end

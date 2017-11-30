@@ -9,7 +9,7 @@ namespace Compiler.TreeStructure
             var className = new ClassName("Boolean");
             var @class = new Class(className);
 
-            var equals = new MethodDeclaration("Equals") {Parent = @class};
+            var equals = new MethodDeclaration("Equal") {Parent = @class};
             equals.ResultType = new ClassName(className);
             equals.Parameters.Add(new ParameterDeclaration("b", new ClassName("Boolean")));
             
@@ -47,7 +47,7 @@ namespace Compiler.TreeStructure
 
             
             @class.MemberDeclarations.Add(equals);
-            @class.Members.Add("Equals", equals);
+            @class.Members.Add("Equal", equals);
             @class.MemberDeclarations.Add(and);
             @class.Members.Add("And", and);
             @class.MemberDeclarations.Add(not);
@@ -59,6 +59,14 @@ namespace Compiler.TreeStructure
             @class.MemberDeclarations.Add(toInt);
             @class.Members.Add("ToInteger", toInt);
 
+            return @class;
+        }
+
+        public static Class GenerateObject()
+        {
+            var className = new ClassName("Object");
+            var @class = new Class(className);
+            
             return @class;
         }
 
@@ -152,7 +160,7 @@ namespace Compiler.TreeStructure
            
  
             
-            var equals = new MethodDeclaration("Equals")
+            var equals = new MethodDeclaration("Equal")
             {
                 Parent = @class,
                 ResultType = new ClassName("Boolean")
@@ -250,7 +258,7 @@ namespace Compiler.TreeStructure
             
             
             @class.MemberDeclarations.Add(equals); 
-            @class.Members.Add("Equals", equals);
+            @class.Members.Add("Equal", equals);
 //            @class.MemberDeclarations.Add(equalsReal); 
 //            @class.Members.Add("Equals", equalsReal);
             @class.MemberDeclarations.Add(greater);
@@ -349,7 +357,7 @@ namespace Compiler.TreeStructure
             
     
             
-            var equals = new MethodDeclaration("Equals")
+            var equals = new MethodDeclaration("Equal")
             {
                 Parent = @class,
                 ResultType = new ClassName("Boolean")
@@ -451,7 +459,7 @@ namespace Compiler.TreeStructure
             
             
             @class.MemberDeclarations.Add(equals); 
-            @class.Members.Add("Equals", equals);
+            @class.Members.Add("Equal", equals);
 //            @class.MemberDeclarations.Add(equalsInt); 
 //            @class.Members.Add("Equals", equalsInt);
             @class.MemberDeclarations.Add(greater);
