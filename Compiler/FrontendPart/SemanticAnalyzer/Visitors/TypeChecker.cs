@@ -49,12 +49,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 				
 			}
 
-//			foreach (var i in methodDeclaration.Body)
-//			{
-//					res |= CheckBranchForReturn(i);	
-//			}
-			
-
 			if (res == false)
 			{
 				throw new MissingReturnStatementException();
@@ -138,9 +132,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
 			
 			bool res = checkParent(returnStatement.Parent);
-			Console.WriteLine($"HHHHHHHHHHHHHHHHHHHHH    {res}");
+			Console.WriteLine($"Result of return statement checking - {res}");
 
-			Console.WriteLine(returnStatement.Expression.ReturnType + "JJJJJJJJJJJJJJJJ");
+			Console.WriteLine(returnStatement.Expression.ReturnType + " - this is return type");
 
 			if (!res)
 			{

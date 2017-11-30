@@ -118,7 +118,7 @@ namespace Compiler
         }
         public static void PrintList<T>(IEnumerable<T> list, string message)
         {
-            Console.WriteLine($"##### I START PRINTING {message}###########");
+            Console.WriteLine($"#### I START PRINTING {message} ####");
             foreach (var i in list)
             {
                 Console.WriteLine(i);

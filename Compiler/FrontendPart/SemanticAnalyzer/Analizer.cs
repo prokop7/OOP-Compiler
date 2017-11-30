@@ -227,6 +227,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             }
             Log($"Variable declaration check: finish", 2);
         }
+        
     }
     
 
