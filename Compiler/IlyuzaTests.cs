@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Compiler.FrontendPart.SemanticAnalyzer;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;

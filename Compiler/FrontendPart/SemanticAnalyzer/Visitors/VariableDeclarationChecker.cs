@@ -18,9 +18,9 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public string GetContextIdentifier(string identifier)
         {
-            var newIdentifier = string.Copy(identifier) + VariableNum;
+            var newIdentifier = string.Copy(identifier) + "$" + VariableNum;
             VariableNum++;
-            return $"${newIdentifier}";
+            return newIdentifier;
         }
 
         public void SetMap(string identifier, string newIdentifier)
@@ -48,6 +48,18 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
         public override void Visit(Assignment assignment)
         {
             base.Visit(assignment);
+            var cls = (Class) Stack[0];
+            check:
+            if (cls.Base != null && !cls.NameMap.ContainsKey(assignment.Identifier))
+            {
+                cls = cls.Base;
+                goto check;
+            }
+            if (cls.NameMap.ContainsKey(assignment.Identifier))
+            {
+                assignment.Identifier = cls.NameMap[assignment.Identifier];
+                return;
+            }
             if (!HasMap(assignment.Identifier))
                 throw new VariableNotFoundException(assignment.Identifier);
             assignment.Identifier = GetValueFromMap(assignment.Identifier);
@@ -55,21 +67,27 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(LocalCall localCall)
         {
-            if (localCall.Parameters != null)
+            if (localCall.Arguments != null)
                 return;
-            if (!HasMap(localCall.Identifier))
-                throw new VariableNotFoundException(localCall.Identifier);
-            localCall.Identifier = GetValueFromMap(localCall.Identifier);
-            var variable = (IVariableDeclaration) GetTypeVariable(localCall, localCall.Identifier);
-            switch (variable)
+
+            var cls = (Class) Stack[0];
+            check:
+            if (cls.Base != null && !cls.NameMap.ContainsKey(localCall.Identifier))
             {
-                case VariableDeclaration variableDeclaration:
-                    localCall.Type = variableDeclaration.Expression.ReturnType;
-                    break;
-                case ParameterDeclaration parameterDeclaration:
-                    localCall.Type = parameterDeclaration.Type.Identifier;
-                    break;
+                cls = cls.Base;
+                goto check;
             }
+            if (cls.NameMap.ContainsKey(localCall.Identifier))
+            {
+                localCall.Identifier = cls.NameMap[localCall.Identifier];
+                return;
+            }
+            if (!HasMap(localCall.Identifier))
+            {
+                throw new VariableNotFoundException(localCall.Identifier);
+            }
+            localCall.Identifier = GetValueFromMap(localCall.Identifier);
+//            GetTypeVariable(localCall, localCall.Identifier);
         }
 
         public override void Visit(Class @class)
@@ -135,6 +153,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(VariableDeclaration variable)
         {
+            base.Visit(variable);
             if (HasMap(variable.Identifier))
                 throw new DuplicatedDeclarationException(variable.Identifier);
             var newName = GetContextIdentifier(variable.Identifier);
@@ -185,6 +204,40 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public bool HasMap(string identifier) => !(GetValueFromMap(identifier) is null);
 
+        public static string GetValueFromMap(ICommonTreeInterface node, string identifier)
+        {
+            while (true)
+            {
+                switch (node)
+                {
+                    case null:
+                        return null;
+                    case Class @class:
+                        return @class.NameMap.ContainsKey(identifier) ? @class.NameMap[identifier] : null;
+                    case MethodDeclaration method:
+                        return method.NameMap.ContainsKey(identifier)
+                            ? method.NameMap[identifier]
+                            : GetValueFromMap(method.Parent, identifier);
+                    case IfStatement ifStatement:
+                        return ifStatement.NameMap.ContainsKey(identifier)
+                            ? ifStatement.NameMap[identifier]
+                            : GetValueFromMap(ifStatement.Parent, identifier);
+                    case WhileLoop whileLoop:
+                        return whileLoop.NameMap.ContainsKey(identifier)
+                            ? whileLoop.NameMap[identifier]
+                            : GetValueFromMap(whileLoop.Parent, identifier);
+                    case ConstructorDeclaration constructorDeclaration:
+                        return constructorDeclaration.NameMap.ContainsKey(identifier)
+                            ? constructorDeclaration.NameMap[identifier]
+                            : GetValueFromMap(constructorDeclaration.Parent, identifier);
+                }
+                node = node.Parent;
+            }
+        }
+        
+        public static bool HasMap(ICommonTreeInterface node, string identifier) => !(GetValueFromMap(node, identifier) is null);
+        
+        
         public static ICommonTreeInterface GetTypeVariable(ICommonTreeInterface node, string identifier)
         {
             while (true)
@@ -196,21 +249,21 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
                     case Class @class:
                         return @class.Members.ContainsKey(identifier) ? @class.Members[identifier] : null;
                     case MethodDeclaration method:
-                        if (method.VariableDeclarations.ContainsKey(identifier))
-                            return method.VariableDeclarations[identifier];
-                        break;
+                        return method.VariableDeclarations.ContainsKey(identifier)
+                            ? method.VariableDeclarations[identifier]
+                            : GetTypeVariable(method.Parent, identifier);
                     case IfStatement ifStatement:
-                        if (ifStatement.VariableDeclarations.ContainsKey(identifier))
-                            return ifStatement.VariableDeclarations[identifier];
-                        break;
+                        return ifStatement.VariableDeclarations.ContainsKey(identifier)
+                            ? ifStatement.VariableDeclarations[identifier]
+                            : GetTypeVariable(ifStatement.Parent, identifier);
                     case WhileLoop whileLoop:
-                        if (whileLoop.VariableDeclarations.ContainsKey(identifier))
-                            return whileLoop.VariableDeclarations[identifier];
-                        break;
+                        return whileLoop.VariableDeclarations.ContainsKey(identifier)
+                            ? whileLoop.VariableDeclarations[identifier]
+                            : GetTypeVariable(whileLoop.Parent, identifier);
                     case ConstructorDeclaration constructorDeclaration:
-                        if (constructorDeclaration.VariableDeclarations.ContainsKey(identifier))
-                            return constructorDeclaration.VariableDeclarations[identifier];
-                        break;
+                        return constructorDeclaration.VariableDeclarations.ContainsKey(identifier)
+                            ? constructorDeclaration.VariableDeclarations[identifier]
+                            : GetTypeVariable(constructorDeclaration.Parent, identifier);
                 }
                 node = node.Parent;
             }

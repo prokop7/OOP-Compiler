@@ -1,11 +1,15 @@
 class Program is
 
-  var y is Integer(0)
+  var y is Real(1)
+	this is
+  		y := mulByOneAndHalf(1)
+  	end
+
 
   method mulByOneAndHalf( x : Integer ) : Real is
-    return x.Mul(3).Mul(0.5) //return type is Real
+    return x.Mult(3).Mult(0.5) //return type is Real
   end
-
+	
 end
 
 // Вычисление типа Expression.

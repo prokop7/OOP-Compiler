@@ -18,7 +18,7 @@ namespace Compiler
 		public static void LogError(Exception e)
 		{
 			var line = string.Concat(Enumerable.Repeat("-", 70));
-			Console.WriteLine($"{line}\n{DateTime.Now}\tCompilation failed.\n\t\t\t\t{e.GetType()}: {e.Message}");
+			Console.WriteLine($"{line}\n{DateTime.Now}\tCompilation failed.\n\t\t\t\t{e.GetType()}: {e}");
 		}
 	}
 }

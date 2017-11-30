@@ -1,28 +1,28 @@
+class D is
+    this is
+        var c is C()
+        c.Foo()
+    end
+end
+
 class A is
     method Foo is
         return 5
     end
+    var a is 1
 
     this is
-        var a is 0
     end
 end
 
 class B extends A is
-    this(a: A) is
-        var b  is a
+    this is
+        var b  is 11
     end
 end
 
 class C extends B is
     this is
         var b is a
-    end
-end
-
-class D is
-    this is
-        var c is C()
-        c.Foo()
     end
 end

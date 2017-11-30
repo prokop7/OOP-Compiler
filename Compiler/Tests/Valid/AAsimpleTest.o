@@ -1,0 +1,11 @@
+class Program is
+    method Foo is
+        var a is 10
+        var b is 100.Plus(1)
+        if a.Greater(b) then
+            a := b
+        else
+            b := a
+        end
+    end
+end

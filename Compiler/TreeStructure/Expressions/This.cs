@@ -12,6 +12,10 @@ namespace Compiler.TreeStructure.Expressions
         {
         }
 
+        public This()
+        {
+        }
+
         public void Accept(IVisitor visitor) => visitor.Visit(this);
     }
 }

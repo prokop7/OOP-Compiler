@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class Expression : ICommonTreeInterface
+    public class Expression : IBody
     {
         // 5.Plus(4) - 5 is a primary part, всё остальное - calls либо fields
         public ICommonTreeInterface Parent { get; set; }
@@ -56,8 +57,14 @@ namespace Compiler.TreeStructure.Expressions
                 case BooleanLiteral booleanLiteral:
                     PrimaryPart = new BooleanLiteral(booleanLiteral) {Parent = this};
                     break;
+                case ConstructorCall constructorCall:
+                    PrimaryPart = new ConstructorCall(constructorCall) {Parent = this};
+                    break;
                 case IntegerLiteral integerLiteral:
                     PrimaryPart = new IntegerLiteral(integerLiteral) {Parent = this};
+                    break;
+                case LocalCall localCall:
+                    PrimaryPart = new LocalCall(localCall) {Parent = this};
                     break;
                 case RealLiteral realLiteral:
                     PrimaryPart = new RealLiteral(realLiteral) {Parent = this};
@@ -85,7 +92,7 @@ namespace Compiler.TreeStructure.Expressions
         public override string ToString()
         {
             var s = "";
-            Calls.ForEach(call => s += "." + call.Identifier);
+            Calls.ForEach(call => s += "." + call.ToString());
             return PrimaryPart + s;
         }
     }
