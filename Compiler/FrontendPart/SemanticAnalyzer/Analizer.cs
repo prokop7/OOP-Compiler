@@ -34,19 +34,23 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             FillStaticTable();
 //            GenericTypesCheck();
 //            InitClasses();
-
             ReplaceLocalCall();
             FillMethodsTable();
             AddInheritance();
             VariableDeclarationCheck();
             CheckMethodDeclaration();
+            FieldChange();
+            TypeCheck();
+            return _classList;
+        }
+
+        private void FieldChange()
+        {
             foreach (var @class in _classList)
             {
                 var fieldVisitor = new FieldChangeVisitor();
                 fieldVisitor.Visit(@class);
             }
-            TypeCheck();
-            return _classList;
         }
 
         private void AddInheritance()

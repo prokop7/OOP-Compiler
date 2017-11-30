@@ -49,50 +49,61 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 
         public override void Visit(MethodDeclaration methodDeclaration)
         {
-            base.Visit(methodDeclaration);
-            if (methodDeclaration.ResultType != null &&
-                !StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType.Identifier))
-                throw new ClassNotFoundException(methodDeclaration.ResultType.Identifier);
-	        
-	        bool res = false;
+            base.Visit(methodDeclaration);   
 
-	        for (int i = 0; i < methodDeclaration.Body.Count; i++)
+	        if (methodDeclaration.ResultType != null)
 	        {
-				
-		        if (methodDeclaration.Body[i] is ReturnStatement returnStatement)
+		        if (!StaticTables.ClassTable.ContainsKey(methodDeclaration.ResultType.Identifier))
+                                    throw new ClassNotFoundException(methodDeclaration.ResultType.Identifier);
+
+		        bool res = false;
+
+		        for (int i = 0; i < methodDeclaration.Body.Count; i++)
 		        {
-			        res = true;
-			        methodDeclaration.Body.RemoveRange(i, methodDeclaration.Body.Count-1);
-		        }
-		        else
-		        {
-			        res |= CheckBranchForReturn(methodDeclaration.Body[i]);
-		        }
-				
-	        }
-	        
-	        if (res == false)
-	        {
-		        throw new MissingReturnStatementException();
-	        }
-			
-	        bool CheckBranchForReturn(IBody iBody)
-	        {	
-		        switch (iBody)
-		        {
-			        case IfStatement ifStatement:
-				        bool tempBody = false;
-				        for (int i = 0; i < ifStatement.Body.Count; i++)
+
+			        if (methodDeclaration.Body[i] is ReturnStatement returnStatement)
+			        {
+				        res = true;
+				        if (i != methodDeclaration.Body.Count-1)
 				        {
-					        if (CheckBranchForReturn(ifStatement.Body[i]))
-					        {
-						        tempBody = true;
-						        ifStatement.Body.RemoveRange(i, ifStatement.Body.Count-1); // будет ли он ругаться на последний элемент?
-						        break;
-					        }
-					        tempBody = false;
+					        methodDeclaration.Body.RemoveRange(i, methodDeclaration.Body.Count - 1);
 				        }
-						
+				        
+			        }
+			        else
+			        {
+				        res |= CheckBranchForReturn(methodDeclaration.Body[i]);
+			        }
+
+		        }
+
+		        if (res == false)
+		        {
+			        throw new MissingReturnStatementException();
+		        }
+
+		        bool CheckBranchForReturn(IBody iBody)
+		        {
+			        switch (iBody)
+			        {
+				        case IfStatement ifStatement:
+					        bool tempBody = false;
+					        for (int i = 0; i < ifStatement.Body.Count; i++)
+					        {
+						        if (CheckBranchForReturn(ifStatement.Body[i]))
+						        {
+							        tempBody = true;
+							        if (i != ifStatement.Body.Count-1)
+							        {
+								        ifStatement.Body.RemoveRange(i,
+									        ifStatement.Body.Count - 1); 
+							        }
+							        break;
+							        
+						        }
+						        tempBody = false;
+					        }
+
 //						foreach (var i in ifStatement.Body)
 //						{
 //							tempBody |= CheckBranchForReturn(i);
@@ -100,24 +111,30 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 //							break;
 //						}
 
-				        var tempElseBody = false;
-				        for (int i = 0; i < ifStatement.ElseBody.Count; i++)
-				        {
-					        if (CheckBranchForReturn(ifStatement.ElseBody[i]))
+					        var tempElseBody = false;
+					        for (int i = 0; i < ifStatement.ElseBody.Count; i++)
 					        {
-						        tempElseBody = true;
-						        ifStatement.ElseBody.RemoveRange(i, ifStatement.ElseBody.Count-1); // будет ли он ругаться на последний элемент?
-						        break;
+						        if (CheckBranchForReturn(ifStatement.ElseBody[i]))
+						        {
+							        tempElseBody = true;
+							        if (i != ifStatement.ElseBody.Count - 1)
+							        {
+								        ifStatement.ElseBody.RemoveRange(i,
+									        ifStatement.ElseBody.Count - 1); 
+							        }
+							        break;
+							       
+						        }
+						        tempElseBody = false;
+
 					        }
-					        tempElseBody = false;
-							
-				        }
-				        return tempBody && tempElseBody;
-			        case ReturnStatement returnStatement:
-				        return true;
-			        default:
-				        return false;
-					
+					        return tempBody && tempElseBody;
+				        case ReturnStatement returnStatement:
+					        return true;
+				        default:
+					        return false;
+
+			        }
 		        }
 	        }
 
@@ -180,49 +197,75 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 			base.Visit(returnStatement);
 			//TODO check returning type and Expression type - Done
 
-			
-			bool res = checkParent(returnStatement.Parent);
-			Console.WriteLine($"Result of return statement checking - {res}");
 
-			Console.WriteLine(returnStatement.Expression.ReturnType + " - this is return type");
-
-			if (!res)
+			if (returnStatement.Expression != null)
 			{
-				throw new InvalidReturnTypeException(
-                							$"Expected one type, got {returnStatement.Expression.ReturnType}");
-			}
-
-			bool checkParent(ICommonTreeInterface memberDeclaration)
-			{
-				if (memberDeclaration is MethodDeclaration methodDeclaration)
+				if (!StaticTables.ClassTable.ContainsKey(returnStatement.Expression.ReturnType))
 				{
-
-					if (returnStatement.Expression.ReturnType.Equals(methodDeclaration.ResultType.Identifier))
-					{
-						return true;
-					}
-
-					return false;
+					throw new ClassNotFoundException(returnStatement.Expression.ReturnType);
 				}
-				else
+
+				bool res = checkParent(returnStatement.Parent);
+				Console.WriteLine($"Result of return statement checking - {res}");
+
+				Console.WriteLine(returnStatement.Expression.ReturnType + " - this is return type");
+
+				if (!res)
 				{
-					if (memberDeclaration is IStatement)
+					throw new InvalidReturnTypeException(
+						$"Expected one type, got {returnStatement.Expression.ReturnType}");
+				}
+
+				bool checkParent(ICommonTreeInterface memberDeclaration)
+				{
+					if (memberDeclaration is MethodDeclaration methodDeclaration)
 					{
-						switch (memberDeclaration)
+						if (methodDeclaration.ResultType != null)
 						{
-							case IfStatement ifStatement:
-								checkParent(ifStatement.Parent);
-								break;
-							case WhileLoop whileLoop:
-								checkParent(whileLoop.Parent);
-								break;
+
+							if (!returnStatement.Expression.ReturnType.Equals(methodDeclaration.ResultType.Identifier))
+							{
+								if (StaticTables.ClassTable[returnStatement.Expression.ReturnType][0].BaseClassName != null)
+								{
+									if (StaticTables.ClassTable[returnStatement.Expression.ReturnType][0].BaseClassName.Identifier
+										.Equals(methodDeclaration.ResultType.Identifier))
+
+									{
+										return true;
+									}
+								}
+
+
+							}
+							return returnStatement.Expression.ReturnType.Equals(methodDeclaration.ResultType.Identifier);
+
 						}
-						return false;
+						else
+						{
+							throw new InvalidReturnParentException("Result is void");
+						}
+
 					}
 					else
 					{
-						return true;
-					}
+						if (memberDeclaration is IStatement)
+						{
+							bool tempReturn = false;
+							switch (memberDeclaration)
+							{
+								case IfStatement ifStatement:
+									tempReturn |= checkParent(ifStatement.Parent);
+									break;
+								case WhileLoop whileLoop:
+									tempReturn |= checkParent(whileLoop.Parent);
+									break;
+							}
+							return tempReturn;
+						}
+						else
+						{
+							return true;
+						}
 //					return checkParent(memberDeclaration.Parent);
 //					if (returnStatement.Parent is IfStatement ifStatement)
 //					{	
@@ -237,6 +280,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 //					
 //					}					
 //				
+					}
 				}
 			}
 

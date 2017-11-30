@@ -110,7 +110,9 @@
   <ItemGroup>
     <Content Include="Tests\Composite\AbstractFactory.o" />
     <Content Include="Tests\Composite\factoryMethod.o" />
+    <Content Include="Tests\Composite\list.o" />
     <Content Include="Tests\Composite\ReturnStatementTypeChecking.o" />
+    <Content Include="Tests\Composite\Silitti.o" />
     <Content Include="Tests\Not Valid\Assignment.o" />
     <Content Include="Tests\Not Valid\Boolean.o" />
     <Content Include="Tests\Not Valid\ClassCreation.o" />

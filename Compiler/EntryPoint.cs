@@ -20,7 +20,7 @@ namespace Compiler
                 CompileFile(args[0], outputName);
             }
             else
-                CompileSuite("./../../Tests/Composite");
+                CompileSuite("./../../Tests/Valid");
         }
 
         private static void CompileFile(string filename, string output)

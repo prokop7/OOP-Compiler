@@ -7,7 +7,7 @@ class Program is
 
 
   method mulByOneAndHalf( x : Integer ) : Real is
-    return x.Mult(3).Mult(0.5) //return type is Real
+    return x.Mult(3.5).Mult(0.5) //return type is Real
   end
 	
 end

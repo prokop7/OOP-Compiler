@@ -6,7 +6,7 @@ class D is
 end
 
 class A is
-    method Foo is
+    method Foo : Integer is 
         return 5
     end
     var a is 1
