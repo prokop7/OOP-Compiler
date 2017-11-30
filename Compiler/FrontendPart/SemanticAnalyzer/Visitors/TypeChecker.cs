@@ -33,45 +33,77 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 				throw new ClassNotFoundException(methodDeclaration.ResultType.Identifier);
 
 			bool res = false;
-	
 
-			foreach (var i in methodDeclaration.Body)
+			for (int i = 0; i < methodDeclaration.Body.Count; i++)
 			{
-					res |= CheckBranchForReturn(i);	
+				
+				if (methodDeclaration.Body[i] is ReturnStatement returnStatement)
+				{
+					res = true;
+					methodDeclaration.Body.RemoveRange(i, methodDeclaration.Body.Count-1);
+				}
+				else
+				{
+					res |= CheckBranchForReturn(methodDeclaration.Body[i]);
+				}
+				
 			}
 
-//			if (res == false)
+//			foreach (var i in methodDeclaration.Body)
 //			{
-//				throw new MissingReturnStatementException();
+//					res |= CheckBranchForReturn(i);	
 //			}
 			
-			bool CheckBranchForReturn(IBody iBody)
+
+			if (res == false)
 			{
+				throw new MissingReturnStatementException();
+			}
+			
+			bool CheckBranchForReturn(IBody iBody)
+			{	
 				switch (iBody)
 				{
 					case IfStatement ifStatement:
-						foreach (var i in ifStatement.Body)
+						bool tempBody = false;
+						for (int i = 0; i < ifStatement.Body.Count; i++)
 						{
-							CheckBranchForReturn(i);
+							if (CheckBranchForReturn(ifStatement.Body[i]))
+							{
+								tempBody = true;
+								ifStatement.Body.RemoveRange(i, ifStatement.Body.Count-1); // будет ли он ругаться на последний элемент?
+								break;
+							}
+							tempBody = false;
 						}
-						foreach (var i in ifStatement.ElseBody)
-						{
-							CheckBranchForReturn(i);
-						}
-						break;
-					case WhileLoop whileLoop:
-						foreach (var i in whileLoop.Body)
-						{
-							CheckBranchForReturn(i);
-						}
-						break;
-					case ReturnStatement _:
-						return true;
 						
-//					default:
-//						return false;
+//						foreach (var i in ifStatement.Body)
+//						{
+//							tempBody |= CheckBranchForReturn(i);
+//							ifStatement.Body.RemoveRange();
+//							break;
+//						}
+
+						var tempElseBody = false;
+						for (int i = 0; i < ifStatement.ElseBody.Count; i++)
+						{
+							if (CheckBranchForReturn(ifStatement.ElseBody[i]))
+							{
+								tempElseBody = true;
+								ifStatement.ElseBody.RemoveRange(i, ifStatement.ElseBody.Count-1); // будет ли он ругаться на последний элемент?
+								break;
+							}
+							tempElseBody = false;
+							
+						}
+						
+						return tempBody && tempElseBody;
+					case ReturnStatement returnStatement:
+						return true;
+					default:
+						return false;
+					
 				}
-				return false;
 			}
 
 
