@@ -13,7 +13,7 @@ class Program is
     end
 
     // no expression in return statement
-    method nullMethod(n: Integer) : is
+    method nullMethod(n: Integer) is
         return 
     end
 end

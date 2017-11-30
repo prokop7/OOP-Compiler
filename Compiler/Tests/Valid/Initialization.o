@@ -1,7 +1,7 @@
 class Program is
     var a is 10
-    method FooBar: Integer is
-        var b is 1.5
+    method FooBar is
+        var b is 2.5
         if true then
             b := 22
         end

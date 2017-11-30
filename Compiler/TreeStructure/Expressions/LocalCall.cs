@@ -5,25 +5,43 @@ using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class LocalCall: IPrimaryExpression
+    public class LocalCall: IPrimaryExpression, ICommonCall
     {
         //BUG might happen when you copy. 
         public ICommonTreeInterface Parent { get; set; }
         public string Identifier { get; set; }
         public string Type { get; set; }
-        public List<Expression> Parameters { get; set; } = null;
+        public List<Expression> Arguments { get; set; } = null;
 
         public LocalCall(string identifier)
         {
             Identifier = identifier;
         }
+        
+        public LocalCall(string identifier, List<Expression> arguments) : this(identifier)
+        {
+            Arguments = arguments;
+            foreach (var expression in arguments)
+                expression.Parent = this;
+        }
+
+        public LocalCall(LocalCall localCall)
+        {
+            Identifier = string.Copy(localCall.Identifier);
+            if (localCall.Arguments != null)
+                Arguments = new List<Expression>();
+            localCall.Arguments?.ForEach(arg => Arguments.Add(new Expression(arg) {Parent = this}));
+            
+        }
 
 
         public void Accept(IVisitor visitor) => visitor.Visit(this);
-        
+
         public override string ToString()
         {
-            return Identifier + $"({Parameters?.Aggregate("", (current, p) => current + (p + ", "))})";
+            return Identifier + (Arguments == null
+                       ? ""
+                       : $"({Arguments.Aggregate("", (current, p) => current + (p + ", "))})");
         }
     }
 }

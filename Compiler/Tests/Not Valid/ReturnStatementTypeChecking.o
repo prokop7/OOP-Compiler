@@ -1,5 +1,5 @@
 class Program is
     method Foo: Real is
         return true // Must return Real
-    return  
+    end
 end

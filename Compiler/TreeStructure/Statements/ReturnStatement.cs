@@ -14,8 +14,11 @@ namespace Compiler.TreeStructure.Statements
 
         public ReturnStatement(Expression expression)
         {
-            Expression = expression;
-            Expression.Parent = this;
+            if (expression != null)
+            {
+                Expression = expression;
+                Expression.Parent = this;
+            }
         }
 
         public ReturnStatement(ReturnStatement returnStatement)

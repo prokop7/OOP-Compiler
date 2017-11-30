@@ -1,33 +1,46 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Compiler.TreeStructure.MemberDeclarations;
 using Compiler.TreeStructure.Visitors;
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public class Call: ICall
+    public class ConstructorCall: IPrimaryExpression, ICommonCall
     {
         public ICommonTreeInterface Parent { get; set; }
         public string InputType { get; set; }
         public IMemberDeclaration MemberDeclaration { get; set; }
-        public string Identifier { get; set; }
+        public ClassName ClassName { get; set; }
         public List<Expression> Arguments { get; set; } = new List<Expression>();
+        public string Type { get; set; }
         
-        public Call(string identifier)
+        public ConstructorCall(ClassName className)
         {
-            Identifier = identifier;
+            ClassName = className;
+            Type = ClassName.Identifier;
+        }
+        
+        public ConstructorCall(LocalCall localCall)
+        {
+            ClassName = new ClassName(localCall.Identifier) {Parent = this};
+            if (localCall.Arguments != null)
+                foreach (var argument in localCall.Arguments)
+                {
+                    Arguments.Add(new Expression(argument) {Parent = this});
+                }
+            Parent = localCall.Parent;
+            Type = ClassName.Identifier;
         }
 
-        public Call(string identifier, List<Expression> arguments) : this(identifier)
+        public ConstructorCall(ClassName className, List<Expression> arguments) : this(className)
         {
             Arguments = arguments;
             foreach (var expression in arguments)
                 expression.Parent = this;
         }
 
-        public Call(Call call)
+        public ConstructorCall(ConstructorCall call)
         {
-            Identifier = string.Copy(call.Identifier);
+            ClassName = new ClassName(call.ClassName);
             if (call.InputType != null) InputType = string.Copy(call.InputType);
             switch (call.MemberDeclaration)
             {
@@ -53,7 +66,7 @@ namespace Compiler.TreeStructure.Expressions
             Arguments.ForEach(arg => args += $"{arg}, ");
             if(Arguments.Count > 0)
                 args = args.Remove(args.Length - 2);
-            return Identifier + $"({args})";
+            return ClassName + $"({args})";
         }
     }
 }

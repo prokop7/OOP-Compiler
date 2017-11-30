@@ -1,18 +1,18 @@
-class A[T] is
-    this(t: T)
+class A<T> is
+    this(t: T) is
         var b is t
     end
 end
 
-class B[TKey, TValue] is
-    this(k: TKey, v: TValue)
+class B<TKey, TValue> is
+    this(k: TKey, v: TValue) is
         var key is k
         var value is v
     end
 end
 
-class C[TOne, TTwo, TThree] is
-    this(k: TOne, v: TTwo, w: TThree)
+class C<TOne, TTwo, TThree> is
+    this(k: TOne, v: TTwo, w: TThree) is
         var one is k
         var two is v
         var three is w
@@ -21,9 +21,9 @@ end
 
 class D is
     this is
-        var a is A[](4) // Missed type specification
-        var b is B[TKey, TValue](1, true) 
-        var c is C[COne, CTwo, CThree](5.4, false, 5)  //не передается реальный тип
+        var a is A<>(4) // Missed type specification
+        var b is B<TKey, TValue>(1, true) 
+        var c is C<COne, CTwo, CThree>(5.4, false, 5)  //не передается реальный тип
     end
 end
 

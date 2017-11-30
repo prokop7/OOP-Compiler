@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer;
@@ -42,21 +42,9 @@ namespace Compiler.TreeStructure
             var generics = Specification.Aggregate("", (s1, name) => s1 += $"{name}, ");
             if (generics.EndsWith(", "))
                 generics = generics.Remove(generics.Length - 2);
-            return !generics.Equals("") ? $"{Identifier}<{generics}>" : Identifier;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is ClassName)
-            {
-                var o = obj as ClassName;
-                if (this.Specification.Count == o.Specification.Count)
-                {
-                    return base.Equals(obj);
-                }
-            }
-            //That's useless if you return base.Equals :D
-            return base.Equals(obj);
+            var str = !generics.Equals("") ? $"{Identifier}<{generics}>" : Identifier;
+            str += ArrSize != null ? $"[{ArrSize}]" : "";
+            return str;
         }
     }
 }

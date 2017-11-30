@@ -1,5 +1,6 @@
 class Program is
-
+	
+	this is
     var int is 10
 	var real is 2.55
 	
@@ -12,6 +13,6 @@ class Program is
 	var div_Int_Real is int.Div(real)
 	var div_Real_Int is real.Div(int)
 	var rem_Real_Int is real.Rem(int)
-	
+	end
 	
 end

@@ -1,13 +1,14 @@
 class Program is
-
-    var bool1 is true
-	var bool2 is false
-	var bool3: Boolean is true
-	var bool6: Boolean is false
-	
-	var and is bool1.And(bool2)
-	var or os bool1.Or(bool2)
-	var xor is bool1.Xor(bool2)
-	var less is 5.Less(4)
-	var not is bool1.Not()
+	method Foo is
+		var bool1 is true
+		var bool2 is false
+		var bool3: Boolean is true
+		var bool6: Boolean is false
+		
+		var and is bool1.And(bool2)
+		var or is bool1.Or(bool2)
+		var xor is bool1.Xor(bool2)
+		var less is 5.Less(4)
+		var not is bool1.Not()
+	end
 end

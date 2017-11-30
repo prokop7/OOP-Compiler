@@ -2,7 +2,7 @@
 
 namespace Compiler.TreeStructure.Expressions
 {
-    public interface ICall: ICommonTreeInterface
+    public interface ICall: ICommonTreeInterface, ICommonCall
     {
         string InputType { get; set; }
         string Identifier { get; set; }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using Compiler.FrontendPart.SemanticAnalyzer.Visitors;
 using Compiler.TreeStructure;
+using Compiler.TreeStructure.Expressions;
 using Compiler.TreeStructure.Statements;
 using Compiler.TreeStructure.Visitors;
 using Compiler.TreeStructure.MemberDeclarations;
@@ -12,9 +13,8 @@ using static Compiler.L;
 
 namespace Compiler.FrontendPart.SemanticAnalyzer
 {
-    /// TODO Stages of analizer
     /// [95%] Fill class table    <see cref="FillStaticTable"/>
-    /// [50%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
+    /// [90%] Fill variable/methods table for classes    <see cref="FillMethodsTable"/>
     /// [90%] Simple inheritance    <see cref="AddInheritedMembers"/>
     /// [80%] Fill variable table for methods and check initialization of variables    <see cref="VariableDeclarationCheck"/>
     /// [70%] Replace Generic classes with existing    <see cref="InitClasses"/>
@@ -27,6 +27,43 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
         public Analizer(List<Class> classList)
         {
             _classList = classList;
+        }
+
+        public List<Class> Analize()
+        {
+            FillStaticTable();
+//            GenericTypesCheck();
+//            InitClasses();
+
+            ReplaceLocalCall();
+            FillMethodsTable();
+            AddInheritance();
+            VariableDeclarationCheck();
+            CheckMethodDeclaration();
+            foreach (var @class in _classList)
+            {
+                var fieldVisitor = new FieldChangeVisitor();
+                fieldVisitor.Visit(@class);
+            }
+            TypeCheck();
+            return _classList;
+        }
+
+        private void AddInheritance()
+        {
+            foreach (var @class in _classList)
+                if (@class.BaseClassName != null)
+                    if (!StaticTables.ClassTable.ContainsKey(@class.BaseClassName.Identifier))
+                        throw new ClassNotFoundException(@class.BaseClassName.Identifier);
+                    else
+                        @class.Base = StaticTables.ClassTable[@class.BaseClassName.Identifier][0];
+        }
+
+        private void ReplaceLocalCall()
+        {
+            var visitor = new LocalCallReplacer();
+            foreach (var @class in _classList)
+                visitor.Visit(@class);
         }
 
         public void InitClasses()
@@ -68,19 +105,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Initialization of generic classes: finish", 2);
         }
 
-        public List<Class> Analize()
-        {
-            FillStaticTable();
-//            GenericTypesCheck();
-//            InitClasses();
-            FillMethodsTable();
-            AddInheritedMembers();
-            VariableDeclarationCheck();
-            CheckMethodDeclaration();
-            TypeCheck();
-            return _classList;
-        }
-
         private void GenericTypesCheck()
         {
             Log($"Generic types check: start", 1);
@@ -119,35 +143,38 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             Log($"Fill class method tables: start", 1);
             foreach (var @class in _classList)
             {
-                foreach (var j in @class.MemberDeclarations)
+                foreach (var member in @class.MemberDeclarations)
                 {
-                    if (!(j is MethodDeclaration methodDeclaration)) continue;
-                    if (@class.ClassMethods.Count == 0)
+                    switch (member)
                     {
-                        @class.ClassMethods.Add(@class.SelfClassName.Identifier, new List<MethodDeclaration>{methodDeclaration});
-                            
-                    }
-                    else
-                    {
-                        @class.ClassMethods[@class.SelfClassName.Identifier].Add(methodDeclaration);
+                        case MethodDeclaration methodDeclaration:
+                            if (methodDeclaration.Identifier == "Main")
+                                break;
+                            var newName = GetNewName(methodDeclaration);
+                            if (@class.Members.ContainsKey(newName))
+                                throw new DuplicatedDeclarationException(methodDeclaration.Identifier);
+                            methodDeclaration.Identifier = newName;
+                            @class.Members.Add(newName, methodDeclaration);
+                            break;
                     }
                 }
-                
+
+                string GetNewName(MethodDeclaration methodDeclaration) => $"{methodDeclaration.Identifier}$" +
+                                                                          $"{methodDeclaration.Parameters.Aggregate("", (s, declaration) => s += declaration.Type.Identifier)}"
+                ;
             }
-            Log($"Fill class method tables: finish", 1);
-            
+            Log($"Fill class method tables: finish", 1);   
         }
 
         private void FillStaticTable()
         {
             Log($"Fill static tables: start", 1);
-            
             AnalyzeClass(BuiltInClasses.GenerateBoolean());
             AnalyzeClass(BuiltInClasses.GenerateInteger());
-            
+            AnalyzeClass(BuiltInClasses.GenerateReal());
             foreach (var i in _classList)
                 AnalyzeClass(i);
-            
+
             void AnalyzeClass(Class i)
             {
                 if (i.SelfClassName.Specification.Count != 0)
@@ -160,15 +187,10 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                     }
                     PutToGenericClassTable(i.SelfClassName.Identifier, (GenericClass) i);
                 }
+                else if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
+                    throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
                 else
-                {
-                    if (StaticTables.ClassTable.ContainsKey(i.SelfClassName.Identifier))
-                        throw new DuplicatedDeclarationException(i.SelfClassName.ToString());
-                    
                     PutToClassTable(i.SelfClassName.Identifier, i);
-                }
-                    
-
             }
 
             void PutToClassTable(string key, Class value)
@@ -200,8 +222,7 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
             {
                 if (@class.Base == null)
                     return;
-                
-                // TODO something strange. Test it!!!
+
                 AddParentMethods(@class.Base);
                 var members = @class.Members;
                 foreach (var pair in @class.Base.Members)
@@ -222,19 +243,50 @@ namespace Compiler.FrontendPart.SemanticAnalyzer
                 Log($"Go into {@class}: start", 4);
                 visitor.Visit(@class);
                 Log($"Go into {@class}: finish", 4);
-                var fillVariables = new FillVariablesVisitor();
-                fillVariables.Visit(@class);
             }
             Log($"Variable declaration check: finish", 2);
         }
     }
-    
 
-    public class FillVariablesVisitor: BaseVisitor
+    public class LocalCallReplacer : BaseVisitor
     {
-        public override void Visit(WhileLoop whileLoop)
+        public override void Visit(Expression expression)
         {
-            base.Visit(whileLoop);
+            if (!(expression.PrimaryPart is LocalCall localCall)) return;
+            if (StaticTables.ClassTable.ContainsKey(localCall.Identifier))
+            {
+                expression.PrimaryPart = new ConstructorCall(localCall);
+            }
+        }
+
+        public override void Visit(VariableDeclaration variableDeclaration)
+        {
+            base.Visit(variableDeclaration);
+            if (variableDeclaration.Classname != null && variableDeclaration.Expression.ReturnType != null &&
+                variableDeclaration.Classname.Identifier != variableDeclaration.Expression.ReturnType)
+            {
+                variableDeclaration.Expression.Calls.Add(new Call("To" + variableDeclaration.Classname.Identifier)
+                {
+                    Parent = variableDeclaration.Expression,
+                    InputType = variableDeclaration.Expression.ReturnType
+                });
+                variableDeclaration.Expression.ReturnType = variableDeclaration.Classname.Identifier;
+            }
+        }
+    }
+
+    public class FieldChangeVisitor : BaseVisitor
+    {
+        public override void Visit(FieldCall fieldCall)
+        {
+            var inputType = fieldCall.InputType;
+            var inputClass = StaticTables.ClassTable[inputType][0];
+            if (inputClass.Members.ContainsKey(fieldCall.Identifier))
+                return;
+            if (inputClass.NameMap.ContainsKey(fieldCall.Identifier))
+                fieldCall.Identifier = inputClass.NameMap[fieldCall.Identifier];
+            else
+                throw new ClassMemberNotFoundException(inputType, fieldCall.Identifier);
         }
     }
 }

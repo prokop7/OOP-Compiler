@@ -1,9 +1,9 @@
 class AnotherClass is
 
-	var value: Integer(0)
+	var value: Integer is 5
 
 	this is
-		this.value := 5
+		var i is this.value
 	end
 
 end

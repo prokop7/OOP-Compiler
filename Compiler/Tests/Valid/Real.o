@@ -6,11 +6,11 @@ class Program is
 	var real4: Real is 3.78
 	var real5: Real is 3
 	
-	var sum is real1.Plus(real2)
-	var sub is real3.Minus(real2)
-	var mult is real1.Mult(real2)
-	var div is real1.Div(real2)
-	var reminder is real1.Rem(2)
-	var neg is real1.Neg()
+//	var sum is real1.Plus(real2)
+//	var sub is real3.Minus(real2)
+//	var mult is real1.Mult(real2)
+//	var div is real1.Div(real2)
+//	var reminder is real1.Rem(2)
+//	var neg is real1.UnaryMinus()
 	
 end
