@@ -12,10 +12,29 @@ namespace Compiler.TreeStructure.MemberDeclarations
         public ICommonTreeInterface Parent { get; set; }
         public string Identifier { get; set; } // название метода
         public ClassName ResultType { get; set; } // result types
-        public List<IBody> Body { get; set; } = new List<IBody>(); // тело
+        private List<IBody> _body = new List<IBody>();
+        private List<ParameterDeclaration> _parameters = new List<ParameterDeclaration>();
 
-        public List<ParameterDeclaration> Parameters { get; set; } =
-            new List<ParameterDeclaration>(); // параметры метода
+        public List<IBody> Body
+        {
+            get => _body;
+            set
+            {
+                _body = value;
+                _body?.ForEach(body => body.Parent = this);
+            }
+        } // тело
+
+        public List<ParameterDeclaration> Parameters
+        { 
+            get => _parameters;
+            set
+            {
+                _parameters = value;
+                _parameters?.ForEach(param => param.Parent = this);
+            }
+            
+        } // параметры метода
         
         public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
 

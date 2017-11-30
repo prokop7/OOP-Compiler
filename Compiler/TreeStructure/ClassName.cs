@@ -10,7 +10,18 @@ namespace Compiler.TreeStructure
     public class ClassName : IPrimaryExpression
     {
         public string Identifier { get; set; } // название класса
-        public List<ClassName> Specification { get; set; } = new List<ClassName>(); // для дженериков, названия буков дженериков
+        private List<ClassName> _specification  = new List<ClassName>();
+
+        public List<ClassName> Specification
+        {
+            get => _specification;
+            set
+            {
+                _specification = value;
+                _specification?.ForEach(sp => sp.Parent = this);
+            }
+        } // для дженериков, названия буков дженериков
+
         public ICommonTreeInterface Parent { get; set; }
         public string Type { set; get; }
 
@@ -25,6 +36,12 @@ namespace Compiler.TreeStructure
         {
             Identifier = name;
             Type = name;
+        }
+
+        public ClassName(string name, List<ClassName> specification) : this(name)
+        {
+            if (specification == null) return;
+            Specification = specification;
         }
 
         public ClassName(ClassName className)

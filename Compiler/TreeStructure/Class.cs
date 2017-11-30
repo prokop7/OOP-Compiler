@@ -15,15 +15,40 @@ namespace Compiler.TreeStructure
         public ClassName BaseClassName { get; set; }
         public Class Base { get; set; } // класс от которого наследуется текущий класс
         public Dictionary<string, string> NameMap { get; set; } = new Dictionary<string, string>();
-        public List<IMemberDeclaration> MemberDeclarations { get; set; } =
-            new List<IMemberDeclaration>(); // члены класса: перемененные, методы, декларация конструкции
-        
+        private List<IMemberDeclaration> _memberDeclarations = new List<IMemberDeclaration>();
+
+        public List<IMemberDeclaration> MemberDeclarations
+        {
+            get => _memberDeclarations;
+            set
+            {
+                _memberDeclarations = value;
+                _memberDeclarations?.ForEach(member => member.Parent = this);
+            }
+        } // члены класса: перемененные, методы, декларация конструкции
+
 
 
         public Class(ClassName name)
         {
             SelfClassName = name;
             name.Parent = this;
+        }
+        
+        public Class(ClassName name, ClassName baseClassName) : this(name)
+        {
+            BaseClassName = baseClassName;
+            BaseClassName.Parent = this;
+        }
+        
+        public Class(ClassName name, ClassName baseClassName, List<IMemberDeclaration> memberDeclarations) : this(name)
+        {
+            if (baseClassName != null)
+            {
+                BaseClassName = baseClassName;
+                BaseClassName.Parent = this;
+            }
+            MemberDeclarations = memberDeclarations;
         }
 
         public Class(Class @class)

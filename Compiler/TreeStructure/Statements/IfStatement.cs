@@ -12,8 +12,28 @@ namespace Compiler.TreeStructure.Statements
     {
         public ICommonTreeInterface Parent { get; set; }
         public Expression Expression { get; set; }
-        public List<IBody> Body { get; set; } = new List<IBody>();
-        public List<IBody> ElseBody { get; set; } = new List<IBody>();
+        private List<IBody> _body = new List<IBody>();
+        private List<IBody> _elseBody = new List<IBody>();
+        
+        public List<IBody> Body
+        {
+            get => _body;
+            set
+            {
+                _body = value;
+                _body?.ForEach(body => body.Parent = this);
+            }
+        }
+
+        public List<IBody> ElseBody
+        {
+            get => _elseBody;
+            set
+            {
+                _elseBody = value;
+                _elseBody?.ForEach(body => body.Parent = this);
+            }
+        }
 
         public Dictionary<string, VariableDeclaration> VariableDeclarations { get; set; } =
             new Dictionary<string, VariableDeclaration>();
@@ -24,22 +44,16 @@ namespace Compiler.TreeStructure.Statements
         public IfStatement(Expression expression, List<IBody> body)
         {
             Expression = expression;
-            Body = body;
             Expression.Parent = this;
-            foreach (var el in Body)
-                el.Parent = this;
+
+            if (body == null) return;
+            Body = body;
         }
 
-        public IfStatement(Expression expression, List<IBody> body, List<IBody> elseBody)
+        public IfStatement(Expression expression, List<IBody> body, List<IBody> elseBody) : this(expression, body)
         {
-            Expression = expression;
-            Body = body;
+            if (elseBody == null) return;
             ElseBody = elseBody;
-            Expression.Parent = this;
-            foreach (var el in Body)
-                el.Parent = this;
-            foreach (var el in ElseBody)
-                el.Parent = this;
         }
 
         public IfStatement(IfStatement ifStatement)

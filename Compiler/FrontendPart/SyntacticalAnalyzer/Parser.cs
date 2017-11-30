@@ -13,7 +13,6 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
     public class Parser
     {
         private Lexer lexer;
-//        private Token currentToken = null;
         private Token prevToken = null;
         private List<Token> tokensToProcess = new List<Token>();
         
@@ -44,7 +43,6 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         private Token PeekCurrentToken()
         {
             return tokensToProcess.First();
-//            return currentToken;
         }
 
         private void ReturnTokensToProcess(List<Token> tokens)
@@ -86,29 +84,25 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                 return null;
             CheckTokenTypeStrong(PeekCurrentToken(), Type.ClassKey);
             GetNextToken();
-            var classObj = new Class(ParseClassName());
+            var className = ParseClassName();
+            ClassName baseClassName = null;
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.ExtendsKey))
             {
                 GetNextToken();
-                var baseClassName = ParseClassName();
+                baseClassName = ParseClassName();
                 if(baseClassName == null)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "base class name");
-                baseClassName.Parent = classObj;
-                classObj.BaseClassName = baseClassName;
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.IsKey);
 
             /* Parse body of class */
-            IMemberDeclaration memberDeclaration;
+            var memberDeclarations = new List<IMemberDeclaration>();
             GetNextToken();
+            IMemberDeclaration memberDeclaration;
             while ((memberDeclaration = ParseMemberDeclaration()) != null)
-            {
-                memberDeclaration.Parent = classObj;
-                classObj.MemberDeclarations.Add(memberDeclaration);
-//                GetNextToken();
-            }
+                memberDeclarations.Add(memberDeclaration);
             CheckTokenTypeStrong(PeekCurrentToken(), Type.EndKey);
-            return classObj;
+            return new Class(className, baseClassName, memberDeclarations);
         }
 
         private ClassName ParseClassName()
@@ -122,11 +116,7 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
                 var genericParams = ParseGenericParams();
                 if (genericParams.Count == 0)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "generic parameter");
-                foreach (var genericParam in genericParams)
-                {
-                    genericParam.Parent = className;
-                    className.Specification.Add(genericParam);
-                }
+                className.Specification = genericParams;
                 CheckTokenTypeStrong(PeekCurrentToken(), Type.TrglRparen);
                 GetNextToken();
             }
@@ -179,32 +169,29 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
         {
             CheckTokenTypeStrong(PeekCurrentToken(), Type.Id, " of variable name");
             var varName = (string)PeekCurrentToken().value;
-            var varDeclaration = new VariableDeclaration(varName);
             ClassName className = null;
-            var typeOrValueDefined = false;
             if (CheckTokenTypeWeak(GetNextToken(), Type.Colon))
             {
                 GetNextToken();
                 className = ParseClassName();
                 if (className == null)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "class name");
-                className.Parent = varDeclaration;
-                varDeclaration.Classname = className;
-                typeOrValueDefined = true;
             }
+            Expression expression;
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.IsKey))
             {
                 GetNextToken();
-                var expression = ParseExpression();
+                expression = ParseExpression();
                 if (expression == null)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "expression");
-                expression.Parent = varDeclaration;
-                varDeclaration.Expression = expression;
-                typeOrValueDefined = true;
+                if(className != null)
+                    return new VariableDeclaration(varName, className, expression);
+                return new VariableDeclaration(varName, expression);
             }
-            if(!typeOrValueDefined)
+            // if no expression
+            if (className == null) // defined only name of variable
                 throw new UnexpectedTokenException(PeekCurrentToken(), $"explisit type or value of variable '{varName}'");
-            return varDeclaration;
+            return new VariableDeclaration(varName, className, new Expression(new ConstructorCall(className))); // with default class constructor
         }
 
         private MethodDeclaration ParseMethodDeclaration()
@@ -213,29 +200,19 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             var method = new MethodDeclaration((string)PeekCurrentToken().value);
             var parameters = ParseParameters();
             if (parameters != null)
-            {
-                foreach (var parameter in parameters)
-                {
-                    parameter.Parent = method;
-                    method.Parameters.Add(parameter);
-                }
-            }
+                method.Parameters = parameters;
             if (CheckTokenTypeWeak(PeekCurrentToken(), Type.Colon))
             {
                 GetNextToken();
                 var resultType = ParseClassName();
                 if(resultType == null)
                     throw new UnexpectedTokenException(PeekCurrentToken(), "class name");
-                resultType.Parent = method;
                 method.ResultType = resultType;
             }
             GetNextToken();
             var body = ParseBody();
-            foreach (var bodyItem in body)
-            {
-                bodyItem.Parent = method;
-                method.Body.Add(bodyItem);
-            }
+            if (body != null)
+                method.Body = body;
             
             CheckTokenTypeStrong(PeekCurrentToken(), Type.EndKey);
             GetNextToken();
@@ -382,7 +359,6 @@ namespace Compiler.FrontendPart.SyntacticalAnalyzer
             {
                 GetNextToken();
                 ifStat.ElseBody = ParseBody();
-                ifStat.ElseBody.ForEach(el => el.Parent = ifStat);
             }
             CheckTokenTypeStrong(PeekCurrentToken(), Type.EndKey);
             return ifStat;
