@@ -206,9 +206,6 @@ namespace Compiler.FrontendPart.SemanticAnalyzer.Visitors
 				}
 
 				bool res = checkParent(returnStatement.Parent);
-				Console.WriteLine($"Result of return statement checking - {res}");
-
-				Console.WriteLine(returnStatement.Expression.ReturnType + " - this is return type");
 
 				if (!res)
 				{

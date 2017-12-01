@@ -16,19 +16,20 @@ namespace Compiler
             L.LogLevel = 0;
             if (args.Length > 0)
             {
-                var outputName = (args.Length == 2 ? args[1] : Path.GetFileNameWithoutExtension(args[0])) + ".exe";
-                CompileFile(args[0], outputName);
+                var cName = args.Length > 1 ? args[1] : null;
+                var mName = args.Length > 2 ? args[2] : null;
+                CompileFile(args[0], cName, mName);
             }
             else
-                CompileSuite("./../../Tests/Valid");
+                CompileSuite("./../../Tests/Composite");
         }
 
-        private static void CompileFile(string filename, string output)
+        private static void CompileFile(string filename, string entryClass=null, string entryMethod=null)
         {
             var main = new FrontEndCompiler(filename);
             try
             {
-                Compiler.Compile(main.GetClasses(), filename, output);
+                Compiler.Compile(main.GetClasses(), filename, entryClass, entryMethod);
             }
             catch (Exception e)
             {
@@ -46,7 +47,7 @@ namespace Compiler
             foreach (var filename in files)
             {
                 Console.WriteLine(Path.GetFullPath(filename));
-                CompileFile(filename, Path.GetFileNameWithoutExtension(filename) + ".exe");
+                CompileFile(filename);
                 Console.WriteLine("\n\n");
             }
         }
